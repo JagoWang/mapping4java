@@ -1,0 +1,18 @@
+#BeanMapping for java
+
+= Introduction =
+1. 解决BeanUtils, BeanCopier使用上的局限，只能针对同名属性的拷贝
+2. 相比于BeanUtils，性能提升是它的优势
+3. 相比于BeanCopier，类型之间的convertor是它的优势
+4. 支持插件方式的扩展，自身框架的设计也是基于插件扩展。 
+
+目前的插件支持：
+1. default value支持
+2. convetor转换
+3. script脚本支持 (EL表达式处理)
+4. bean creator(嵌套对象自动创建)
+
+
+= Details =
+
+待补充
