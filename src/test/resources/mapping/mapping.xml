@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="GBK"?>
-<bean-mappings xmlns="http://www.alibaba.com/schema/udsl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.alibaba.com/schema/udsl ../../../main/resources/META-INF/mapping.xsd">
+<bean-mappings xmlns="http://www.alibaba.com/schema/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.alibaba.com/schema/mapping ../../../main/resources/META-INF/mapping.xsd">
     <bean-mapping srcClass="map" targetClass="java.util.HashMap" reversable="false">
     	<field-mapping srcName="id" srcClass="java.lang.String" targetName="id" targetClass="java.lang.String" defaultValue="0" convetor="stringToDate" script="idFormat.format()" />
     	<field-mapping mapping="true" srcName="model" targetName="model" ></field-mapping>
     </bean-mapping>
     
     <!--  (bean-bean) mapping 测试 -->
-    <bean-mapping srcClass="com.alibaba.udsl.dataroute.beanbuilder.mapping.object.SrcMappingObject" targetClass="com.alibaba.udsl.dataroute.beanbuilder.mapping.object.TargetMappingObject" reversable="true">
+    <bean-mapping srcClass="com.agapple.mapping.object.SrcMappingObject" targetClass="com.agapple.mapping.object.TargetMappingObject" reversable="true">
     	<field-mapping srcName="intValue" targetName="intValue" />
     	<field-mapping srcName="integerValue" targetName="integerValue" />
     	<field-mapping srcName="start" targetName="start" />
@@ -15,26 +15,26 @@
     	<field-mapping srcName="mapping" targetName="mapping" mapping="true" />
     </bean-mapping>
     
-    <bean-mapping srcClass="com.alibaba.udsl.dataroute.beanbuilder.mapping.object.NestedSrcMappingObject" targetClass="com.alibaba.udsl.dataroute.beanbuilder.mapping.object.NestedTargetMappingObject" reversable="true">
+    <bean-mapping srcClass="com.agapple.mapping.object.NestedSrcMappingObject" targetClass="com.agapple.mapping.object.NestedTargetMappingObject" reversable="true">
     	<field-mapping srcName="name" targetName="name" defaultValue="ljh" /> <!-- 测试default value -->
     	<field-mapping srcName="bigDecimalValue" targetName="value" targetClass="string" defaultValue="10" /> <!-- 测试不同名+不同类型+default value  -->
     </bean-mapping>
     
      <!--  (bean-map) mapping 测试 -->
-     <bean-mapping srcClass="com.alibaba.udsl.dataroute.beanbuilder.mapping.object.SrcMappingObject" targetClass="map" reversable="true">
+     <bean-mapping srcClass="com.agapple.mapping.object.SrcMappingObject" targetClass="map" reversable="true">
     	<field-mapping srcName="intValue" targetName="intValue" />
     	<field-mapping srcName="integerValue" targetName="integerValue" />
     	<field-mapping srcName="start" targetName="start" />
     	<field-mapping srcName="name" targetName="targetName" /> <!--  注意不同名 -->
     	<field-mapping srcName="mapping" targetName="mapping" mapping="true" />
     </bean-mapping>
-    <bean-mapping srcClass="com.alibaba.udsl.dataroute.beanbuilder.mapping.object.NestedSrcMappingObject" targetClass="map" reversable="true">
+    <bean-mapping srcClass="com.agapple.mapping.object.NestedSrcMappingObject" targetClass="map" reversable="true">
     	<field-mapping srcName="name" targetName="name" defaultValue="ljh" /> <!-- 测试default value -->
     	<field-mapping srcName="bigDecimalValue" targetName="value" targetClass="string" defaultValue="10" /> <!-- 测试不同名+不同类型+default value  -->
     </bean-mapping>
     
     <!--  bean script测试, map转化到object -->
-    <bean-mapping srcClass="map" targetClass="com.alibaba.udsl.dataroute.beanbuilder.mapping.object.TargetMappingObject">
+    <bean-mapping srcClass="map" targetClass="com.agapple.mapping.object.TargetMappingObject">
     	<field-mapping srcName="intValue" targetName="intValue" script="srcKey.intValue" />
     	<field-mapping srcName="integerValue" targetName="integerValue" script="srcKey.integerValue"/>
     	<field-mapping srcName="start" targetName="start" script="srcKey.start"/>
@@ -42,7 +42,7 @@
     	<field-mapping srcName="mapping" targetName="mapping" mapping="true" />
     </bean-mapping>
     
-    <bean-mapping srcClass="map" targetClass="com.alibaba.udsl.dataroute.beanbuilder.mapping.object.NestedTargetMappingObject">
+    <bean-mapping srcClass="map" targetClass="com.agapple.mapping.object.NestedTargetMappingObject">
     	<field-mapping srcName="name" targetName="name" script="srcKey.name" defaultValue="ljh" /> <!-- 测试default value -->
     	<field-mapping srcName="value" targetName="value" script="srcKey.value" targetClass="string" defaultValue="10" /> <!-- 测试不同名+不同类型+default value  -->
     </bean-mapping>
