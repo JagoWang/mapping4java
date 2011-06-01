@@ -138,7 +138,7 @@ public class Introspector {
      * @return
      */
     private String buildMethodKey(String clazzName, String methodName, Class[] parameters) {
-        String paramName = "#";
+        String paramName = "";
         for (Class p : parameters) {
             paramName += p.getName() + "#";
         }

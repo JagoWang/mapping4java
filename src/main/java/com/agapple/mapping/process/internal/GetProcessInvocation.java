@@ -38,7 +38,11 @@ public class GetProcessInvocation {
     }
 
     protected Object invokeExecutor() {
-        return executor.invoke(context.getParam().getSrcRef());
+        if (executor != null) {
+            return executor.invoke(context.getParam().getSrcRef());
+        } else {
+            return null;
+        }
     }
 
     // =================== get 操作===============

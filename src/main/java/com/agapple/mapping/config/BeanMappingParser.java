@@ -205,6 +205,13 @@ public class BeanMappingParser {
                 Node defaultValueNode = node.getAttributes().getNamedItem("defaultValue");
                 Node convetorNode = node.getAttributes().getNamedItem("convetor");
                 Node scriptNode = node.getAttributes().getNamedItem("script");
+                if (scriptNode == null && srcNameNode == null) {
+                    throw new BeanMappingException("srcName or script is requied");
+                }
+                if (targetNameNode == null) {
+                    throw new BeanMappingException("targetName is requied");
+                }
+
                 if (srcNameNode != null) {
                     beanField.setSrcName(srcNameNode.getNodeValue());
                 }

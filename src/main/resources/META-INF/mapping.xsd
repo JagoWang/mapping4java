@@ -33,16 +33,18 @@
         			<xs:documentation>script context for key, you can use define script with &quot;srcKey.field&quot;</xs:documentation></xs:annotation></xs:attribute>
         	<xs:attribute name="reversable" type="xs:boolean"
         		use="optional" default="false" />
+        	<xs:attribute name="batch" type="xs:boolean"
+        		use="optional" default="false" />
         </xs:complexType>
     </xs:element>
 
     <xs:element name="field-mapping">
         <xs:complexType>
-        	<xs:attribute name="srcName" type="xs:string" use="required" >
+        	<xs:attribute name="srcName" type="xs:string" use="optional" >
         		<xs:annotation>
         			<xs:documentation>src field name</xs:documentation>
         		</xs:annotation></xs:attribute>
-        	<xs:attribute name="targetName" type="xs:string" use="required" >
+        	<xs:attribute name="targetName" type="xs:string" use="optional" >
         		<xs:annotation>
         			<xs:documentation>target field name</xs:documentation>
         		</xs:annotation></xs:attribute>

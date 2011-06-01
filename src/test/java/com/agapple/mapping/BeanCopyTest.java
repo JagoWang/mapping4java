@@ -32,11 +32,17 @@ public class BeanCopyTest extends TestCase {
 
         TargetMappingObject targetRef = new TargetMappingObject();// 测试一下mapping到一个Object对象
         BeanMappingUtil.copy(srcRef, targetRef);
-        System.out.println(targetRef);
+        assertEquals(targetRef.getIntegerValue(), srcRef.getIntegerValue());
+        assertEquals(targetRef.getIntValue(), srcRef.getIntValue());
+        assertNull(targetRef.getTargetName());// 为null，因为属性不匹配
+        assertEquals(targetRef.isStart(), srcRef.isStart());
 
         SrcMappingObject newSrcRef = new SrcMappingObject();// 反过来再mapping一次
         BeanMappingUtil.copy(targetRef, newSrcRef);
-        System.out.println(newSrcRef);
+        assertEquals(newSrcRef.getIntegerValue(), targetRef.getIntegerValue());
+        assertEquals(newSrcRef.getIntValue(), targetRef.getIntValue());
+        assertNull(newSrcRef.getName());// 为null，因为属性不匹配
+        assertEquals(newSrcRef.isStart(), targetRef.isStart());
     }
 
     @Test
@@ -47,10 +53,13 @@ public class BeanCopyTest extends TestCase {
 
         NestedTargetMappingObject nestedTargetRef = new NestedTargetMappingObject();// 测试一下mapping到一个Object对象
         BeanMappingUtil.simpleCopy(nestedSrcRef, nestedTargetRef);
-        System.out.println(nestedTargetRef);
+        assertNull(nestedTargetRef.getValue());// 属性不同，类型也不同
+        assertEquals(nestedTargetRef.getName(), nestedSrcRef.getName());
 
         NestedSrcMappingObject newNestedSrcRef = new NestedSrcMappingObject();// 反过来再mapping一次
         BeanMappingUtil.simpleCopy(nestedTargetRef, newNestedSrcRef);
-        System.out.println(newNestedSrcRef);
+        assertNull(newNestedSrcRef.getBigDecimalValue());// 属性不同，类型也不同
+        assertEquals(newNestedSrcRef.getName(), nestedTargetRef.getName());
+
     }
 }

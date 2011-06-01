@@ -16,7 +16,7 @@ import com.agapple.mapping.object.SrcMappingObject;
 public class BeanMapTest extends TestCase {
 
     @Test
-    public void testDescribe_ok() {
+    public void testDescribe_Populate_ok() {
         SrcMappingObject srcRef = new SrcMappingObject();
         srcRef.setIntegerValue(1);
         srcRef.setIntValue(1);
@@ -28,10 +28,24 @@ public class BeanMapTest extends TestCase {
         srcRef.setMapping(nestedSrcRef);
 
         Map map = BeanMappingUtil.describe(srcRef);
-        System.out.println(map);
+        assertEquals(map.get("integerValue"), srcRef.getIntegerValue());
+        assertEquals(map.get("intValue"), srcRef.getIntValue());
+        assertEquals(map.get("name"), srcRef.getName());
+        assertEquals(map.get("start"), srcRef.isStart());
+        assertNotNull(map.get("mapping"));
+        NestedSrcMappingObject nested = (NestedSrcMappingObject) map.get("mapping");
+        assertEquals(srcRef.getMapping(), nested);// 没有做递归的describe
+        // assertEquals(nested.get("bigDecimalValue"), nestedSrcRef.getBigDecimalValue());
+        // assertEquals(nested.get("name"), null);// 没有设置，为null
 
         SrcMappingObject newSrcRef = new SrcMappingObject();// 反过来再mapping一次
         BeanMappingUtil.populate(newSrcRef, map);
-        System.out.println(newSrcRef);
+        assertEquals(map.get("integerValue"), newSrcRef.getIntegerValue());
+        assertEquals(map.get("intValue"), newSrcRef.getIntValue());
+        assertEquals(map.get("name"), newSrcRef.getName());
+        assertEquals(map.get("start"), newSrcRef.isStart());
+        assertNotNull(map.get("mapping"));
+        NestedSrcMappingObject newNested = (NestedSrcMappingObject) newSrcRef.getMapping();
+        assertEquals(map.get("mapping"), newNested);// 没有做递归的describe
     }
 }

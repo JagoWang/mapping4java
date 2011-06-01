@@ -37,6 +37,9 @@ public class SetProcessInvocation {
     }
 
     protected Object invokeExecutor(Object value) {
+        if (executor == null) {
+            throw new BeanMappingException("SetExecutor is null!");
+        }
         return executor.invoke(context.getParam().getTargetRef(), value);
     }
 
