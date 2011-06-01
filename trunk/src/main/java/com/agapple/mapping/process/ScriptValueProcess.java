@@ -43,10 +43,14 @@ public class ScriptValueProcess extends ValueProcessSupport {
 
             ScriptContext scriptContext = new JexlScriptContext(param);
             // 进行值转化处理
-            return scriptExecutor.evaluate(scriptContext, currentField.getScript());
-        } else {
-            return getInvocation.proceed();
+            Object value = scriptExecutor.evaluate(scriptContext, currentField.getScript());
+            if (value != null) {// 如果结果不为空，直接返回
+                return value;
+            }
         }
+
+        // 继续走到下一步处理
+        return getInvocation.proceed();
 
     }
 }

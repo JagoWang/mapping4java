@@ -26,7 +26,6 @@ public class BeanMappingTest extends TestCase {
 
     @Test
     public void testBeanToBean_ok() {
-
         SrcMappingObject srcRef = new SrcMappingObject();
         srcRef.setIntegerValue(1);
         srcRef.setIntValue(1);
@@ -39,11 +38,67 @@ public class BeanMappingTest extends TestCase {
 
         TargetMappingObject targetRef = new TargetMappingObject();// 测试一下mapping到一个Object对象
         BeanMappingUtil.mapping(srcRef, targetRef);
-        System.out.println(targetRef);
+        assertNotNull(targetRef.getMapping());
 
         SrcMappingObject newSrcRef = new SrcMappingObject();// 反过来再mapping一次
         BeanMappingUtil.mapping(targetRef, newSrcRef);
-        System.out.println(newSrcRef);
+        assertNotNull(newSrcRef.getMapping());
+    }
+
+    @Test
+    public void testBeanToBean_defaultValue() {
+        SrcMappingObject srcRef = new SrcMappingObject();
+
+        NestedSrcMappingObject nestedSrcRef = new NestedSrcMappingObject();
+        srcRef.setMapping(nestedSrcRef);
+
+        TargetMappingObject targetRef = new TargetMappingObject();// 测试一下mapping到一个HashMap对象
+        BeanMappingUtil.mapping(srcRef, targetRef);
+        assertNotNull(targetRef.getMapping());
+        assertEquals(targetRef.getMapping().getName(), "ljh");// 检查下default value
+
+        SrcMappingObject newSrcRef = new SrcMappingObject();
+        BeanMappingUtil.mapping(targetRef, newSrcRef); // 反过来再mapping一次
+        assertNotNull(newSrcRef.getMapping());
+        assertEquals(newSrcRef.getMapping().getName(), "ljh");// 检查下default value
+    }
+
+    @Test
+    public void testBeanToBean_nested_null() {// 测试嵌套对象为null
+        SrcMappingObject srcRef = new SrcMappingObject();
+        srcRef.setIntegerValue(1);// 只复制一个属性
+
+        TargetMappingObject targetRef = new TargetMappingObject();// 测试一下mapping到一个HashMap对象
+        BeanMappingUtil.mapping(srcRef, targetRef);
+        assertNull(targetRef.getMapping());
+        assertEquals(targetRef.getIntegerValue(), srcRef.getIntegerValue());
+
+        SrcMappingObject newSrcRef = new SrcMappingObject();
+        BeanMappingUtil.mapping(targetRef, newSrcRef); // 反过来再mapping一次
+        assertNull(newSrcRef.getMapping());
+        assertEquals(targetRef.getIntegerValue(), newSrcRef.getIntegerValue());
+    }
+
+    @Test
+    public void testBeanToBean_diff_fieldname_and_convertor() {// 测试名字不同 + 类型转化 + defaultValue
+        SrcMappingObject srcRef = new SrcMappingObject();
+        srcRef.setName("ljh"); // 名字不同
+
+        NestedSrcMappingObject nestedSrcRef = new NestedSrcMappingObject();
+        // nestedSrcRef.setBigDecimalValue(BigDecimal.ONE); // 类型不匹配
+        srcRef.setMapping(nestedSrcRef);
+
+        TargetMappingObject targetRef = new TargetMappingObject();// 测试一下mapping到一个HashMap对象
+        BeanMappingUtil.mapping(srcRef, targetRef);
+        assertNotNull(targetRef.getMapping());
+        assertEquals(targetRef.getMapping().getValue(), "10");
+        assertEquals(targetRef.getTargetName(), srcRef.getName());
+
+        SrcMappingObject newSrcRef = new SrcMappingObject();
+        BeanMappingUtil.mapping(targetRef, newSrcRef); // 反过来再mapping一次
+        assertNotNull(newSrcRef.getMapping());
+        assertEquals(targetRef.getMapping().getValue(), newSrcRef.getMapping().getBigDecimalValue().toString());
+        assertEquals(targetRef.getIntegerValue(), newSrcRef.getIntegerValue());
     }
 
     @Test
@@ -60,11 +115,11 @@ public class BeanMappingTest extends TestCase {
 
         Map targetRef = new HashMap();// 测试一下mapping到一个HashMap对象
         BeanMappingUtil.mapping(srcRef, targetRef);
-        System.out.println(targetRef);
+        assertNotNull(targetRef.get("mapping"));
 
         SrcMappingObject newSrcRef = new SrcMappingObject();
         BeanMappingUtil.mapping(targetRef, newSrcRef); // 反过来再mapping一次
-        System.out.println(newSrcRef);
+        assertNotNull(newSrcRef.getMapping());
     }
 
     @Test
@@ -93,12 +148,12 @@ public class BeanMappingTest extends TestCase {
         Map targetRef = new HashMap();// 测试一下mapping到一个HashMap对象
         BeanMappingUtil.mapping(srcRef, targetRef);
         assertNull(targetRef.get("mapping"));
-        assertEquals(targetRef.get("integerValue"), srcRef.getIntegerValue().toString());
+        assertEquals(targetRef.get("integerValue"), srcRef.getIntegerValue());
 
         SrcMappingObject newSrcRef = new SrcMappingObject();
         BeanMappingUtil.mapping(targetRef, newSrcRef); // 反过来再mapping一次
         assertNull(newSrcRef.getMapping());
-        assertEquals(targetRef.get("integerValue"), newSrcRef.getIntegerValue().toString());
+        assertEquals(targetRef.get("integerValue"), newSrcRef.getIntegerValue());
     }
 
     @Test

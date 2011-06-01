@@ -7,6 +7,9 @@ import java.util.List;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
+import com.agapple.mapping.introspect.GetExecutor;
+import com.agapple.mapping.introspect.SetExecutor;
+
 /**
  * 解析完成后的一个BeanMapping配置对象
  * 
@@ -21,6 +24,11 @@ public class BeanMappingObject implements Serializable {
     private Class                  targetClass;                                         // mapping的目标class
     private boolean                reversable       = true;                             // 原始和目标的mapping是否可逆，如果有自定义的convertor,强制修改为不可逆
     private List<BeanMappingField> beanFields       = new ArrayList<BeanMappingField>(); // 具体字段的mapping配置
+    private boolean                batch            = false;                            // 优化参数，是否开启批量处理操作.
+
+    // ======================= 内部数据，外部请勿直接操作 ==================
+    private GetExecutor            getExecutor      = null;                             // get操作的执行引擎
+    private SetExecutor            setExecutor      = null;                             // set操作的执行引擎
 
     public Class getSrcClass() {
         return srcClass;

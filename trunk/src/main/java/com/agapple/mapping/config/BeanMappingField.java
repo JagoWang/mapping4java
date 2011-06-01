@@ -5,6 +5,9 @@ import java.io.Serializable;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
+import com.agapple.mapping.introspect.GetExecutor;
+import com.agapple.mapping.introspect.SetExecutor;
+
 /**
  * 解析完成后的一个BeanMapping的field配置对象
  * 
@@ -18,9 +21,13 @@ public class BeanMappingField implements Serializable {
     private String            srcName;                                // 源数据的name
     private Class             srcClass;                               // 源数据的class
     private String            defaultValue;                           // 默认值,配置文件中定义的字符串
-    private String            convetor;                               // 自定义conveterName
+    private String            convertor;                              // 自定义conveterName
     private String            script;                                 // format script字符串
     private boolean           mapping          = false;               // 是否深度递归mapping
+
+    // ======================= 内部数据，外部请勿直接操作 ==================
+    private GetExecutor       getExecutor      = null;                // get操作的执行引擎
+    private SetExecutor       setExecutor      = null;                // set操作的执行引擎
 
     public String getTargetName() {
         return targetName;
@@ -62,14 +69,6 @@ public class BeanMappingField implements Serializable {
         this.defaultValue = defaultValue;
     }
 
-    public String getConvertor() {
-        return convetor;
-    }
-
-    public void setConvertor(String convertor) {
-        this.convetor = convertor;
-    }
-
     public String getScript() {
         return script;
     }
@@ -84,6 +83,30 @@ public class BeanMappingField implements Serializable {
 
     public void setMapping(boolean mapping) {
         this.mapping = mapping;
+    }
+
+    public String getConvertor() {
+        return convertor;
+    }
+
+    public void setConvertor(String convertor) {
+        this.convertor = convertor;
+    }
+
+    public GetExecutor getGetExecutor() {
+        return getExecutor;
+    }
+
+    public void setGetExecutor(GetExecutor getExecutor) {
+        this.getExecutor = getExecutor;
+    }
+
+    public SetExecutor getSetExecutor() {
+        return setExecutor;
+    }
+
+    public void setSetExecutor(SetExecutor setExecutor) {
+        this.setExecutor = setExecutor;
     }
 
     @Override
