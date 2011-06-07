@@ -34,6 +34,26 @@ public class Uberspector {
         return singleton;
     }
 
+    public BatchExecutor getBatchExecutor(Object obj, String[] identifier, Class[] args) {
+        final Class<?> clazz = obj.getClass();
+        // 尝试一下map处理
+        MapBatchExecutor mBatchExecutor = new MapBatchExecutor(getIntrospector(), clazz, identifier);
+        if (mBatchExecutor.isAlive()) {
+            return mBatchExecutor;
+        }
+
+        // 尝试一下bean处理
+        if (identifier != null) {
+            PropertyBatchExecutor pBatchExecutor = new PropertyBatchExecutor(getIntrospector(), clazz, identifier, args);
+            if (pBatchExecutor.isAlive()) {
+                return pBatchExecutor;
+            }
+        }
+
+        // 如果没有匹配到executor，则返回null，不做batch优化
+        return null;
+    }
+
     public GetExecutor getGetExecutor(Object obj, Object identifier) {
         final Class<?> clazz = obj.getClass();
         final String property = (identifier == null ? null : identifier.toString());

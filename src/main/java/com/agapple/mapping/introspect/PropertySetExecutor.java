@@ -23,7 +23,7 @@ public class PropertySetExecutor extends AbstractExecutor implements SetExecutor
     public Object invoke(Object key, Object value) throws BeanMappingException {
         Object[] pargs = { value };
         try {
-            method.invoke(key, pargs);
+            method.getJavaMethod().invoke(key, pargs);
             return value;
         } catch (Exception e) {
             throw new BeanMappingException(e);
@@ -35,7 +35,7 @@ public class PropertySetExecutor extends AbstractExecutor implements SetExecutor
         return property;
     }
 
-    private static FastMethod discover(Introspector is, Class<?> clazz, String property, Class arg) {
+    public static FastMethod discover(Introspector is, Class<?> clazz, String property, Class arg) {
         String prefix = "set";
         final int start = prefix.length(); // "get" or "is" 情况处理
 

@@ -21,7 +21,7 @@ public class PropertyGetExecutor extends AbstractExecutor implements GetExecutor
     @Override
     public Object invoke(Object obj) throws BeanMappingException {
         try {
-            return (method == null ? null : method.invoke(obj, (Object[]) null));
+            return (method == null ? null : method.getJavaMethod().invoke(obj, (Object[]) null));
         } catch (Exception e) {
             throw new BeanMappingException(e);
         }
@@ -32,7 +32,7 @@ public class PropertyGetExecutor extends AbstractExecutor implements GetExecutor
         return property;
     }
 
-    static FastMethod discover(Introspector is, Class<?> clazz, String property) {
+    public static FastMethod discover(Introspector is, Class<?> clazz, String property) {
         FastMethod method = discoverGet(is, "get", clazz, property);
         if (method == null) {
             // 尝试一下"is"方法
@@ -41,7 +41,7 @@ public class PropertyGetExecutor extends AbstractExecutor implements GetExecutor
         return method;
     }
 
-    static FastMethod discoverGet(Introspector is, String which, Class<?> clazz, String property) {
+    public static FastMethod discoverGet(Introspector is, String which, Class<?> clazz, String property) {
         FastMethod method = null;
         final int start = which.length(); // "get" or "is" 情况处理
         StringBuilder sb = new StringBuilder(which);

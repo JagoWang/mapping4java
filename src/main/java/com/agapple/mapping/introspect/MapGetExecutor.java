@@ -28,13 +28,17 @@ public class MapGetExecutor extends AbstractExecutor implements GetExecutor {
         property = key;
     }
 
+    public Object getTargetProperty() {
+        return property;
+    }
+
     @Override
     public Object invoke(Object obj) throws BeanMappingException {
         final Map<Object, ?> map = (Map<Object, ?>) obj;
         return map.get(property);
     }
 
-    static FastMethod discover(Class<?> clazz) {
+    public static FastMethod discover(Class<?> clazz) {
         return (Map.class.isAssignableFrom(clazz)) ? MAP_GET : null;
     }
 

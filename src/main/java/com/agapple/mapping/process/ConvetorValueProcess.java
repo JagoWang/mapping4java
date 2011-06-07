@@ -25,7 +25,9 @@ public class ConvetorValueProcess extends ValueProcessSupport {
             if (StringUtils.isNotEmpty(customConvertorName)) { // 判断是否有自定义的convertor
                 convertor = ConvertorHelper.getInstance().getConvertor(customConvertorName);
             } else {
-                convertor = ConvertorHelper.getInstance().getConvertor(value.getClass(), currentField.getTargetClass());
+                // 注意这里不用value.getClass(),原生类型会返回对应的Object类型，导出出现convetor转化
+                convertor = ConvertorHelper.getInstance().getConvertor(currentField.getSrcClass(),
+                                                                       currentField.getTargetClass());
             }
 
             if (convertor != null) {

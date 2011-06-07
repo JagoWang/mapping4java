@@ -7,8 +7,7 @@ import java.util.List;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
-import com.agapple.mapping.introspect.GetExecutor;
-import com.agapple.mapping.introspect.SetExecutor;
+import com.agapple.mapping.introspect.BatchExecutor;
 
 /**
  * 解析完成后的一个BeanMapping配置对象
@@ -27,8 +26,8 @@ public class BeanMappingObject implements Serializable {
     private boolean                batch            = false;                            // 优化参数，是否开启批量处理操作.
 
     // ======================= 内部数据，外部请勿直接操作 ==================
-    private GetExecutor            getExecutor      = null;                             // get操作的执行引擎
-    private SetExecutor            setExecutor      = null;                             // set操作的执行引擎
+    private BatchExecutor          getBatchExecutor = null;                             // get操作的batch执行引擎
+    private BatchExecutor          setBatchExecutor = null;                             // set操作的batch执行引擎
 
     public Class getSrcClass() {
         return srcClass;
@@ -76,6 +75,30 @@ public class BeanMappingObject implements Serializable {
 
     public void setTargetKey(String targetKey) {
         this.targetKey = targetKey;
+    }
+
+    public boolean isBatch() {
+        return batch;
+    }
+
+    public void setBatch(boolean batch) {
+        this.batch = batch;
+    }
+
+    public BatchExecutor getGetBatchExecutor() {
+        return getBatchExecutor;
+    }
+
+    public void setGetBatchExecutor(BatchExecutor getBatchExecutor) {
+        this.getBatchExecutor = getBatchExecutor;
+    }
+
+    public BatchExecutor getSetBatchExecutor() {
+        return setBatchExecutor;
+    }
+
+    public void setSetBatchExecutor(BatchExecutor setBatchExecutor) {
+        this.setBatchExecutor = setBatchExecutor;
     }
 
     @Override

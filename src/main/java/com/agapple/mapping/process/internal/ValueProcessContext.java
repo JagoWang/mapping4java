@@ -6,6 +6,7 @@ import java.util.Map;
 import com.agapple.mapping.BeanMappingParam;
 import com.agapple.mapping.config.BeanMappingField;
 import com.agapple.mapping.config.BeanMappingObject;
+import com.agapple.mapping.helper.BatchObjectHolder;
 
 /**
  * ValueProcess处理的上下文，允许ValueProcess基于context进行自定义的处理
@@ -18,17 +19,20 @@ public class ValueProcessContext implements Serializable {
     private BeanMappingParam  param;
     private BeanMappingObject beanObject;
     private BeanMappingField  currentField;
+    private BatchObjectHolder holder;
     private Map               custom;                                 // 允许自定义的context
 
-    public ValueProcessContext(BeanMappingParam param, BeanMappingObject object, BeanMappingField field){
-        this(param, object, field, null);
+    public ValueProcessContext(BeanMappingParam param, BeanMappingObject object, BeanMappingField field,
+                               BatchObjectHolder holder){
+        this(param, object, field, holder, null);
     }
 
     public ValueProcessContext(BeanMappingParam param, BeanMappingObject object, BeanMappingField field,
-                               Map customContext){
+                               BatchObjectHolder holder, Map customContext){
         this.param = param;
         this.beanObject = object;
         this.currentField = field;
+        this.holder = holder;
         this.custom = customContext;
     }
 
@@ -54,6 +58,14 @@ public class ValueProcessContext implements Serializable {
 
     public void setCurrentField(BeanMappingField currentField) {
         this.currentField = currentField;
+    }
+
+    public BatchObjectHolder getHolder() {
+        return holder;
+    }
+
+    public void setHolder(BatchObjectHolder holder) {
+        this.holder = holder;
     }
 
     public Map getCustom() {

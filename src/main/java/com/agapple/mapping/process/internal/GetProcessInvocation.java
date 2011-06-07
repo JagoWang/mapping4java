@@ -38,11 +38,22 @@ public class GetProcessInvocation {
     }
 
     protected Object invokeExecutor() {
+        if (isBatch()) { // 如果是batch模式
+            return context.getHolder().get().poll();
+        }
+
         if (executor != null) {
             return executor.invoke(context.getParam().getSrcRef());
         } else {
             return null;
         }
+    }
+
+    /**
+     * 判断一下是否处于batch处理模式
+     */
+    private boolean isBatch() {
+        return context.getBeanObject().isBatch() && context.getBeanObject().getGetBatchExecutor() != null;
     }
 
     // =================== get 操作===============
