@@ -47,6 +47,7 @@ public class BeanMappingParser {
         BeanMappingObject object = new BeanMappingObject();
         object.setSrcClass(src);
         object.setTargetClass(target);
+        // object.setBatch(true);
         List<BeanMappingField> fields = new ArrayList<BeanMappingField>();
         for (PropertyDescriptor targetPd : targetPds) {
             String property = targetPd.getName();
@@ -82,6 +83,7 @@ public class BeanMappingParser {
         BeanMappingObject object = new BeanMappingObject();
         object.setSrcClass(src);
         object.setTargetClass(HashMap.class);
+        object.setBatch(true);
         List<BeanMappingField> fields = new ArrayList<BeanMappingField>();
         for (PropertyDescriptor targetPd : targetPds) {
             if (targetPd.getWriteMethod() != null && targetPd.getReadMethod() != null) {
@@ -111,6 +113,9 @@ public class BeanMappingParser {
         newObject.setSrcClass(object.getTargetClass());
         newObject.setTargetClass(object.getSrcClass());
         newObject.setReversable(object.isReversable());
+        newObject.setBatch(object.isBatch());
+        newObject.setSrcKey(object.getSrcKey());
+        newObject.setTargetKey(object.getTargetKey());
 
         List<BeanMappingField> fields = newObject.getBeanFields();
         for (BeanMappingField field : object.getBeanFields()) {
@@ -166,6 +171,7 @@ public class BeanMappingParser {
             Node targetKeyNode = node.getAttributes().getNamedItem("targetKey");
             // 设置reversable
             Node reversableNode = node.getAttributes().getNamedItem("reversable");
+            Node batchNode = node.getAttributes().getNamedItem("batch");
 
             String src = srcNode.getNodeValue();
             String target = targetNode.getNodeValue();
@@ -180,6 +186,10 @@ public class BeanMappingParser {
             if (reversableNode != null) {
                 config.setReversable(Boolean.valueOf(reversableNode.getNodeValue()));
             }
+            if (batchNode != null) {
+                config.setBatch(Boolean.valueOf(batchNode.getNodeValue()));
+            }
+
             // 解析bean fields
             List<BeanMappingField> beanFields = parseMappingField(node);
             config.setBeanFields(beanFields);

@@ -15,9 +15,13 @@ public class BeanCreatorValueProcess extends ValueProcessSupport {
 
     @Override
     public Object setProcess(Object value, SetProcessInvocation setInvocation) throws BeanMappingException {
-        BeanMappingField currentField = setInvocation.getContext().getCurrentField();
-        if (value == null && currentField.isMapping()) {// 判断下是否在处理嵌套的mapping
-            value = ReflectionHelper.newInstance(setInvocation.getContext().getCurrentField().getTargetClass());
+        if (value != null) {
+            BeanMappingField currentField = setInvocation.getContext().getCurrentField();
+            if (currentField.isMapping()) {
+                // 判断下是否在处理嵌套的mapping
+                // 这里的value代表从get取出来的嵌套对象，如果有值，说明在目标对象上也需要创建targetClass对象进行复制
+                value = ReflectionHelper.newInstance(setInvocation.getContext().getCurrentField().getTargetClass());
+            }
         }
 
         // 继续下一步的调用

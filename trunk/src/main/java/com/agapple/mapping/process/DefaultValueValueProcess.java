@@ -1,5 +1,7 @@
 package com.agapple.mapping.process;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.agapple.mapping.BeanMappingException;
 import com.agapple.mapping.config.BeanMappingField;
 import com.agapple.mapping.convert.Convertor;
@@ -19,8 +21,8 @@ public class DefaultValueValueProcess extends ValueProcessSupport {
         // 先调用executor
         Object value = getInvocation.proceed();
         // 处理下自己的业务
-        if (value == null) {
-            BeanMappingField currentField = getInvocation.getContext().getCurrentField();
+        BeanMappingField currentField = getInvocation.getContext().getCurrentField();
+        if (value == null && StringUtils.isNotEmpty(currentField.getDefaultValue())) {
             if (currentField.getSrcClass() != null) {// 有指定对应的SrcClass
                 Convertor convertor = ConvertorHelper.getInstance().getConvertor(String.class,
                                                                                  currentField.getSrcClass());

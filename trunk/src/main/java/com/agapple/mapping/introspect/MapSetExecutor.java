@@ -28,6 +28,10 @@ public class MapSetExecutor extends AbstractExecutor implements SetExecutor {
         property = key;
     }
 
+    public Object getTargetProperty() {
+        return property;
+    }
+
     @Override
     public Object invoke(Object obj, Object value) throws BeanMappingException {
         final Map<Object, Object> map = ((Map<Object, Object>) obj);
@@ -35,7 +39,7 @@ public class MapSetExecutor extends AbstractExecutor implements SetExecutor {
         return value;
     }
 
-    static FastMethod discover(Class<?> clazz) {
+    public static FastMethod discover(Class<?> clazz) {
         return (Map.class.isAssignableFrom(clazz)) ? MAP_SET : null;
     }
 }

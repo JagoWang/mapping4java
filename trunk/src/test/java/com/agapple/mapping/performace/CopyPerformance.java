@@ -12,6 +12,7 @@ import java.text.DecimalFormat;
 
 import junit.framework.TestCase;
 import net.sf.cglib.beans.BeanCopier;
+import net.sf.cglib.beans.BulkBean;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -27,12 +28,12 @@ public class CopyPerformance extends TestCase {
 
     private static final DecimalFormat integerFormat = new DecimalFormat("#,###");
 
-    public static void main(String args[]) {
+    public static void main(String args[]) throws Exception {
         testCopy();
     }
 
     public static void testCopy() {
-        final int testCount = 1000 * 100 * 2;
+        final int testCount = 1000 * 100 * 5;
         CopyBean bean = getBean();
         // BeanMapping copy测试
         final CopyBean beanMappingTarget = new CopyBean();
@@ -70,6 +71,32 @@ public class CopyPerformance extends TestCase {
                 return beanMappingSimpleTarget;
             }
 
+        }, bean, testCount);
+        // bulkbean测试
+        String[] getters = new String[] { "getIntValue", "isBoolValue", "getFloatValue", "getDoubleValue",
+                "getLongValue", "getCharValue", "getShortValue", "getByteValue", "getIntegerValue", "getBoolObjValue",
+                "getFloatObjValue", "getDoubleObjValue", "getLongObjValue", "getShortObjValue", "getByteObjValue",
+                "getBigIntegerValue", "getBigDecimalValue", "getStringValue" };
+        String[] setters = new String[] { "setIntValue", "setBoolValue", "setFloatValue", "setDoubleValue",
+                "setLongValue", "setCharValue", "setShortValue", "setByteValue", "setIntegerValue", "setBoolObjValue",
+                "setFloatObjValue", "setDoubleObjValue", "setLongObjValue", "setShortObjValue", "setByteObjValue",
+                "setBigIntegerValue", "setBigDecimalValue", "setStringValue" };
+        Class[] clazzes = new Class[] { int.class, boolean.class, float.class, double.class, long.class, char.class,
+                short.class, byte.class, Integer.class, Boolean.class, Float.class, Double.class, Long.class,
+                Short.class, Byte.class, BigInteger.class, BigDecimal.class, String.class };
+        final BulkBean bulkBean = BulkBean.create(CopyBean.class, getters, setters, clazzes);
+        final CopyBean bulkBeanTarget = new CopyBean();
+        testTemplate(new TestCallback() {
+
+            public String getName() {
+                return "BulkBean";
+            }
+
+            public CopyBean call(CopyBean source) {
+                Object[] values = bulkBean.getPropertyValues(source);
+                bulkBean.setPropertyValues(bulkBeanTarget, values);
+                return bulkBeanTarget;
+            }
         }, bean, testCount);
         // beanCopier测试
         final BeanCopier beanCopier = BeanCopier.create(CopyBean.class, CopyBean.class, false);

@@ -3,6 +3,7 @@ package com.agapple.mapping.process.internal;
 import java.util.List;
 
 import com.agapple.mapping.BeanMappingException;
+import com.agapple.mapping.helper.BatchObjectHolder.StackQueue;
 import com.agapple.mapping.introspect.SetExecutor;
 
 /**
@@ -37,10 +38,23 @@ public class SetProcessInvocation {
     }
 
     protected Object invokeExecutor(Object value) {
+        if (isBatch()) { // 如果是batch模式
+            StackQueue sq = context.getHolder().get();
+            sq.offer(value);
+            return value;
+        }
+
         if (executor == null) {
             throw new BeanMappingException("SetExecutor is null!");
         }
         return executor.invoke(context.getParam().getTargetRef(), value);
+    }
+
+    /**
+     * 判断一下是否处于batch处理模式
+     */
+    private boolean isBatch() {
+        return context.getBeanObject().isBatch() && context.getBeanObject().getSetBatchExecutor() != null;
     }
 
     // =================== get 操作===============

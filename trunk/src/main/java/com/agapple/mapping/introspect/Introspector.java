@@ -59,8 +59,10 @@ public class Introspector {
         FastMethod method = fastMethodCache.get(methodKey);
         if (null == method) {
             getFastClass(clazz);// 分析一次clazz,这时会跟新fastMethodCache
+            return fastMethodCache.get(methodKey);
+        } else {
+            return method;
         }
-        return fastMethodCache.get(methodKey);
     }
 
     /**
@@ -94,9 +96,11 @@ public class Introspector {
         Method[] methods = allMethodCache.get(clazz.getName());
         if (methods == null) {
             getFastClass(clazz);// 分析一次clazz,这时会跟新fastMethodCache
+            return allMethodCache.get(clazz.getName());
+        } else {
+            return methods;
         }
 
-        return allMethodCache.get(clazz.getName());
     }
 
     /**
@@ -126,9 +130,11 @@ public class Introspector {
                 allMethodCache.put(clazzName, methods);
                 fastClassCache.put(clazzName, fc);
             }
+            // 再取一次cache
+            return fastClassCache.get(clazzName);
+        } else {
+            return fc;
         }
-        // 再取一次cache
-        return fastClassCache.get(clazzName);
     }
 
     // ============================ helper mthod =========================
