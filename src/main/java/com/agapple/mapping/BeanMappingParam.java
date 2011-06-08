@@ -9,7 +9,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 import com.agapple.mapping.config.BeanMappingObject;
-import com.agapple.mapping.process.internal.ValueProcess;
+import com.agapple.mapping.process.internal.GetValueProcess;
+import com.agapple.mapping.process.internal.SetValueProcess;
 
 /**
  * bean mapping传递的参数
@@ -18,14 +19,15 @@ import com.agapple.mapping.process.internal.ValueProcess;
  */
 public class BeanMappingParam implements Serializable {
 
-    private static final long  serialVersionUID   = 2371233083866029415L;
-    private Object             srcRef;                                   // 待转化src
-    private Object             targetRef;                                // 转化的目标dest
-    private BeanMappingObject  config;                                   // bean mapping相关配置
+    private static final long     serialVersionUID   = 2371233083866029415L;
+    private Object                srcRef;                                   // 待转化src
+    private Object                targetRef;                                // 转化的目标dest
+    private BeanMappingObject     config;                                   // bean mapping相关配置
 
     // =========================== ValueProcess 扩展参数==============================
-    private List<ValueProcess> processes;                                // 自定义的valueProcess
-    private Map                customValueContext = new HashMap();       // 自定义的valueProcess上下文处理
+    private List<GetValueProcess> getProcesses;                             // 自定义的get valueProcess
+    private List<SetValueProcess> setProcesses;                             // 自定义的set valueProcess
+    private Map                   customValueContext = new HashMap();       // 自定义的valueProcess上下文处理
 
     public Object getSrcRef() {
         return srcRef;
@@ -59,12 +61,20 @@ public class BeanMappingParam implements Serializable {
         this.customValueContext = customValueContext;
     }
 
-    public List<ValueProcess> getProcesses() {
-        return processes;
+    public List<GetValueProcess> getGetProcesses() {
+        return getProcesses;
     }
 
-    public void setProcesses(List<ValueProcess> processes) {
-        this.processes = processes;
+    public void setGetProcesses(List<GetValueProcess> getProcesses) {
+        this.getProcesses = getProcesses;
+    }
+
+    public List<SetValueProcess> getSetProcesses() {
+        return setProcesses;
+    }
+
+    public void setSetProcesses(List<SetValueProcess> setProcesses) {
+        this.setProcesses = setProcesses;
     }
 
     @Override

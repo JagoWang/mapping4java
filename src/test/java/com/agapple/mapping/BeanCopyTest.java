@@ -26,9 +26,9 @@ public class BeanCopyTest extends TestCase {
         srcRef.setName("ljh");
         srcRef.setStart(true);
 
-        NestedSrcMappingObject nestedSrcRef = new NestedSrcMappingObject();
-        nestedSrcRef.setBigDecimalValue(BigDecimal.ONE);
-        srcRef.setMapping(nestedSrcRef);
+        // NestedSrcMappingObject nestedSrcRef = new NestedSrcMappingObject();
+        // nestedSrcRef.setBigDecimalValue(BigDecimal.ONE);
+        // srcRef.setMapping(nestedSrcRef);
 
         TargetMappingObject targetRef = new TargetMappingObject();// 测试一下mapping到一个Object对象
         BeanMappingUtil.copy(srcRef, targetRef);

@@ -4,17 +4,17 @@ import com.agapple.mapping.BeanMappingException;
 import com.agapple.mapping.config.BeanMappingField;
 import com.agapple.mapping.helper.ReflectionHelper;
 import com.agapple.mapping.process.internal.SetProcessInvocation;
-import com.agapple.mapping.process.internal.ValueProcessSupport;
+import com.agapple.mapping.process.internal.SetValueProcess;
 
 /**
  * set操作流程中, 尝试创建一下嵌套的bean实例，通过反射newInstance,
  * 
  * @author jianghang 2011-5-28 下午11:32:38
  */
-public class BeanCreatorValueProcess extends ValueProcessSupport {
+public class BeanCreatorValueProcess implements SetValueProcess {
 
     @Override
-    public Object setProcess(Object value, SetProcessInvocation setInvocation) throws BeanMappingException {
+    public Object process(Object value, SetProcessInvocation setInvocation) throws BeanMappingException {
         if (value != null) {
             BeanMappingField currentField = setInvocation.getContext().getCurrentField();
             if (currentField.isMapping()) {

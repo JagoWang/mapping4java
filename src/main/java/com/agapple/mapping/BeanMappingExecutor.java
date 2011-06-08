@@ -28,24 +28,12 @@ import com.agapple.mapping.process.internal.ValueProcessContext;
  */
 public class BeanMappingExecutor {
 
-    private BatchObjectHolder holder = new BatchObjectHolder();
-
     /**
      * 根据传递的param，进行mapping处理
      */
     public void execute(BeanMappingParam param) {
-        try {
-            doExecute(param);
-        } finally {
-            holder.clear(); // 清空一下holder数据
-        }
-    }
-
-    /**
-     * @param param
-     */
-    private void doExecute(BeanMappingParam param) {
         BeanMappingObject config = param.getConfig();
+        BatchObjectHolder holder = null;
         BatchExecutor getBatchExecutor = null;
         BatchExecutor setBatchExecutor = null;
         if (config.isBatch()) { // 执行一次batch get操作，注意batch的获取操作需要放置在doFieldMapping/doBeanMapping之前
@@ -53,42 +41,21 @@ public class BeanMappingExecutor {
             setBatchExecutor = getSetBatchExecutor(param, config);
         }
         if (config.isBatch() && getBatchExecutor != null) { // 执行一次batch get操作
-            doBatchGet(getBatchExecutor, param, config);
+            Object[] batchValues = getBatchExecutor.gets(param.getSrcRef());
+            holder = new BatchObjectHolder(batchValues);
         }
-        for (BeanMappingField beanField : config.getBeanFields()) {
+        List<BeanMappingField> beanFields = config.getBeanFields();
+        for (int i = 0, size = beanFields.size(); i < size; i++) {
+            BeanMappingField beanField = beanFields.get(i);
             if (beanField.isMapping()) {
-                doBeanMapping(param, beanField);
+                doBeanMapping(param, beanField, holder);
             } else {
-                doFieldMapping(param, beanField);
+                doFieldMapping(param, beanField, holder);
             }
         }
-        if (config.isBatch() && setBatchExecutor != null) { // 执行一次batch set操作
-            doBatchSet(setBatchExecutor, param, config);
+        if (config.isBatch() && setBatchExecutor != null && holder != null) { // 执行一次batch set操作
+            setBatchExecutor.sets(param.getTargetRef(), holder.getBatchValues());
         }
-    }
-
-    /**
-     *执行batch get操作
-     */
-    private void doBatchGet(BatchExecutor executor, BeanMappingParam param, BeanMappingObject config) {
-        // 执行get操作
-        Object[] results = executor.gets(param.getSrcRef());
-        for (int i = 0; i < results.length; i++) {
-            holder.get().offer(results[i]);// result和属性顺序一一配对
-        }
-    }
-
-    /**
-     *执行batch set操作
-     */
-    private void doBatchSet(BatchExecutor executor, BeanMappingParam param, BeanMappingObject config) {
-        List<BeanMappingField> beanFields = config.getBeanFields();
-        Object[] datas = new Object[beanFields.size()];
-        for (int i = 0; i < beanFields.size(); i++) {
-            datas[i] = holder.get().poll();// 取数据
-        }
-        // 执行set操作
-        executor.sets(param.getTargetRef(), datas);
     }
 
     /**
@@ -154,33 +121,28 @@ public class BeanMappingExecutor {
     /**
      * 处理下模型的field的mapping动作
      */
-    private void doFieldMapping(BeanMappingParam param, BeanMappingField beanField) {
+    private void doFieldMapping(BeanMappingParam param, BeanMappingField beanField, BatchObjectHolder holder) {
         // 定义valueContext
         ValueProcessContext valueContext = new ValueProcessContext(param, param.getConfig(), beanField, holder,
                                                                    param.getCustomValueContext());
         // 设置getExecutor
-        GetExecutor getExecutor = null;
-        if (StringUtils.isNotEmpty(beanField.getSrcName())) {// 如果不为空,可能存在script
-            getExecutor = beanField.getGetExecutor();
-            if (getExecutor == null) {// 优先从beanField里取
-                getExecutor = Uberspector.getInstance().getGetExecutor(param.getSrcRef(), beanField.getSrcName());
-                beanField.setGetExecutor(getExecutor);
-            }
+        GetExecutor getExecutor = beanField.getGetExecutor();// 优先从beanField里取
+        if (getExecutor == null && StringUtils.isNotEmpty(beanField.getSrcName())) {// 如果不为空,可能存在script
+            getExecutor = Uberspector.getInstance().getGetExecutor(param.getSrcRef(), beanField.getSrcName());
+            beanField.setGetExecutor(getExecutor);
         }
         // 设置setExecutor
-        SetExecutor setExecutor = null;
-        if (StringUtils.isNotEmpty(beanField.getTargetName())) {
-            setExecutor = beanField.getSetExecutor();// 优先从beanField里取
-            if (setExecutor == null) {
-                setExecutor = Uberspector.getInstance().getSetExecutor(param.getTargetRef(), beanField.getTargetName(),
-                                                                       beanField.getTargetClass());
-                beanField.setSetExecutor(setExecutor);
-            }
+        SetExecutor setExecutor = beanField.getSetExecutor();// 优先从beanField里取
+        if (setExecutor == null && StringUtils.isNotEmpty(beanField.getTargetName())) {
+            setExecutor = Uberspector.getInstance().getSetExecutor(param.getTargetRef(), beanField.getTargetName(),
+                                                                   beanField.getTargetClass());
+            beanField.setSetExecutor(setExecutor);
 
         }
 
         // 获取get结果
-        GetProcessInvocation getInvocation = new GetProcessInvocation(getExecutor, valueContext, param.getProcesses());
+        GetProcessInvocation getInvocation = new GetProcessInvocation(getExecutor, valueContext,
+                                                                      param.getGetProcesses());
         Object getResult = getInvocation.proceed();
         // 设置下srcClass
         if (getExecutor != null && beanField.getSrcClass() == null) {
@@ -207,40 +169,36 @@ public class BeanMappingExecutor {
         }
 
         // 执行set
-        SetProcessInvocation setInvocation = new SetProcessInvocation(setExecutor, valueContext, param.getProcesses());
+        SetProcessInvocation setInvocation = new SetProcessInvocation(setExecutor, valueContext,
+                                                                      param.getSetProcesses());
         setInvocation.proceed(getResult);
     }
 
     /**
      * 处理下子模型的嵌套mapping动作
      */
-    private void doBeanMapping(BeanMappingParam param, BeanMappingField beanField) {
+    private void doBeanMapping(BeanMappingParam param, BeanMappingField beanField, BatchObjectHolder holder) {
         // 定义valueContext
         ValueProcessContext valueContext = new ValueProcessContext(param, param.getConfig(), beanField, holder,
                                                                    param.getCustomValueContext());
         // 检查一下targetClass是否有设置，针对bean对象有效
         // 如果目标对象是map，需要客户端强制设定targetClass
-        SetExecutor setExecutor = null;
-        if (StringUtils.isNotEmpty(beanField.getTargetName())) {// 可能存在为空
-            setExecutor = beanField.getSetExecutor();
-            if (setExecutor == null) {
-                setExecutor = Uberspector.getInstance().getSetExecutor(param.getTargetRef(), beanField.getTargetName(),
-                                                                       beanField.getTargetClass());
-                beanField.setSetExecutor(setExecutor);
-            }
+        SetExecutor setExecutor = beanField.getSetExecutor();
+        if (setExecutor == null && StringUtils.isNotEmpty(beanField.getTargetName())) {// 可能存在为空
+            setExecutor = Uberspector.getInstance().getSetExecutor(param.getTargetRef(), beanField.getTargetName(),
+                                                                   beanField.getTargetClass());
+            beanField.setSetExecutor(setExecutor);
         }
-        GetExecutor getExecutor = null;
-        if (StringUtils.isNotEmpty(beanField.getSrcName())) {// 可能存在为空
-            getExecutor = beanField.getGetExecutor();
-            if (getExecutor == null) {
-                getExecutor = Uberspector.getInstance().getGetExecutor(param.getSrcRef(), beanField.getSrcName());
-                beanField.setGetExecutor(getExecutor);
-            }
+        GetExecutor getExecutor = beanField.getGetExecutor();
+        if (getExecutor == null && StringUtils.isNotEmpty(beanField.getSrcName())) {// 可能存在为空
+            getExecutor = Uberspector.getInstance().getGetExecutor(param.getSrcRef(), beanField.getSrcName());
+            beanField.setGetExecutor(getExecutor);
         }
 
         // 获取新的srcRef
         // 获取get结果
-        GetProcessInvocation getInvocation = new GetProcessInvocation(getExecutor, valueContext, param.getProcesses());
+        GetProcessInvocation getInvocation = new GetProcessInvocation(getExecutor, valueContext,
+                                                                      param.getGetProcesses());
         Object srcRef = getInvocation.proceed();
         // 设置下srcClass
         if (getExecutor != null && beanField.getSrcClass() == null) {
@@ -263,7 +221,8 @@ public class BeanMappingExecutor {
         }
 
         // 执行set,反射构造一个子Model
-        SetProcessInvocation setInvocation = new SetProcessInvocation(setExecutor, valueContext, param.getProcesses());
+        SetProcessInvocation setInvocation = new SetProcessInvocation(setExecutor, valueContext,
+                                                                      param.getSetProcesses());
         // 如果嵌套对象为null，则直接略过该对象处理，目标对象也为null,此时srcRef可能为null
         Object value = setInvocation.proceed(srcRef); // 在目标节点对象上，创建一个子节点
         if (srcRef == null) {
@@ -284,14 +243,10 @@ public class BeanMappingExecutor {
         newParam.setSrcRef(srcRef);
         newParam.setConfig(object);
         // 复制并传递
-        newParam.setProcesses(param.getProcesses());
+        newParam.setGetProcesses(param.getGetProcesses());
+        newParam.setSetProcesses(param.getSetProcesses());
         // 进行递归调用
-        try {
-            holder.get().pushStack();
-            doExecute(newParam);
-        } finally {
-            holder.get().popStack();
-        }
+        execute(newParam);
     }
 
     /**

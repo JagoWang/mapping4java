@@ -47,7 +47,7 @@ public class BeanMappingParser {
         BeanMappingObject object = new BeanMappingObject();
         object.setSrcClass(src);
         object.setTargetClass(target);
-        // object.setBatch(true);
+        object.setBatch(true);
         List<BeanMappingField> fields = new ArrayList<BeanMappingField>();
         for (PropertyDescriptor targetPd : targetPds) {
             String property = targetPd.getName();

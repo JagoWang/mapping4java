@@ -7,17 +7,17 @@ import com.agapple.mapping.config.BeanMappingField;
 import com.agapple.mapping.convert.Convertor;
 import com.agapple.mapping.convert.ConvertorHelper;
 import com.agapple.mapping.process.internal.GetProcessInvocation;
-import com.agapple.mapping.process.internal.ValueProcessSupport;
+import com.agapple.mapping.process.internal.GetValueProcess;
 
 /**
  * mapping默认值的处理，get流程处理
  * 
  * @author jianghang 2011-5-27 下午09:19:46
  */
-public class DefaultValueValueProcess extends ValueProcessSupport {
+public class DefaultValueValueProcess implements GetValueProcess {
 
     @Override
-    public Object getProcess(GetProcessInvocation getInvocation) throws BeanMappingException {
+    public Object process(GetProcessInvocation getInvocation) throws BeanMappingException {
         // 先调用executor
         Object value = getInvocation.proceed();
         // 处理下自己的业务

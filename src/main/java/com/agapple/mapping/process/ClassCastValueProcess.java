@@ -5,7 +5,7 @@ import com.agapple.mapping.config.BeanMappingField;
 import com.agapple.mapping.introspect.MapGetExecutor;
 import com.agapple.mapping.introspect.PropertySetExecutor;
 import com.agapple.mapping.process.internal.SetProcessInvocation;
-import com.agapple.mapping.process.internal.ValueProcessSupport;
+import com.agapple.mapping.process.internal.SetValueProcess;
 
 /**
  * set流程处理, {@linkplain PropertySetExecutor}和{@linkplain MapGetExecutor}操作时检查下目标的class和当前的value.getClass()是否相同
@@ -17,9 +17,9 @@ import com.agapple.mapping.process.internal.ValueProcessSupport;
  * 
  * @author jianghang 2011-5-29 上午12:14:51
  */
-public class ClassCastValueProcess extends ValueProcessSupport {
+public class ClassCastValueProcess implements SetValueProcess {
 
-    public Object setProcess(Object value, SetProcessInvocation setInvocation) throws BeanMappingException {
+    public Object process(Object value, SetProcessInvocation setInvocation) throws BeanMappingException {
         BeanMappingField field = setInvocation.getContext().getCurrentField();
         if (field.getTargetClass() != null && value != null) {
             if (checkcast(value.getClass(), field.getTargetClass()) == false) {
@@ -31,14 +31,18 @@ public class ClassCastValueProcess extends ValueProcessSupport {
     }
 
     private boolean checkcast(Class src, Class target) {
-        src = mapper(src);
-        target = mapper(target);
+        if (target.isAssignableFrom(src)) {// 如果src是target的子类，可以向上转型，没问题
+            return true;
+        }
 
         if (src == target) { // 两个类相等
             return true;
         }
+        // 进行原始类型转化
+        src = mapper(src);
+        target = mapper(target);
 
-        if (target.isAssignableFrom(src)) {// 如果src是target的子类，可以向上转型，没问题
+        if (src == target) { // 两个类相等
             return true;
         }
 

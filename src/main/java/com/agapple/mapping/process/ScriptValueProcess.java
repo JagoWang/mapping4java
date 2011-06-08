@@ -9,7 +9,7 @@ import com.agapple.mapping.BeanMappingException;
 import com.agapple.mapping.config.BeanMappingField;
 import com.agapple.mapping.config.BeanMappingObject;
 import com.agapple.mapping.process.internal.GetProcessInvocation;
-import com.agapple.mapping.process.internal.ValueProcessSupport;
+import com.agapple.mapping.process.internal.GetValueProcess;
 import com.agapple.mapping.script.JexlScriptContext;
 import com.agapple.mapping.script.JexlScriptExecutor;
 import com.agapple.mapping.script.ScriptContext;
@@ -20,13 +20,13 @@ import com.agapple.mapping.script.ScriptExecutor;
  * 
  * @author jianghang 2011-5-27 下午09:25:17
  */
-public class ScriptValueProcess extends ValueProcessSupport {
+public class ScriptValueProcess implements GetValueProcess {
 
     private ScriptExecutor scriptExecutor = new JexlScriptExecutor();
     public final String    SCRIPT_CONTEXT = "_script_context";
 
     @Override
-    public Object getProcess(GetProcessInvocation getInvocation) throws BeanMappingException {
+    public Object process(GetProcessInvocation getInvocation) throws BeanMappingException {
         BeanMappingField currentField = getInvocation.getContext().getCurrentField();
         if (StringUtils.isNotEmpty(currentField.getScript())) {
             BeanMappingObject beanObject = getInvocation.getContext().getBeanObject();
