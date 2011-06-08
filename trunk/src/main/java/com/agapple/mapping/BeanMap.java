@@ -44,12 +44,11 @@ public class BeanMap {
      * 创建srcClass和targetClass之间的BeanMapping操作
      */
     public static BeanMap create(Class srcClass) {
-        BeanMappingObject describeConfig = BeanMappingConfigHelper.getInstance().getBeanMappingObject(srcClass,
-                                                                                                      HashMap.class,
-                                                                                                      true);
+        BeanMappingObject describeConfig = BeanMappingConfigHelper.getInstance().getBeanMapObject(srcClass,
+                                                                                                  HashMap.class, true);
 
-        BeanMappingObject populateConfig = BeanMappingConfigHelper.getInstance().getBeanMappingObject(HashMap.class,
-                                                                                                      srcClass, true);
+        BeanMappingObject populateConfig = BeanMappingConfigHelper.getInstance().getBeanMapObject(HashMap.class,
+                                                                                                  srcClass, true);
         return new BeanMap(describeConfig, populateConfig);
     }
 
