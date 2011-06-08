@@ -1,4 +1,4 @@
-package com.agapple.mapping.introspect;
+package com.agapple.mapping.core.introspect;
 
 import java.lang.reflect.Method;
 import java.util.Map;

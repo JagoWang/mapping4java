@@ -2,10 +2,10 @@ package com.agapple.mapping.process;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.agapple.mapping.BeanMappingException;
-import com.agapple.mapping.config.BeanMappingField;
 import com.agapple.mapping.convert.Convertor;
 import com.agapple.mapping.convert.ConvertorHelper;
+import com.agapple.mapping.core.BeanMappingException;
+import com.agapple.mapping.core.config.BeanMappingField;
 import com.agapple.mapping.process.internal.SetProcessInvocation;
 import com.agapple.mapping.process.internal.SetValueProcess;
 

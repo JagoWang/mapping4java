@@ -12,7 +12,7 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
-import com.agapple.mapping.config.BeanMappingConfigHelper;
+import com.agapple.mapping.core.config.BeanMappingConfigHelper;
 import com.agapple.mapping.object.SrcMappingObject;
 
 /**

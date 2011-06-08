@@ -22,11 +22,11 @@ import net.sf.cglib.reflect.FastMethod;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 
-import com.agapple.mapping.BeanMappingExecutor;
-import com.agapple.mapping.BeanMappingParam;
-import com.agapple.mapping.BeanMappingUtil;
-import com.agapple.mapping.config.BeanMappingConfigHelper;
-import com.agapple.mapping.config.BeanMappingObject;
+import com.agapple.mapping.BeanCopy;
+import com.agapple.mapping.core.BeanMappingExecutor;
+import com.agapple.mapping.core.BeanMappingParam;
+import com.agapple.mapping.core.config.BeanMappingConfigHelper;
+import com.agapple.mapping.core.config.BeanMappingObject;
 import com.agapple.mapping.process.internal.GetValueProcess;
 import com.agapple.mapping.process.internal.SetValueProcess;
 
@@ -62,7 +62,6 @@ public class CopyPerformance extends TestCase {
         param.setConfig(config);
         param.setGetProcesses(copyGetProcesses);
         param.setSetProcesses(copySetProcesses);
-        final BeanMappingExecutor executor = new BeanMappingExecutor();
         testTemplate(new TestCallback() {
 
             public String getName() {
@@ -72,7 +71,7 @@ public class CopyPerformance extends TestCase {
             public CopyBean call(CopyBean source) {
                 try {
                     // BeanMappingUtil.copy(source, beanMappingTarget);
-                    executor.execute(param);
+                    BeanMappingExecutor.execute(param);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -82,6 +81,7 @@ public class CopyPerformance extends TestCase {
         }, bean, testCount);
         // BeanMapping copy测试
         final CopyBean beanMappingTarget = new CopyBean();
+        final BeanCopy beanCopy = BeanCopy.create(CopyBean.class, CopyBean.class);
         testTemplate(new TestCallback() {
 
             public String getName() {
@@ -90,7 +90,7 @@ public class CopyPerformance extends TestCase {
 
             public CopyBean call(CopyBean source) {
                 try {
-                    BeanMappingUtil.copy(source, beanMappingTarget);
+                    beanCopy.copy(source, beanMappingTarget);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -108,7 +108,7 @@ public class CopyPerformance extends TestCase {
 
             public CopyBean call(CopyBean source) {
                 try {
-                    BeanMappingUtil.simpleCopy(source, beanMappingSimpleTarget);
+                    beanCopy.simpleCopy(source, beanMappingSimpleTarget);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

@@ -6,8 +6,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import com.agapple.mapping.BeanMappingException;
 import com.agapple.mapping.convert.Convertor;
+import com.agapple.mapping.core.BeanMappingException;
 
 /**
  * string <-> Date/Calendar 之间的转化

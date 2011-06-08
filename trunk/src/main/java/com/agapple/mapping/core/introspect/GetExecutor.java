@@ -1,6 +1,6 @@
-package com.agapple.mapping.introspect;
+package com.agapple.mapping.core.introspect;
 
-import com.agapple.mapping.BeanMappingException;
+import com.agapple.mapping.core.BeanMappingException;
 
 /**
  * 属性的Get方法操作接口

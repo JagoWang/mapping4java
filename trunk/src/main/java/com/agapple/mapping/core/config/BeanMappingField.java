@@ -1,12 +1,12 @@
-package com.agapple.mapping.config;
+package com.agapple.mapping.core.config;
 
 import java.io.Serializable;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
-import com.agapple.mapping.introspect.GetExecutor;
-import com.agapple.mapping.introspect.SetExecutor;
+import com.agapple.mapping.core.introspect.GetExecutor;
+import com.agapple.mapping.core.introspect.SetExecutor;
 
 /**
  * 解析完成后的一个BeanMapping的field配置对象

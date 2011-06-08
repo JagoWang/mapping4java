@@ -3,10 +3,10 @@ package com.agapple.mapping.process.internal;
 import java.io.Serializable;
 import java.util.Map;
 
-import com.agapple.mapping.BeanMappingParam;
-import com.agapple.mapping.config.BeanMappingField;
-import com.agapple.mapping.config.BeanMappingObject;
-import com.agapple.mapping.helper.BatchObjectHolder;
+import com.agapple.mapping.core.BeanMappingParam;
+import com.agapple.mapping.core.config.BeanMappingField;
+import com.agapple.mapping.core.config.BeanMappingObject;
+import com.agapple.mapping.core.helper.BatchObjectHolder;
 
 /**
  * ValueProcess处理的上下文，允许ValueProcess基于context进行自定义的处理

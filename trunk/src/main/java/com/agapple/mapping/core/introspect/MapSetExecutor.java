@@ -1,11 +1,11 @@
-package com.agapple.mapping.introspect;
+package com.agapple.mapping.core.introspect;
 
 import java.util.Map;
 
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 
-import com.agapple.mapping.BeanMappingException;
+import com.agapple.mapping.core.BeanMappingException;
 
 /**
  * 基于map的set操作

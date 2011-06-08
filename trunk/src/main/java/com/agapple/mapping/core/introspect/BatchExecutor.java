@@ -3,9 +3,9 @@
  * Alibaba.com ("Confidential Information"). You shall not disclose such Confidential Information and shall use it only
  * in accordance with the terms of the license agreement you entered into with Alibaba.com.
  */
-package com.agapple.mapping.introspect;
+package com.agapple.mapping.core.introspect;
 
-import com.agapple.mapping.BeanMappingException;
+import com.agapple.mapping.core.BeanMappingException;
 
 /**
  * 针对一个obj对象，批量处理的get/set操作

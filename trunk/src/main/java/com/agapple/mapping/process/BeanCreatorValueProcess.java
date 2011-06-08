@@ -1,8 +1,8 @@
 package com.agapple.mapping.process;
 
-import com.agapple.mapping.BeanMappingException;
-import com.agapple.mapping.config.BeanMappingField;
-import com.agapple.mapping.helper.ReflectionHelper;
+import com.agapple.mapping.core.BeanMappingException;
+import com.agapple.mapping.core.config.BeanMappingField;
+import com.agapple.mapping.core.helper.ReflectionHelper;
 import com.agapple.mapping.process.internal.SetProcessInvocation;
 import com.agapple.mapping.process.internal.SetValueProcess;
 

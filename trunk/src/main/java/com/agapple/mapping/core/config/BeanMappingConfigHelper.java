@@ -1,4 +1,4 @@
-package com.agapple.mapping.config;
+package com.agapple.mapping.core.config;
 
 import java.io.IOException;
 import java.io.InputStream;

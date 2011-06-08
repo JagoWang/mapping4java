@@ -1,4 +1,4 @@
-package com.agapple.mapping.helper;
+package com.agapple.mapping.core.helper;
 
 import java.io.InputStream;
 
@@ -14,7 +14,7 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import com.agapple.mapping.BeanMappingException;
+import com.agapple.mapping.core.BeanMappingException;
 
 /**
  * xml处理的一些简单包装

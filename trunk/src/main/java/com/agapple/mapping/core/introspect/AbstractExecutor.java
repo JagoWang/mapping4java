@@ -1,4 +1,4 @@
-package com.agapple.mapping.introspect;
+package com.agapple.mapping.core.introspect;
 
 import net.sf.cglib.reflect.FastMethod;
 

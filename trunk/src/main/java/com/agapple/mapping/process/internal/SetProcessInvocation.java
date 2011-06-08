@@ -2,8 +2,8 @@ package com.agapple.mapping.process.internal;
 
 import java.util.List;
 
-import com.agapple.mapping.BeanMappingException;
-import com.agapple.mapping.introspect.SetExecutor;
+import com.agapple.mapping.core.BeanMappingException;
+import com.agapple.mapping.core.introspect.SetExecutor;
 
 /**
  * ValueProcess执行的set操作的控制器
