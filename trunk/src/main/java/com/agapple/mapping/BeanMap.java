@@ -17,6 +17,17 @@ import com.agapple.mapping.core.config.BeanMappingObject;
 /**
  * Bean<->Map操作的处理单元
  * 
+ * <pre>
+ * <code>
+ * 使用例子：
+ *  BeanMap beanMap = BeanMap.create(srcClass);
+ *  Map properties = beanMap.describe(src);// 将bean的属性设置到map对象上
+ *  beanMap.populate(src,properties); // 将map对象数据设置到bean的属性上
+ * </code>
+ * </pre>
+ * 
+ * TODO : 后期支持单个属性的put/get操作
+ * 
  * @author jianghang 2011-6-8 上午11:11:13
  */
 public class BeanMap {

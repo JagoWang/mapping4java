@@ -19,6 +19,14 @@ import com.agapple.mapping.process.internal.SetValueProcess;
 /**
  * Bean copy操作的处理单元
  * 
+ * <pre>
+ * <code>
+ * 使用例子：
+ *  BeanCopy beanCopy = BeanCopy.create(srcClass , targetClass);
+ *  beanCopy.copy(src,target);//完成copy动作
+ * </code>
+ * </pre>
+ * 
  * @author jianghang 2011-6-8 上午11:10:47
  */
 public class BeanCopy {
@@ -62,24 +70,10 @@ public class BeanCopy {
         param.setTargetRef(target);
         param.setConfig(this.config);
         if (this.needConvetor) {
-            param.setSetProcesses(Arrays.asList(convetorValueProcess, classCastValueProcess));
+            param.setSetProcesses(Arrays.asList(convetorValueProcess));
+        } else {
+            param.setSetProcesses(Arrays.asList(classCastValueProcess));
         }
-        // 执行mapping处理
-        BeanMappingExecutor.execute(param);
-    }
-
-    /**
-     * 简单的拷贝模式，不做属性转化处理，与PropertyUtils功能类似
-     * 
-     * @param src
-     * @param target
-     */
-    public void simpleCopy(Object src, Object target) throws BeanMappingException {
-        BeanMappingParam param = new BeanMappingParam();
-        param.setSrcRef(src);
-        param.setTargetRef(target);
-        param.setConfig(this.config);
-        param.setSetProcesses(Arrays.asList(classCastValueProcess));
         // 执行mapping处理
         BeanMappingExecutor.execute(param);
     }

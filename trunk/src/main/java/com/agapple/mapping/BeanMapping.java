@@ -22,6 +22,16 @@ import com.agapple.mapping.process.internal.SetValueProcess;
 /**
  * Bean Mapping操作的处理单元
  * 
+ * <pre>
+ * <code>
+ * 使用例子：
+ *  BeanMapping beanMapping = BeanMapping.create(srcClass,targetClass);
+ *  beanMapping.mapping(src,target);// 将src的属性mapping到target
+ *  
+ *  注意：srcClass/targetClass的映射关系必须实现通过{@linkplain BeanMappingConfigHelper}的registerConfig方法注册mapping配置
+ * </code>
+ * </pre>
+ * 
  * @author jianghang 2011-6-8 上午11:10:24
  */
 public class BeanMapping {
