@@ -5,14 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.cglib.beans.BeanCopier;
-
-import org.apache.commons.beanutils.PropertyUtils;
-import org.springframework.beans.BeanUtils;
-
 import com.agapple.mapping.config.BeanMappingConfigHelper;
 import com.agapple.mapping.config.BeanMappingObject;
 import com.agapple.mapping.process.BeanCreatorValueProcess;
+import com.agapple.mapping.process.ClassCastValueProcess;
 import com.agapple.mapping.process.ConvetorValueProcess;
 import com.agapple.mapping.process.DefaultValueValueProcess;
 import com.agapple.mapping.process.ScriptValueProcess;
@@ -46,13 +42,13 @@ public class BeanMappingUtil {
         mappingSetProcesses.add(new ConvetorValueProcess());
 
         // field set
-        // copySetProcesses.add(new BeanCreatorValueProcess());
-        // copySetProcesses.add(new ConvetorValueProcess());
+        copySetProcesses.add(new BeanCreatorValueProcess());
+        copySetProcesses.add(new ConvetorValueProcess());
         // copySetProcesses.add(new ClassCastValueProcess());
 
         // field set
-        // simpleCopySetProcesses.add(new BeanCreatorValueProcess());
-        // simpleCopySetProcesses.add(new ClassCastValueProcess());
+        simpleCopySetProcesses.add(new BeanCreatorValueProcess());
+        simpleCopySetProcesses.add(new ClassCastValueProcess());
 
         // field set
         mapSetProcesses.add(new BeanCreatorValueProcess());
@@ -85,7 +81,7 @@ public class BeanMappingUtil {
     }
 
     /**
-     * 对象属性的拷贝，与{@linkplain BeanUtils} {@linkplain BeanCopier} 功能类似
+     * 对象属性的拷贝，与BeanUtils , BeanCopier功能类似
      * 
      * @param src
      * @param target
@@ -104,7 +100,7 @@ public class BeanMappingUtil {
     }
 
     /**
-     * 简单的拷贝模式，不做属性转化处理，与{@linkplain PropertyUtils}功能类似
+     * 简单的拷贝模式，不做属性转化处理，与PropertyUtils功能类似
      * 
      * @param src
      * @param target
