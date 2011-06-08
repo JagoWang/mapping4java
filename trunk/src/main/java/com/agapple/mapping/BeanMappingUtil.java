@@ -7,16 +7,17 @@ import java.util.Map;
 
 import net.sf.cglib.beans.BeanCopier;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.beans.BeanUtils;
 
 import com.agapple.mapping.config.BeanMappingConfigHelper;
 import com.agapple.mapping.config.BeanMappingObject;
 import com.agapple.mapping.process.BeanCreatorValueProcess;
-import com.agapple.mapping.process.ClassCastValueProcess;
 import com.agapple.mapping.process.ConvetorValueProcess;
 import com.agapple.mapping.process.DefaultValueValueProcess;
 import com.agapple.mapping.process.ScriptValueProcess;
-import com.agapple.mapping.process.internal.ValueProcess;
+import com.agapple.mapping.process.internal.GetValueProcess;
+import com.agapple.mapping.process.internal.SetValueProcess;
 
 /**
  * Bean mapping处理的一些常用方法
@@ -25,32 +26,36 @@ import com.agapple.mapping.process.internal.ValueProcess;
  */
 public class BeanMappingUtil {
 
-    private static BeanMappingExecutor executor            = new BeanMappingExecutor();
-    private static List<ValueProcess>  mappingProcesses    = new ArrayList<ValueProcess>(2);
-    private static List<ValueProcess>  copyProcesses       = new ArrayList<ValueProcess>(2);
-    private static List<ValueProcess>  simpleCopyProcesses = new ArrayList<ValueProcess>(2);
-    private static List<ValueProcess>  mapProcesses        = new ArrayList<ValueProcess>(2);
+    private static BeanMappingExecutor   executor               = new BeanMappingExecutor();
+    private static List<GetValueProcess> mappingGetProcesses    = new ArrayList<GetValueProcess>(2);
+    private static List<SetValueProcess> mappingSetProcesses    = new ArrayList<SetValueProcess>(2);
+    private static List<GetValueProcess> copyGetProcesses       = new ArrayList<GetValueProcess>(2);
+    private static List<SetValueProcess> copySetProcesses       = new ArrayList<SetValueProcess>(2);
+    private static List<GetValueProcess> simpleCopyGetProcesses = new ArrayList<GetValueProcess>(2);
+    private static List<SetValueProcess> simpleCopySetProcesses = new ArrayList<SetValueProcess>(2);
+    private static List<GetValueProcess> mapGetProcesses        = new ArrayList<GetValueProcess>(2);
+    private static List<SetValueProcess> mapSetProcesses        = new ArrayList<SetValueProcess>(2);
 
     static {
         // 注意保持特定的顺序非常重要，请别随意变更
         // field get
-        mappingProcesses.add(new ScriptValueProcess());
-        mappingProcesses.add(new DefaultValueValueProcess());
+        mappingGetProcesses.add(new ScriptValueProcess());
+        mappingGetProcesses.add(new DefaultValueValueProcess());
         // field set
-        mappingProcesses.add(new BeanCreatorValueProcess());
-        mappingProcesses.add(new ConvetorValueProcess());
+        mappingSetProcesses.add(new BeanCreatorValueProcess());
+        mappingSetProcesses.add(new ConvetorValueProcess());
 
         // field set
-        copyProcesses.add(new BeanCreatorValueProcess());
-        copyProcesses.add(new ConvetorValueProcess());
-        copyProcesses.add(new ClassCastValueProcess());
+        // copySetProcesses.add(new BeanCreatorValueProcess());
+        // copySetProcesses.add(new ConvetorValueProcess());
+        // copySetProcesses.add(new ClassCastValueProcess());
 
         // field set
-        simpleCopyProcesses.add(new BeanCreatorValueProcess());
-        simpleCopyProcesses.add(new ClassCastValueProcess());
+        // simpleCopySetProcesses.add(new BeanCreatorValueProcess());
+        // simpleCopySetProcesses.add(new ClassCastValueProcess());
 
         // field set
-        mapProcesses.add(new BeanCreatorValueProcess());
+        mapSetProcesses.add(new BeanCreatorValueProcess());
     }
 
     /**
@@ -73,7 +78,8 @@ public class BeanMappingUtil {
         param.setTargetRef(target);
         param.setConfig(object);
         // 设置valueProcess，进行插件扩展
-        param.setProcesses(mappingProcesses);
+        param.setGetProcesses(mappingGetProcesses);
+        param.setSetProcesses(mappingSetProcesses);
         // 执行mapping处理
         executor.execute(param);
     }
@@ -91,7 +97,8 @@ public class BeanMappingUtil {
         param.setSrcRef(src);
         param.setTargetRef(target);
         param.setConfig(object);
-        param.setProcesses(copyProcesses);
+        param.setGetProcesses(copyGetProcesses);
+        param.setSetProcesses(copySetProcesses);
         // 执行mapping处理
         executor.execute(param);
     }
@@ -109,7 +116,8 @@ public class BeanMappingUtil {
         param.setSrcRef(src);
         param.setTargetRef(target);
         param.setConfig(object);
-        param.setProcesses(simpleCopyProcesses);
+        param.setGetProcesses(simpleCopyGetProcesses);
+        param.setSetProcesses(simpleCopySetProcesses);
         // 执行mapping处理
         executor.execute(param);
     }
@@ -122,7 +130,8 @@ public class BeanMappingUtil {
         param.setSrcRef(src);
         param.setTargetRef(result);
         param.setConfig(object);
-        param.setProcesses(mapProcesses);
+        param.setGetProcesses(mapGetProcesses);
+        param.setSetProcesses(mapSetProcesses);
         // 执行mapping处理
         executor.execute(param);
         return result;
@@ -135,7 +144,8 @@ public class BeanMappingUtil {
         param.setSrcRef(properties);
         param.setTargetRef(target);
         param.setConfig(object);
-        param.setProcesses(mapProcesses);
+        param.setGetProcesses(mapGetProcesses);
+        param.setSetProcesses(mapSetProcesses);
         // 执行mapping处理
         executor.execute(param);
     }

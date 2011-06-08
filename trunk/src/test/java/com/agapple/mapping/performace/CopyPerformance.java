@@ -6,18 +6,29 @@
 package com.agapple.mapping.performace;
 
 import java.lang.management.ManagementFactory;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import junit.framework.TestCase;
 import net.sf.cglib.beans.BeanCopier;
 import net.sf.cglib.beans.BulkBean;
+import net.sf.cglib.reflect.FastClass;
+import net.sf.cglib.reflect.FastMethod;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 
+import com.agapple.mapping.BeanMappingExecutor;
+import com.agapple.mapping.BeanMappingParam;
 import com.agapple.mapping.BeanMappingUtil;
+import com.agapple.mapping.config.BeanMappingConfigHelper;
+import com.agapple.mapping.config.BeanMappingObject;
+import com.agapple.mapping.process.internal.GetValueProcess;
+import com.agapple.mapping.process.internal.SetValueProcess;
 
 /**
  * BeanCopier , Beanutils/PropertyUtils , BeanMapping几种机制的copy操作的性能测试
@@ -33,8 +44,42 @@ public class CopyPerformance extends TestCase {
     }
 
     public static void testCopy() {
-        final int testCount = 1000 * 100 * 5;
+        final int testCount = 1000 * 100 * 20;
         CopyBean bean = getBean();
+        // BeanMapping copy测试
+        BeanMappingObject config = BeanMappingConfigHelper.getInstance().getBeanMappingObject(CopyBean.class,
+                                                                                              CopyBean.class, true);
+        // 执行mapping处理
+        final CopyBean beanMappingCustomTarget = new CopyBean();
+        List<GetValueProcess> copyGetProcesses = new ArrayList<GetValueProcess>(2);
+        List<SetValueProcess> copySetProcesses = new ArrayList<SetValueProcess>(2);
+        // copySetProcesses.add(new BeanCreatorValueProcess());
+        // copySetProcesses.add(new ConvetorValueProcess());
+        // // copySetProcesses.add(new ClassCastValueProcess());
+        final BeanMappingParam param = new BeanMappingParam();
+        param.setSrcRef(bean);
+        param.setTargetRef(beanMappingCustomTarget);
+        param.setConfig(config);
+        param.setGetProcesses(copyGetProcesses);
+        param.setSetProcesses(copySetProcesses);
+        final BeanMappingExecutor executor = new BeanMappingExecutor();
+        testTemplate(new TestCallback() {
+
+            public String getName() {
+                return "BeanMapping cache copy";
+            }
+
+            public CopyBean call(CopyBean source) {
+                try {
+                    // BeanMappingUtil.copy(source, beanMappingTarget);
+                    executor.execute(param);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return beanMappingCustomTarget;
+            }
+
+        }, bean, testCount);
         // BeanMapping copy测试
         final CopyBean beanMappingTarget = new CopyBean();
         testTemplate(new TestCallback() {
@@ -53,7 +98,6 @@ public class CopyPerformance extends TestCase {
             }
 
         }, bean, testCount);
-
         // BeanMapping simpleCopy测试
         final CopyBean beanMappingSimpleTarget = new CopyBean();
         testTemplate(new TestCallback() {
@@ -71,6 +115,54 @@ public class CopyPerformance extends TestCase {
                 return beanMappingSimpleTarget;
             }
 
+        }, bean, testCount);
+        // method反射测试
+        List<Method> getMethodList = getGetMethod();
+        List<Method> setMethodList = getSetMethod();
+        final Method[] getterMethods = getMethodList.toArray(new Method[getMethodList.size()]);
+        final Method[] setterMethods = setMethodList.toArray(new Method[setMethodList.size()]);
+        final CopyBean methodCopierTarget = new CopyBean();
+        testTemplate(new TestCallback() {
+
+            public String getName() {
+                return "Method Copy";
+            }
+
+            public CopyBean call(CopyBean source) {
+                try {
+                    for (int i = 0; i < getterMethods.length; i++) {
+                        Object temp = getterMethods[i].invoke(source);
+                        setterMethods[i].invoke(methodCopierTarget, temp);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return methodCopierTarget;
+            }
+        }, bean, testCount);
+        // fastMethod反射测试
+        List<FastMethod> getFastMethodList = getGetFastMethod();
+        List<FastMethod> setFastMethodList = getSetFastMethod();
+        final FastMethod[] getterFastMethods = getFastMethodList.toArray(new FastMethod[getFastMethodList.size()]);
+        final FastMethod[] setterFastMethods = setFastMethodList.toArray(new FastMethod[setFastMethodList.size()]);
+        final CopyBean fastMethodCopierTarget = new CopyBean();
+        testTemplate(new TestCallback() {
+
+            public String getName() {
+                return "FastMethod Copy";
+            }
+
+            public CopyBean call(CopyBean source) {
+                try {
+                    for (int i = 0; i < getterFastMethods.length; i++) {
+                        Object temp = getterFastMethods[i].invoke(source, new Object[] {});
+                        setterFastMethods[i].invoke(fastMethodCopierTarget, new Object[] { temp });
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return methodCopierTarget;
+            }
         }, bean, testCount);
         // bulkbean测试
         String[] getters = new String[] { "getIntValue", "isBoolValue", "getFloatValue", "getDoubleValue",
@@ -170,6 +262,72 @@ public class CopyPerformance extends TestCase {
 
     }
 
+    private static List<Method> getGetMethod() {
+        List<Method> result = new ArrayList<Method>();
+        result.add(getMethod("getIntValue", new Class[] {}));
+        result.add(getMethod("isBoolValue", new Class[] {}));
+        result.add(getMethod("getFloatValue", new Class[] {}));
+        result.add(getMethod("getDoubleValue", new Class[] {}));
+        result.add(getMethod("getLongValue", new Class[] {}));
+        result.add(getMethod("getCharValue", new Class[] {}));
+        result.add(getMethod("getShortValue", new Class[] {}));
+        result.add(getMethod("getByteValue", new Class[] {}));
+        result.add(getMethod("getIntegerValue", new Class[] {}));
+        result.add(getMethod("getBoolObjValue", new Class[] {}));
+        result.add(getMethod("getFloatObjValue", new Class[] {}));
+        result.add(getMethod("getDoubleObjValue", new Class[] {}));
+        result.add(getMethod("getLongObjValue", new Class[] {}));
+        result.add(getMethod("getShortObjValue", new Class[] {}));
+        result.add(getMethod("getByteObjValue", new Class[] {}));
+        result.add(getMethod("getBigIntegerValue", new Class[] {}));
+        result.add(getMethod("getBigDecimalValue", new Class[] {}));
+        result.add(getMethod("getStringValue", new Class[] {}));
+        return result;
+    }
+
+    private static List<Method> getSetMethod() {
+        List<Method> result = new ArrayList<Method>();
+        result.add(getMethod("setIntValue", new Class[] { int.class }));
+        result.add(getMethod("setBoolValue", new Class[] { boolean.class }));
+        result.add(getMethod("setFloatValue", new Class[] { float.class }));
+        result.add(getMethod("setDoubleValue", new Class[] { double.class }));
+        result.add(getMethod("setLongValue", new Class[] { long.class }));
+        result.add(getMethod("setCharValue", new Class[] { char.class }));
+        result.add(getMethod("setShortValue", new Class[] { short.class }));
+        result.add(getMethod("setByteValue", new Class[] { byte.class }));
+        result.add(getMethod("setIntegerValue", new Class[] { Integer.class }));
+        result.add(getMethod("setBoolObjValue", new Class[] { Boolean.class }));
+        result.add(getMethod("setFloatObjValue", new Class[] { Float.class }));
+        result.add(getMethod("setDoubleObjValue", new Class[] { Double.class }));
+        result.add(getMethod("setLongObjValue", new Class[] { Long.class }));
+        result.add(getMethod("setShortObjValue", new Class[] { Short.class }));
+        result.add(getMethod("setByteObjValue", new Class[] { Byte.class }));
+        result.add(getMethod("setBigIntegerValue", new Class[] { BigInteger.class }));
+        result.add(getMethod("setBigDecimalValue", new Class[] { BigDecimal.class }));
+        result.add(getMethod("setStringValue", new Class[] { String.class }));
+        return result;
+    }
+
+    private static List<FastMethod> getGetFastMethod() {
+        List<FastMethod> result = new ArrayList<FastMethod>();
+        FastClass fc = FastClass.create(CopyBean.class);
+        List<Method> methods = getGetMethod();
+        for (Method method : methods) {
+            result.add(fc.getMethod(method));
+        }
+        return result;
+    }
+
+    private static List<FastMethod> getSetFastMethod() {
+        List<FastMethod> result = new ArrayList<FastMethod>();
+        FastClass fc = FastClass.create(CopyBean.class);
+        List<Method> methods = getSetMethod();
+        for (Method method : methods) {
+            result.add(fc.getMethod(method));
+        }
+        return result;
+    }
+
     private static CopyBean getBean() {
         CopyBean bean = new CopyBean();
         bean.setIntValue(1);
@@ -191,6 +349,15 @@ public class CopyPerformance extends TestCase {
         bean.setBigDecimalValue(new BigDecimal("1"));
         bean.setStringValue("1");
         return bean;
+    }
+
+    private static Method getMethod(String methodName, Class... type) {
+        try {
+            return CopyBean.class.getMethod(methodName, type);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private static void restoreJvm() {

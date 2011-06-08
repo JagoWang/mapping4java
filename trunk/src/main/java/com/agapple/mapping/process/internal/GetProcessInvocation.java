@@ -12,12 +12,12 @@ import com.agapple.mapping.introspect.GetExecutor;
  */
 public class GetProcessInvocation {
 
-    private ValueProcessContext context;          // valueProcess执行的上下文参数
-    private List<ValueProcess>  processes;        // 处理的process列表
-    private GetExecutor         executor;         // get方法调用
-    private int                 currentIndex = -1; // 当前执行的valueProcess下标
+    private ValueProcessContext   context;          // valueProcess执行的上下文参数
+    private List<GetValueProcess> processes;        // 处理的process列表
+    private GetExecutor           executor;         // get方法调用
+    private int                   currentIndex = -1; // 当前执行的valueProcess下标
 
-    public GetProcessInvocation(GetExecutor executor, ValueProcessContext context, List<ValueProcess> processes){
+    public GetProcessInvocation(GetExecutor executor, ValueProcessContext context, List<GetValueProcess> processes){
         this.executor = executor;
         this.context = context;
         this.processes = processes;
@@ -30,8 +30,8 @@ public class GetProcessInvocation {
             if (this.currentIndex == this.processes.size() - 1) {
                 return invokeExecutor();
             } else {
-                ValueProcess vp = this.processes.get(++this.currentIndex);
-                return vp.getProcess(this);
+                GetValueProcess vp = this.processes.get(++this.currentIndex);
+                return vp.process(this);
             }
         }
 
@@ -39,7 +39,7 @@ public class GetProcessInvocation {
 
     protected Object invokeExecutor() {
         if (isBatch()) { // 如果是batch模式
-            return context.getHolder().get().poll();
+            return context.getHolder().getNext();
         }
 
         if (executor != null) {

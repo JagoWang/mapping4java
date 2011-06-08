@@ -3,7 +3,6 @@ package com.agapple.mapping.process.internal;
 import java.util.List;
 
 import com.agapple.mapping.BeanMappingException;
-import com.agapple.mapping.helper.BatchObjectHolder.StackQueue;
 import com.agapple.mapping.introspect.SetExecutor;
 
 /**
@@ -13,12 +12,12 @@ import com.agapple.mapping.introspect.SetExecutor;
  */
 public class SetProcessInvocation {
 
-    private ValueProcessContext context;          // valueProcess执行的上下文参数
-    private List<ValueProcess>  processes;        // 处理的process列表
-    private SetExecutor         executor;         // get方法调用
-    private int                 currentIndex = -1; // 当前执行的valueProcess下标
+    private ValueProcessContext   context;          // valueProcess执行的上下文参数
+    private List<SetValueProcess> processes;        // 处理的process列表
+    private SetExecutor           executor;         // get方法调用
+    private int                   currentIndex = -1; // 当前执行的valueProcess下标
 
-    public SetProcessInvocation(SetExecutor executor, ValueProcessContext context, List<ValueProcess> processes){
+    public SetProcessInvocation(SetExecutor executor, ValueProcessContext context, List<SetValueProcess> processes){
         this.executor = executor;
         this.context = context;
         this.processes = processes;
@@ -31,16 +30,15 @@ public class SetProcessInvocation {
             if (this.currentIndex == this.processes.size() - 1) {
                 return invokeExecutor(value);
             } else {
-                ValueProcess vp = this.processes.get(++this.currentIndex);
-                return vp.setProcess(value, this); // 保存一下，上一次执行的结果
+                SetValueProcess vp = this.processes.get(++this.currentIndex);
+                return vp.process(value, this); // 保存一下，上一次执行的结果
             }
         }
     }
 
     protected Object invokeExecutor(Object value) {
         if (isBatch()) { // 如果是batch模式
-            StackQueue sq = context.getHolder().get();
-            sq.offer(value);
+            context.getHolder().setObject(value); // 更新下holder的value值
             return value;
         }
 
