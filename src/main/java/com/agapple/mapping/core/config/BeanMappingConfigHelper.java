@@ -82,23 +82,6 @@ public class BeanMappingConfigHelper {
         repository.register(object);
     }
 
-    /**
-     * 直接注册为默认mapping
-     * 
-     * @param src
-     * @param dest
-     */
-    public void register(Class src, Class target) {
-        repository.register(src, target);
-    }
-
-    /**
-     * 直接注册bean和map的mapping关系，比如进行describe(map) , populate(map)操作，将属性数据直接转化为map，或者反过来
-     */
-    public void registerMap(Class src) {
-        repository.registerMap(src);
-    }
-
     public void registerConfig(String file) {
         InputStream in = null;
         ClassLoader cl = Thread.currentThread().getContextClassLoader();

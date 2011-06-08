@@ -23,12 +23,6 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 
 import com.agapple.mapping.BeanCopy;
-import com.agapple.mapping.core.BeanMappingExecutor;
-import com.agapple.mapping.core.BeanMappingParam;
-import com.agapple.mapping.core.config.BeanMappingConfigHelper;
-import com.agapple.mapping.core.config.BeanMappingObject;
-import com.agapple.mapping.process.internal.GetValueProcess;
-import com.agapple.mapping.process.internal.SetValueProcess;
 
 /**
  * BeanCopier , Beanutils/PropertyUtils , BeanMapping几种机制的copy操作的性能测试
@@ -47,41 +41,8 @@ public class CopyPerformance extends TestCase {
         final int testCount = 1000 * 100 * 20;
         CopyBean bean = getBean();
         // BeanMapping copy测试
-        BeanMappingObject config = BeanMappingConfigHelper.getInstance().getBeanMappingObject(CopyBean.class,
-                                                                                              CopyBean.class, true);
-        // 执行mapping处理
-        final CopyBean beanMappingCustomTarget = new CopyBean();
-        List<GetValueProcess> copyGetProcesses = new ArrayList<GetValueProcess>(2);
-        List<SetValueProcess> copySetProcesses = new ArrayList<SetValueProcess>(2);
-        // copySetProcesses.add(new BeanCreatorValueProcess());
-        // copySetProcesses.add(new ConvetorValueProcess());
-        // // copySetProcesses.add(new ClassCastValueProcess());
-        final BeanMappingParam param = new BeanMappingParam();
-        param.setSrcRef(bean);
-        param.setTargetRef(beanMappingCustomTarget);
-        param.setConfig(config);
-        param.setGetProcesses(copyGetProcesses);
-        param.setSetProcesses(copySetProcesses);
-        testTemplate(new TestCallback() {
-
-            public String getName() {
-                return "BeanMapping cache copy";
-            }
-
-            public CopyBean call(CopyBean source) {
-                try {
-                    // BeanMappingUtil.copy(source, beanMappingTarget);
-                    BeanMappingExecutor.execute(param);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return beanMappingCustomTarget;
-            }
-
-        }, bean, testCount);
-        // BeanMapping copy测试
         final CopyBean beanMappingTarget = new CopyBean();
-        final BeanCopy beanCopy = BeanCopy.create(CopyBean.class, CopyBean.class);
+        final BeanCopy beanCopy = BeanCopy.create(CopyBean.class, CopyBean.class, true);
         testTemplate(new TestCallback() {
 
             public String getName() {
@@ -100,6 +61,7 @@ public class CopyPerformance extends TestCase {
         }, bean, testCount);
         // BeanMapping simpleCopy测试
         final CopyBean beanMappingSimpleTarget = new CopyBean();
+        final BeanCopy beanSimpleCopy = BeanCopy.create(CopyBean.class, CopyBean.class, false);
         testTemplate(new TestCallback() {
 
             public String getName() {
@@ -108,7 +70,7 @@ public class CopyPerformance extends TestCase {
 
             public CopyBean call(CopyBean source) {
                 try {
-                    beanCopy.simpleCopy(source, beanMappingSimpleTarget);
+                    beanSimpleCopy.copy(source, beanMappingSimpleTarget);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
