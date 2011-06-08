@@ -1,6 +1,6 @@
 package com.agapple.mapping.process.internal;
 
-import com.agapple.mapping.BeanMappingException;
+import com.agapple.mapping.core.BeanMappingException;
 
 /**
  * 数据处理接口，允许在get Executor执行之前处理下value。

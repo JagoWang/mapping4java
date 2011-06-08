@@ -3,8 +3,8 @@ package com.agapple.mapping.convert.internal;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import com.agapple.mapping.BeanMappingException;
 import com.agapple.mapping.convert.Convertor;
+import com.agapple.mapping.core.BeanMappingException;
 
 /**
  * string <-> common对象 之间的转化

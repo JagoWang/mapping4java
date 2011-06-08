@@ -5,9 +5,9 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.agapple.mapping.BeanMappingException;
-import com.agapple.mapping.config.BeanMappingField;
-import com.agapple.mapping.config.BeanMappingObject;
+import com.agapple.mapping.core.BeanMappingException;
+import com.agapple.mapping.core.config.BeanMappingField;
+import com.agapple.mapping.core.config.BeanMappingObject;
 import com.agapple.mapping.process.internal.GetProcessInvocation;
 import com.agapple.mapping.process.internal.GetValueProcess;
 import com.agapple.mapping.script.JexlScriptContext;

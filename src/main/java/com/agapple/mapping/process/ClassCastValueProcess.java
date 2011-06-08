@@ -1,9 +1,9 @@
 package com.agapple.mapping.process;
 
-import com.agapple.mapping.BeanMappingException;
-import com.agapple.mapping.config.BeanMappingField;
-import com.agapple.mapping.introspect.MapGetExecutor;
-import com.agapple.mapping.introspect.PropertySetExecutor;
+import com.agapple.mapping.core.BeanMappingException;
+import com.agapple.mapping.core.config.BeanMappingField;
+import com.agapple.mapping.core.introspect.MapGetExecutor;
+import com.agapple.mapping.core.introspect.PropertySetExecutor;
 import com.agapple.mapping.process.internal.SetProcessInvocation;
 import com.agapple.mapping.process.internal.SetValueProcess;
 
@@ -31,13 +31,14 @@ public class ClassCastValueProcess implements SetValueProcess {
     }
 
     private boolean checkcast(Class src, Class target) {
+        if (src == target) { // 两个类相等
+            return true;
+        }
+
         if (target.isAssignableFrom(src)) {// 如果src是target的子类，可以向上转型，没问题
             return true;
         }
 
-        if (src == target) { // 两个类相等
-            return true;
-        }
         // 进行原始类型转化
         src = mapper(src);
         target = mapper(target);

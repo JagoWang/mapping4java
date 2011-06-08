@@ -1,4 +1,4 @@
-package com.agapple.mapping.helper;
+package com.agapple.mapping.core.helper;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import net.sf.cglib.core.ReflectUtils;
 
-import com.agapple.mapping.BeanMappingException;
+import com.agapple.mapping.core.BeanMappingException;
 
 /**
  * 一些反射调用的helper类

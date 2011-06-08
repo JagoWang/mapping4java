@@ -6,8 +6,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.agapple.mapping.BeanMappingException;
 import com.agapple.mapping.convert.Convertor;
+import com.agapple.mapping.core.BeanMappingException;
 
 /**
  * Array <-> list 的转化器

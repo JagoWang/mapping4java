@@ -1,4 +1,4 @@
-package com.agapple.mapping.config;
+package com.agapple.mapping.core.config;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -7,7 +7,7 @@ import java.util.List;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
-import com.agapple.mapping.introspect.BatchExecutor;
+import com.agapple.mapping.core.introspect.BatchExecutor;
 
 /**
  * 解析完成后的一个BeanMapping配置对象

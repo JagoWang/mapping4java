@@ -1,8 +1,8 @@
-package com.agapple.mapping.introspect;
+package com.agapple.mapping.core.introspect;
 
 import java.lang.ref.SoftReference;
 
-import com.agapple.mapping.BeanMappingException;
+import com.agapple.mapping.core.BeanMappingException;
 
 /**
  * 暴露给外部的内审接口操作，外部可通过Uberspector.getInstance()进行操作

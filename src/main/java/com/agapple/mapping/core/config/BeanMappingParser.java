@@ -1,4 +1,4 @@
-package com.agapple.mapping.config;
+package com.agapple.mapping.core.config;
 
 import java.beans.PropertyDescriptor;
 import java.io.InputStream;
@@ -12,9 +12,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.agapple.mapping.BeanMappingException;
-import com.agapple.mapping.helper.ReflectionHelper;
-import com.agapple.mapping.helper.XmlHelper;
+import com.agapple.mapping.core.BeanMappingException;
+import com.agapple.mapping.core.helper.ReflectionHelper;
+import com.agapple.mapping.core.helper.XmlHelper;
 
 /**
  * 解析对应的mapping配置

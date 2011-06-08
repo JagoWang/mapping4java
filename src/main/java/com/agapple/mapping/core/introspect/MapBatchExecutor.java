@@ -3,11 +3,11 @@
  * Alibaba.com ("Confidential Information"). You shall not disclose such Confidential Information and shall use it only
  * in accordance with the terms of the license agreement you entered into with Alibaba.com.
  */
-package com.agapple.mapping.introspect;
+package com.agapple.mapping.core.introspect;
 
 import java.util.Map;
 
-import com.agapple.mapping.BeanMappingException;
+import com.agapple.mapping.core.BeanMappingException;
 
 /**
  * @author jianghang 2011-6-2 下午04:47:52

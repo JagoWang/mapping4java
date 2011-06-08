@@ -1,8 +1,8 @@
-package com.agapple.mapping.introspect;
+package com.agapple.mapping.core.introspect;
 
 import net.sf.cglib.reflect.FastMethod;
 
-import com.agapple.mapping.BeanMappingException;
+import com.agapple.mapping.core.BeanMappingException;
 
 /**
  * bean 属性的获取

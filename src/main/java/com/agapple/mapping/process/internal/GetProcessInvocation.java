@@ -2,8 +2,8 @@ package com.agapple.mapping.process.internal;
 
 import java.util.List;
 
-import com.agapple.mapping.BeanMappingException;
-import com.agapple.mapping.introspect.GetExecutor;
+import com.agapple.mapping.core.BeanMappingException;
+import com.agapple.mapping.core.introspect.GetExecutor;
 
 /**
  * ValueProcess执行的get操作的控制器
