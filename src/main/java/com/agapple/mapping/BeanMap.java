@@ -21,19 +21,25 @@ import com.agapple.mapping.core.config.BeanMappingObject;
  */
 public class BeanMap {
 
-    private BeanMappingObject config; // 对应的Bean Mapping配置
+    private BeanMappingObject describeConfig; // 对应的Bean Mapping配置
+    private BeanMappingObject populateConfig; // 对应的Bean Mapping配置
 
-    public BeanMap(BeanMappingObject config){
-        this.config = config;
+    public BeanMap(BeanMappingObject describeConfig, BeanMappingObject populateConfig){
+        this.describeConfig = describeConfig;
+        this.populateConfig = populateConfig;
     }
 
     /**
      * 创建srcClass和targetClass之间的BeanMapping操作
      */
-    public static BeanMap create(Class srcClass, Class targetClass) {
-        BeanMappingObject config = BeanMappingConfigHelper.getInstance().getBeanMappingObject(srcClass, targetClass,
-                                                                                              true);
-        return new BeanMap(config);
+    public static BeanMap create(Class srcClass) {
+        BeanMappingObject describeConfig = BeanMappingConfigHelper.getInstance().getBeanMappingObject(srcClass,
+                                                                                                      HashMap.class,
+                                                                                                      true);
+
+        BeanMappingObject populateConfig = BeanMappingConfigHelper.getInstance().getBeanMappingObject(HashMap.class,
+                                                                                                      srcClass, true);
+        return new BeanMap(describeConfig, populateConfig);
     }
 
     /**
@@ -48,7 +54,7 @@ public class BeanMap {
         BeanMappingParam param = new BeanMappingParam();
         param.setSrcRef(src);
         param.setTargetRef(result);
-        param.setConfig(this.config);
+        param.setConfig(this.describeConfig);
         // 执行mapping处理
         BeanMappingExecutor.execute(param);
         return result;
@@ -65,7 +71,7 @@ public class BeanMap {
         BeanMappingParam param = new BeanMappingParam();
         param.setSrcRef(properties);
         param.setTargetRef(target);
-        param.setConfig(this.config);
+        param.setConfig(this.populateConfig);
         // 执行mapping处理
         BeanMappingExecutor.execute(param);
     }
