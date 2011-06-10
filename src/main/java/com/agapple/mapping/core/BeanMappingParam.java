@@ -9,8 +9,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 import com.agapple.mapping.core.config.BeanMappingObject;
-import com.agapple.mapping.process.internal.GetValueProcess;
-import com.agapple.mapping.process.internal.SetValueProcess;
+import com.agapple.mapping.core.process.GetValueProcess;
+import com.agapple.mapping.core.process.SetValueProcess;
 
 /**
  * bean mapping传递的参数

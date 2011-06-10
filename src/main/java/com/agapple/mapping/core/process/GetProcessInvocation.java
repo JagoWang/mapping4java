@@ -1,4 +1,4 @@
-package com.agapple.mapping.process.internal;
+package com.agapple.mapping.core.process;
 
 import java.util.List;
 

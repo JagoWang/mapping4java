@@ -1,4 +1,4 @@
-package com.agapple.mapping.script;
+package com.agapple.mapping.process.script;
 
 import java.util.Map;
 

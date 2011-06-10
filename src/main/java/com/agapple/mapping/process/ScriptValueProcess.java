@@ -8,12 +8,12 @@ import org.apache.commons.lang.StringUtils;
 import com.agapple.mapping.core.BeanMappingException;
 import com.agapple.mapping.core.config.BeanMappingField;
 import com.agapple.mapping.core.config.BeanMappingObject;
-import com.agapple.mapping.process.internal.GetProcessInvocation;
-import com.agapple.mapping.process.internal.GetValueProcess;
-import com.agapple.mapping.script.JexlScriptContext;
-import com.agapple.mapping.script.JexlScriptExecutor;
-import com.agapple.mapping.script.ScriptContext;
-import com.agapple.mapping.script.ScriptExecutor;
+import com.agapple.mapping.core.process.GetProcessInvocation;
+import com.agapple.mapping.core.process.GetValueProcess;
+import com.agapple.mapping.process.script.JexlScriptContext;
+import com.agapple.mapping.process.script.JexlScriptExecutor;
+import com.agapple.mapping.process.script.ScriptContext;
+import com.agapple.mapping.process.script.ScriptExecutor;
 
 /**
  * 自定义script脚本的处理器 , get流程处理

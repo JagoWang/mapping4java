@@ -1,4 +1,4 @@
-package com.agapple.mapping.convert.internal;
+package com.agapple.mapping.process.convetor;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
@@ -6,7 +6,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.agapple.mapping.convert.Convertor;
 import com.agapple.mapping.core.BeanMappingException;
 
 /**

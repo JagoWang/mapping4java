@@ -1,9 +1,8 @@
-package com.agapple.mapping.convert.internal;
+package com.agapple.mapping.process.convetor;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import com.agapple.mapping.convert.Convertor;
 import com.agapple.mapping.core.BeanMappingException;
 
 /**

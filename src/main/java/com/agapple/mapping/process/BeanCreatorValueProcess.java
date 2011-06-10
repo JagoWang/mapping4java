@@ -3,8 +3,8 @@ package com.agapple.mapping.process;
 import com.agapple.mapping.core.BeanMappingException;
 import com.agapple.mapping.core.config.BeanMappingField;
 import com.agapple.mapping.core.helper.ReflectionHelper;
-import com.agapple.mapping.process.internal.SetProcessInvocation;
-import com.agapple.mapping.process.internal.SetValueProcess;
+import com.agapple.mapping.core.process.SetProcessInvocation;
+import com.agapple.mapping.core.process.SetValueProcess;
 
 /**
  * set操作流程中, 尝试创建一下嵌套的bean实例，通过反射newInstance,

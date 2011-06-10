@@ -2,12 +2,12 @@ package com.agapple.mapping.process;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.agapple.mapping.convert.Convertor;
-import com.agapple.mapping.convert.ConvertorHelper;
 import com.agapple.mapping.core.BeanMappingException;
 import com.agapple.mapping.core.config.BeanMappingField;
-import com.agapple.mapping.process.internal.GetProcessInvocation;
-import com.agapple.mapping.process.internal.GetValueProcess;
+import com.agapple.mapping.core.process.GetProcessInvocation;
+import com.agapple.mapping.core.process.GetValueProcess;
+import com.agapple.mapping.process.convetor.Convertor;
+import com.agapple.mapping.process.convetor.ConvertorHelper;
 
 /**
  * mapping默认值的处理，get流程处理

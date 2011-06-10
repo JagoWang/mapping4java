@@ -17,9 +17,9 @@ import com.agapple.mapping.core.introspect.MapGetExecutor;
 import com.agapple.mapping.core.introspect.MapSetExecutor;
 import com.agapple.mapping.core.introspect.SetExecutor;
 import com.agapple.mapping.core.introspect.Uberspector;
-import com.agapple.mapping.process.internal.GetProcessInvocation;
-import com.agapple.mapping.process.internal.SetProcessInvocation;
-import com.agapple.mapping.process.internal.ValueProcessContext;
+import com.agapple.mapping.core.process.GetProcessInvocation;
+import com.agapple.mapping.core.process.SetProcessInvocation;
+import com.agapple.mapping.core.process.ValueProcessContext;
 
 /**
  * Bean mapping具体的执行器

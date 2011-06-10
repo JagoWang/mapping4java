@@ -5,10 +5,10 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import com.agapple.mapping.script.JexlScriptContext;
-import com.agapple.mapping.script.JexlScriptExecutor;
-import com.agapple.mapping.script.ScriptContext;
-import com.agapple.mapping.script.ScriptExecutor;
+import com.agapple.mapping.process.script.JexlScriptContext;
+import com.agapple.mapping.process.script.JexlScriptExecutor;
+import com.agapple.mapping.process.script.ScriptContext;
+import com.agapple.mapping.process.script.ScriptExecutor;
 
 /**
  * @author jianghang 2011-5-24 下午04:43:01

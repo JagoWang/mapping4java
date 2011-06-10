@@ -4,8 +4,8 @@ import com.agapple.mapping.core.BeanMappingException;
 import com.agapple.mapping.core.config.BeanMappingField;
 import com.agapple.mapping.core.introspect.MapGetExecutor;
 import com.agapple.mapping.core.introspect.PropertySetExecutor;
-import com.agapple.mapping.process.internal.SetProcessInvocation;
-import com.agapple.mapping.process.internal.SetValueProcess;
+import com.agapple.mapping.core.process.SetProcessInvocation;
+import com.agapple.mapping.core.process.SetValueProcess;
 
 /**
  * set流程处理, {@linkplain PropertySetExecutor}和{@linkplain MapGetExecutor}操作时检查下目标的class和当前的value.getClass()是否相同

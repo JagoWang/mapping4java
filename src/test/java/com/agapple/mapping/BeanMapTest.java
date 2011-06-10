@@ -15,6 +15,8 @@ import com.agapple.mapping.object.SrcMappingObject;
  */
 public class BeanMapTest extends TestCase {
 
+    public BeanMap beanMap = BeanMap.create(SrcMappingObject.class);
+
     @Test
     public void testDescribe_Populate_ok() {
         SrcMappingObject srcRef = new SrcMappingObject();
@@ -27,7 +29,7 @@ public class BeanMapTest extends TestCase {
         nestedSrcRef.setBigDecimalValue(BigDecimal.ONE);
         srcRef.setMapping(nestedSrcRef);
 
-        Map map = BeanMappingUtil.describe(srcRef);
+        Map map = beanMap.describe(srcRef);
         assertEquals(map.get("integerValue"), srcRef.getIntegerValue());
         assertEquals(map.get("intValue"), srcRef.getIntValue());
         assertEquals(map.get("name"), srcRef.getName());
@@ -39,7 +41,7 @@ public class BeanMapTest extends TestCase {
         // assertEquals(nested.get("name"), null);// 没有设置，为null
 
         SrcMappingObject newSrcRef = new SrcMappingObject();// 反过来再mapping一次
-        BeanMappingUtil.populate(newSrcRef, map);
+        beanMap.populate(newSrcRef, map);
         assertEquals(map.get("integerValue"), newSrcRef.getIntegerValue());
         assertEquals(map.get("intValue"), newSrcRef.getIntValue());
         assertEquals(map.get("name"), newSrcRef.getName());

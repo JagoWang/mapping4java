@@ -7,9 +7,9 @@ import com.agapple.mapping.core.BeanMappingExecutor;
 import com.agapple.mapping.core.BeanMappingParam;
 import com.agapple.mapping.core.config.BeanMappingConfigHelper;
 import com.agapple.mapping.core.config.BeanMappingObject;
+import com.agapple.mapping.core.process.SetValueProcess;
 import com.agapple.mapping.process.ClassCastValueProcess;
 import com.agapple.mapping.process.ConvetorValueProcess;
-import com.agapple.mapping.process.internal.SetValueProcess;
 
 /**
  * Bean copy操作的处理单元

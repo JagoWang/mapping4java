@@ -1,4 +1,4 @@
-package com.agapple.mapping.convert;
+package com.agapple.mapping.process.convetor;
 
 /**
  * 自定义的convertor接口

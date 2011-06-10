@@ -1,4 +1,4 @@
-package com.agapple.mapping.convert.internal;
+package com.agapple.mapping.process.convetor;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -6,7 +6,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import com.agapple.mapping.convert.Convertor;
 import com.agapple.mapping.core.BeanMappingException;
 
 /**
