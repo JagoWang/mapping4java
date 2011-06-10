@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="GBK"?>
+<xs:schema targetNamespace="http://www.alibaba.com/schema/mapping" xmlns="http://www.alibaba.com/schema/mapping" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+    
+    <xs:element name="bean-mappings">
+        <xs:annotation>
+        	<xs:documentation>bean mappings config</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:annotation>
+            	<xs:documentation>src/target bean mapping </xs:documentation>
+            </xs:annotation>
+            <xs:sequence>
+    			<xs:element ref="bean-mapping" maxOccurs="unbounded" />
+    		</xs:sequence>
+    	</xs:complexType>
+    </xs:element>
+
+    <xs:element name="bean-mapping">
+        <xs:complexType>
+        	<xs:sequence>
+        		<xs:element ref="field-mapping" maxOccurs="unbounded" />
+        	</xs:sequence>
+        	<xs:attribute name="srcClass" type="xs:string"
+        		use="required" />
+        	<xs:attribute name="srcKey" type="xs:string" default="src">
+        		<xs:annotation>
+        			<xs:documentation>script context for key, you can use define script with "srcKey.field"</xs:documentation>
+        		</xs:annotation></xs:attribute>
+        	<xs:attribute name="targetClass" type="xs:string"
+        		use="required" />
+        	<xs:attribute name="targetKey" type="xs:string" default="target">
+        		<xs:annotation>
+        			<xs:documentation>script context for key, you can use define script with &quot;srcKey.field&quot;</xs:documentation></xs:annotation></xs:attribute>
+        	<xs:attribute name="reversable" type="xs:boolean"
+        		use="optional" default="false" />
+        	<xs:attribute name="batch" type="xs:boolean"
+        		use="optional" default="false" />
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="field-mapping">
+        <xs:complexType>
+        	<xs:attribute name="srcName" type="xs:string" use="optional" >
+        		<xs:annotation>
+        			<xs:documentation>src field name</xs:documentation>
+        		</xs:annotation></xs:attribute>
+        	<xs:attribute name="targetName" type="xs:string" use="optional" >
+        		<xs:annotation>
+        			<xs:documentation>target field name</xs:documentation>
+        		</xs:annotation></xs:attribute>
+        	<xs:attribute name="srcClass" type="xs:string" use="optional" >
+        		<xs:annotation>
+        			<xs:documentation>src field class</xs:documentation>
+        		</xs:annotation></xs:attribute>
+        	<xs:attribute name="targetClass" type="xs:string" use="optional" >
+        		<xs:annotation>
+        			<xs:documentation>target field class</xs:documentation>
+        		</xs:annotation></xs:attribute>
+        	<xs:attribute name="defaultValue" type="xs:string" use="optional" >
+        		<xs:annotation>
+        			<xs:documentation>if target value is null , defaultValue is used</xs:documentation>
+        		</xs:annotation></xs:attribute>
+        	<xs:attribute name="convetor" type="xs:string" use="optional" >
+        		<xs:annotation>
+        			<xs:documentation>custom convetor alias</xs:documentation>
+        		</xs:annotation></xs:attribute>
+        	<xs:attribute name="script" type="xs:string" use="optional" >
+        		<xs:annotation>
+        			<xs:documentation>format script</xs:documentation>
+        		</xs:annotation></xs:attribute>
+        	<xs:attribute name="mapping" type="xs:boolean" use="optional" default="false">
+        		<xs:annotation>
+        			<xs:documentation>nested mapping</xs:documentation>
+        		</xs:annotation></xs:attribute>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
