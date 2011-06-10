@@ -33,7 +33,7 @@ public class CopyPerformance extends TestCase {
     }
 
     public static void testCopy() {
-        final int testCount = 1000 * 100 * 5;
+        final int testCount = 1000 * 100 * 20;
         CopyBean bean = getBean();
         // BeanMapping copy测试
         final CopyBean beanMappingTarget = new CopyBean();

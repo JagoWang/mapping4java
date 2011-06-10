@@ -4,8 +4,8 @@ import org.apache.commons.lang.StringUtils;
 
 import com.agapple.mapping.core.BeanMappingException;
 import com.agapple.mapping.core.config.BeanMappingField;
-import com.agapple.mapping.core.process.SetProcessInvocation;
-import com.agapple.mapping.core.process.SetValueProcess;
+import com.agapple.mapping.core.process.ValueProcess;
+import com.agapple.mapping.core.process.ValueProcessInvocation;
 import com.agapple.mapping.process.convetor.Convertor;
 import com.agapple.mapping.process.convetor.ConvertorHelper;
 
@@ -14,12 +14,12 @@ import com.agapple.mapping.process.convetor.ConvertorHelper;
  * 
  * @author jianghang 2011-5-27 下午09:30:40
  */
-public class ConvetorValueProcess implements SetValueProcess {
+public class ConvetorValueProcess implements ValueProcess {
 
     @Override
-    public Object process(Object value, SetProcessInvocation setInvocation) throws BeanMappingException {
+    public Object process(Object value, ValueProcessInvocation invocation) throws BeanMappingException {
         if (value != null) {
-            BeanMappingField currentField = setInvocation.getContext().getCurrentField();
+            BeanMappingField currentField = invocation.getContext().getCurrentField();
             String customConvertorName = currentField.getConvertor();
             Convertor convertor = null;
             if (StringUtils.isNotEmpty(customConvertorName)) { // 判断是否有自定义的convertor
@@ -31,16 +31,20 @@ public class ConvetorValueProcess implements SetValueProcess {
                 if (srcClass == null) {
                     srcClass = value.getClass();
                 }
-                convertor = ConvertorHelper.getInstance().getConvertor(srcClass, currentField.getTargetClass());
+                if (currentField.getTargetClass() != null) {
+                    // targetClass可能存在为空，比如这里的Value配置了DefaultValue，在MapSetExecutor解析时会无法识别TargetClass
+                    // 无法识别后，就不做转化
+                    convertor = ConvertorHelper.getInstance().getConvertor(srcClass, currentField.getTargetClass());
+                }
             }
 
-            if (convertor != null) {
+            if (convertor != null && currentField.getTargetClass() != null) {
                 value = convertor.convert(value, currentField.getTargetClass());
             }
         }
 
         // 继续下一步的调用
-        return setInvocation.proceed(value);
+        return invocation.proceed(value);
     }
 
 }

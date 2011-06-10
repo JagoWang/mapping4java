@@ -17,9 +17,8 @@ import com.agapple.mapping.core.introspect.MapGetExecutor;
 import com.agapple.mapping.core.introspect.MapSetExecutor;
 import com.agapple.mapping.core.introspect.SetExecutor;
 import com.agapple.mapping.core.introspect.Uberspector;
-import com.agapple.mapping.core.process.GetProcessInvocation;
-import com.agapple.mapping.core.process.SetProcessInvocation;
 import com.agapple.mapping.core.process.ValueProcessContext;
+import com.agapple.mapping.core.process.ValueProcessInvocation;
 
 /**
  * Bean mapping具体的执行器
@@ -141,9 +140,9 @@ public class BeanMappingExecutor {
         }
 
         // 获取get结果
-        GetProcessInvocation getInvocation = new GetProcessInvocation(getExecutor, valueContext,
-                                                                      param.getGetProcesses());
-        Object getResult = getInvocation.proceed();
+        ValueProcessInvocation invocation = new ValueProcessInvocation(getExecutor, setExecutor, valueContext,
+                                                                       param.getProcesses());
+        Object getResult = invocation.getInitialValue();
         // 设置下srcClass
         if (getExecutor != null && beanField.getSrcClass() == null) {
             // 设置为自动提取的targetClasss
@@ -167,11 +166,8 @@ public class BeanMappingExecutor {
                 beanField.setTargetClass(getTargetClass(setExecutor));
             }
         }
-
-        // 执行set
-        SetProcessInvocation setInvocation = new SetProcessInvocation(setExecutor, valueContext,
-                                                                      param.getSetProcesses());
-        setInvocation.proceed(getResult);
+        // 开始ValueProcess流程
+        invocation.proceed(getResult);
     }
 
     /**
@@ -197,9 +193,9 @@ public class BeanMappingExecutor {
 
         // 获取新的srcRef
         // 获取get结果
-        GetProcessInvocation getInvocation = new GetProcessInvocation(getExecutor, valueContext,
-                                                                      param.getGetProcesses());
-        Object srcRef = getInvocation.proceed();
+        ValueProcessInvocation invocation = new ValueProcessInvocation(getExecutor, setExecutor, valueContext,
+                                                                       param.getProcesses());
+        Object srcRef = invocation.getInitialValue();
         // 设置下srcClass
         if (getExecutor != null && beanField.getSrcClass() == null) {
             // 设置为自动提取的targetClasss
@@ -221,10 +217,8 @@ public class BeanMappingExecutor {
         }
 
         // 执行set,反射构造一个子Model
-        SetProcessInvocation setInvocation = new SetProcessInvocation(setExecutor, valueContext,
-                                                                      param.getSetProcesses());
         // 如果嵌套对象为null，则直接略过该对象处理，目标对象也为null,此时srcRef可能为null
-        Object value = setInvocation.proceed(srcRef); // 在目标节点对象上，创建一个子节点
+        Object value = invocation.proceed(srcRef); // 在目标节点对象上，创建一个子节点
         if (srcRef == null) {
             return; // 如果为null，则不做递归处理
         }
@@ -243,8 +237,7 @@ public class BeanMappingExecutor {
         newParam.setSrcRef(srcRef);
         newParam.setConfig(object);
         // 复制并传递
-        newParam.setGetProcesses(param.getGetProcesses());
-        newParam.setSetProcesses(param.getSetProcesses());
+        newParam.setProcesses(param.getProcesses());
         // 进行递归调用
         execute(newParam);
     }

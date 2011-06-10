@@ -4,8 +4,8 @@ import com.agapple.mapping.core.BeanMappingException;
 import com.agapple.mapping.core.config.BeanMappingField;
 import com.agapple.mapping.core.introspect.MapGetExecutor;
 import com.agapple.mapping.core.introspect.PropertySetExecutor;
-import com.agapple.mapping.core.process.SetProcessInvocation;
-import com.agapple.mapping.core.process.SetValueProcess;
+import com.agapple.mapping.core.process.ValueProcess;
+import com.agapple.mapping.core.process.ValueProcessInvocation;
 
 /**
  * set流程处理, {@linkplain PropertySetExecutor}和{@linkplain MapGetExecutor}操作时检查下目标的class和当前的value.getClass()是否相同
@@ -17,17 +17,17 @@ import com.agapple.mapping.core.process.SetValueProcess;
  * 
  * @author jianghang 2011-5-29 上午12:14:51
  */
-public class ClassCastValueProcess implements SetValueProcess {
+public class ClassCastValueProcess implements ValueProcess {
 
-    public Object process(Object value, SetProcessInvocation setInvocation) throws BeanMappingException {
-        BeanMappingField field = setInvocation.getContext().getCurrentField();
+    public Object process(Object value, ValueProcessInvocation invocation) throws BeanMappingException {
+        BeanMappingField field = invocation.getContext().getCurrentField();
         if (field.getTargetClass() != null && value != null) {
             if (checkcast(value.getClass(), field.getTargetClass()) == false) {
                 // 不调用invocation.proceed()，直接退出
                 return value;
             }
         }
-        return setInvocation.proceed(value);
+        return invocation.proceed(value);
     }
 
     private boolean checkcast(Class src, Class target) {
