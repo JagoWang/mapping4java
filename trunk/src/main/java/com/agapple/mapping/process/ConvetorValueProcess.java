@@ -2,12 +2,12 @@ package com.agapple.mapping.process;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.agapple.mapping.convert.Convertor;
-import com.agapple.mapping.convert.ConvertorHelper;
 import com.agapple.mapping.core.BeanMappingException;
 import com.agapple.mapping.core.config.BeanMappingField;
-import com.agapple.mapping.process.internal.SetProcessInvocation;
-import com.agapple.mapping.process.internal.SetValueProcess;
+import com.agapple.mapping.core.process.SetProcessInvocation;
+import com.agapple.mapping.core.process.SetValueProcess;
+import com.agapple.mapping.process.convetor.Convertor;
+import com.agapple.mapping.process.convetor.ConvertorHelper;
 
 /**
  * {@linkplain Convetor}转化的处理器,set流程处理

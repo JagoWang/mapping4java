@@ -24,6 +24,9 @@ public class BeanMappingTest extends TestCase {
         BeanMappingConfigHelper.getInstance().registerConfig("mapping/mapping.xml");
     }
 
+    public BeanMapping srcMapping    = BeanMapping.create(SrcMappingObject.class, TargetMappingObject.class);
+    public BeanMapping targetMapping = BeanMapping.create(TargetMappingObject.class, SrcMappingObject.class);
+
     @Test
     public void testBeanToBean_ok() {
         SrcMappingObject srcRef = new SrcMappingObject();
@@ -37,11 +40,11 @@ public class BeanMappingTest extends TestCase {
         srcRef.setMapping(nestedSrcRef);
 
         TargetMappingObject targetRef = new TargetMappingObject();// 测试一下mapping到一个Object对象
-        BeanMappingUtil.mapping(srcRef, targetRef);
+        srcMapping.mapping(srcRef, targetRef);
         assertNotNull(targetRef.getMapping());
 
         SrcMappingObject newSrcRef = new SrcMappingObject();// 反过来再mapping一次
-        BeanMappingUtil.mapping(targetRef, newSrcRef);
+        targetMapping.mapping(targetRef, newSrcRef);
         assertNotNull(newSrcRef.getMapping());
     }
 

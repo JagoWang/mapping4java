@@ -1,4 +1,4 @@
-package com.agapple.mapping.script;
+package com.agapple.mapping.process.script;
 
 import org.apache.commons.jexl2.Expression;
 import org.apache.commons.jexl2.JexlContext;

@@ -1,6 +1,5 @@
-package com.agapple.mapping.convert.internal;
+package com.agapple.mapping.process.convetor;
 
-import com.agapple.mapping.convert.Convertor;
 
 /**
  * object <-> String 之间的转化器，目前只实现object -> String的转化

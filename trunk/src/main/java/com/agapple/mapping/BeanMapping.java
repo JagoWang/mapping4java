@@ -7,12 +7,12 @@ import com.agapple.mapping.core.BeanMappingExecutor;
 import com.agapple.mapping.core.BeanMappingParam;
 import com.agapple.mapping.core.config.BeanMappingConfigHelper;
 import com.agapple.mapping.core.config.BeanMappingObject;
+import com.agapple.mapping.core.process.GetValueProcess;
+import com.agapple.mapping.core.process.SetValueProcess;
 import com.agapple.mapping.process.BeanCreatorValueProcess;
 import com.agapple.mapping.process.ConvetorValueProcess;
 import com.agapple.mapping.process.DefaultValueValueProcess;
 import com.agapple.mapping.process.ScriptValueProcess;
-import com.agapple.mapping.process.internal.GetValueProcess;
-import com.agapple.mapping.process.internal.SetValueProcess;
 
 /**
  * Bean Mapping操作的处理单元

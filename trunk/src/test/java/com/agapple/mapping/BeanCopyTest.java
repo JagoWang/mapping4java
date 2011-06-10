@@ -18,6 +18,11 @@ import com.agapple.mapping.object.TargetMappingObject;
  */
 public class BeanCopyTest extends TestCase {
 
+    public BeanCopy srcCopyer          = BeanCopy.create(SrcMappingObject.class, TargetMappingObject.class, true);
+    public BeanCopy targetCopyer       = BeanCopy.create(TargetMappingObject.class, SrcMappingObject.class, true);
+    public BeanCopy nestedSrcCopyer    = BeanCopy.create(NestedSrcMappingObject.class, NestedTargetMappingObject.class);
+    public BeanCopy nestedTargetCopyer = BeanCopy.create(NestedTargetMappingObject.class, NestedSrcMappingObject.class);
+
     @Test
     public void testCopy_ok() {
         SrcMappingObject srcRef = new SrcMappingObject();
@@ -31,14 +36,14 @@ public class BeanCopyTest extends TestCase {
         // srcRef.setMapping(nestedSrcRef);
 
         TargetMappingObject targetRef = new TargetMappingObject();// 测试一下mapping到一个Object对象
-        BeanMappingUtil.copy(srcRef, targetRef);
+        srcCopyer.copy(srcRef, targetRef);
         assertEquals(targetRef.getIntegerValue(), srcRef.getIntegerValue());
         assertEquals(targetRef.getIntValue(), srcRef.getIntValue());
         assertNull(targetRef.getTargetName());// 为null，因为属性不匹配
         assertEquals(targetRef.isStart(), srcRef.isStart());
 
         SrcMappingObject newSrcRef = new SrcMappingObject();// 反过来再mapping一次
-        BeanMappingUtil.copy(targetRef, newSrcRef);
+        targetCopyer.copy(targetRef, newSrcRef);
         assertEquals(newSrcRef.getIntegerValue(), targetRef.getIntegerValue());
         assertEquals(newSrcRef.getIntValue(), targetRef.getIntValue());
         assertNull(newSrcRef.getName());// 为null，因为属性不匹配
@@ -52,12 +57,12 @@ public class BeanCopyTest extends TestCase {
         nestedSrcRef.setName("ljh");
 
         NestedTargetMappingObject nestedTargetRef = new NestedTargetMappingObject();// 测试一下mapping到一个Object对象
-        BeanMappingUtil.simpleCopy(nestedSrcRef, nestedTargetRef);
+        nestedSrcCopyer.copy(nestedSrcRef, nestedTargetRef);
         assertNull(nestedTargetRef.getValue());// 属性不同，类型也不同
         assertEquals(nestedTargetRef.getName(), nestedSrcRef.getName());
 
         NestedSrcMappingObject newNestedSrcRef = new NestedSrcMappingObject();// 反过来再mapping一次
-        BeanMappingUtil.simpleCopy(nestedTargetRef, newNestedSrcRef);
+        nestedTargetCopyer.copy(nestedTargetRef, newNestedSrcRef);
         assertNull(newNestedSrcRef.getBigDecimalValue());// 属性不同，类型也不同
         assertEquals(newNestedSrcRef.getName(), nestedTargetRef.getName());
 

@@ -1,8 +1,3 @@
-/*
- * Copyright 1999-2004 Alibaba.com All right reserved. This software is the confidential and proprietary information of
- * Alibaba.com ("Confidential Information"). You shall not disclose such Confidential Information and shall use it only
- * in accordance with the terms of the license agreement you entered into with Alibaba.com.
- */
 package com.agapple.mapping.performace;
 
 import java.lang.management.ManagementFactory;
@@ -38,7 +33,7 @@ public class CopyPerformance extends TestCase {
     }
 
     public static void testCopy() {
-        final int testCount = 1000 * 100 * 20;
+        final int testCount = 1000 * 100 * 5;
         CopyBean bean = getBean();
         // BeanMapping copy测试
         final CopyBean beanMappingTarget = new CopyBean();
@@ -129,15 +124,15 @@ public class CopyPerformance extends TestCase {
         // bulkbean测试
         String[] getters = new String[] { "getIntValue", "isBoolValue", "getFloatValue", "getDoubleValue",
                 "getLongValue", "getCharValue", "getShortValue", "getByteValue", "getIntegerValue", "getBoolObjValue",
-                "getFloatObjValue", "getDoubleObjValue", "getLongObjValue", "getShortObjValue", "getByteObjValue",
-                "getBigIntegerValue", "getBigDecimalValue", "getStringValue" };
+                "getFloatObjValue", "getDoubleObjValue", "getLongObjValue", "getCharacterValue", "getShortObjValue",
+                "getByteObjValue", "getBigIntegerValue", "getBigDecimalValue", "getStringValue" };
         String[] setters = new String[] { "setIntValue", "setBoolValue", "setFloatValue", "setDoubleValue",
                 "setLongValue", "setCharValue", "setShortValue", "setByteValue", "setIntegerValue", "setBoolObjValue",
-                "setFloatObjValue", "setDoubleObjValue", "setLongObjValue", "setShortObjValue", "setByteObjValue",
-                "setBigIntegerValue", "setBigDecimalValue", "setStringValue" };
+                "setFloatObjValue", "setDoubleObjValue", "setLongObjValue", "setCharacterValue", "setShortObjValue",
+                "setByteObjValue", "setBigIntegerValue", "setBigDecimalValue", "setStringValue" };
         Class[] clazzes = new Class[] { int.class, boolean.class, float.class, double.class, long.class, char.class,
                 short.class, byte.class, Integer.class, Boolean.class, Float.class, Double.class, Long.class,
-                Short.class, Byte.class, BigInteger.class, BigDecimal.class, String.class };
+                Character.class, Short.class, Byte.class, BigInteger.class, BigDecimal.class, String.class };
         final BulkBean bulkBean = BulkBean.create(CopyBean.class, getters, setters, clazzes);
         final CopyBean bulkBeanTarget = new CopyBean();
         testTemplate(new TestCallback() {
@@ -166,6 +161,38 @@ public class CopyPerformance extends TestCase {
                 return beanCopierTarget;
             }
         }, bean, testCount);
+        // HardCode测试
+        final CopyBean hardCodeTarget = new CopyBean();
+        testTemplate(new TestCallback() {
+
+            public String getName() {
+                return "HardCopy";
+            }
+
+            public CopyBean call(CopyBean source) {
+                hardCodeTarget.setIntValue(source.getIntValue());
+                hardCodeTarget.setBoolValue(source.isBoolValue());
+                hardCodeTarget.setFloatValue(source.getFloatValue());
+                hardCodeTarget.setDoubleValue(source.getDoubleValue());
+                hardCodeTarget.setLongValue(source.getLongValue());
+                hardCodeTarget.setCharValue(source.getCharValue());
+                hardCodeTarget.setShortValue(source.getShortValue());
+                hardCodeTarget.setByteValue(source.getByteValue());
+                hardCodeTarget.setIntegerValue(source.getIntegerValue());
+                hardCodeTarget.setBoolObjValue(source.getBoolObjValue());
+                hardCodeTarget.setFloatObjValue(source.getFloatObjValue());
+                hardCodeTarget.setDoubleObjValue(source.getDoubleObjValue());
+                hardCodeTarget.setLongObjValue(source.getLongObjValue());
+                hardCodeTarget.setCharacterValue(source.getCharacterValue());
+                hardCodeTarget.setShortObjValue(source.getShortObjValue());
+                hardCodeTarget.setByteObjValue(source.getByteObjValue());
+                hardCodeTarget.setBigIntegerValue(source.getBigIntegerValue());
+                hardCodeTarget.setBigDecimalValue(source.getBigDecimalValue());
+                hardCodeTarget.setStringValue(source.getStringValue());
+                return hardCodeTarget;
+            }
+        }, bean, testCount);
+
         // PropertyUtils测试
         final CopyBean propertyUtilsTarget = new CopyBean();
         testTemplate(new TestCallback() {
@@ -239,6 +266,7 @@ public class CopyPerformance extends TestCase {
         result.add(getMethod("getFloatObjValue", new Class[] {}));
         result.add(getMethod("getDoubleObjValue", new Class[] {}));
         result.add(getMethod("getLongObjValue", new Class[] {}));
+        result.add(getMethod("getCharacterValue", new Class[] {}));
         result.add(getMethod("getShortObjValue", new Class[] {}));
         result.add(getMethod("getByteObjValue", new Class[] {}));
         result.add(getMethod("getBigIntegerValue", new Class[] {}));
@@ -262,6 +290,7 @@ public class CopyPerformance extends TestCase {
         result.add(getMethod("setFloatObjValue", new Class[] { Float.class }));
         result.add(getMethod("setDoubleObjValue", new Class[] { Double.class }));
         result.add(getMethod("setLongObjValue", new Class[] { Long.class }));
+        result.add(getMethod("setCharacterValue", new Class[] { Character.class }));
         result.add(getMethod("setShortObjValue", new Class[] { Short.class }));
         result.add(getMethod("setByteObjValue", new Class[] { Byte.class }));
         result.add(getMethod("setBigIntegerValue", new Class[] { BigInteger.class }));
@@ -305,6 +334,7 @@ public class CopyPerformance extends TestCase {
         bean.setFloatObjValue(new Float("1.0"));
         bean.setDoubleObjValue(new Double("1.0"));
         bean.setLongObjValue(new Long("1"));
+        bean.setCharacterValue('a');
         bean.setShortObjValue(new Short("1"));
         bean.setByteObjValue(new Byte("1"));
         bean.setBigIntegerValue(new BigInteger("1"));
@@ -345,176 +375,11 @@ public class CopyPerformance extends TestCase {
         return rt.totalMemory() - rt.freeMemory();
     }
 
-    public static class CopyBean {
-
-        private int        intValue;
-        private boolean    boolValue;
-        private float      floatValue;
-        private double     doubleValue;
-        private long       longValue;
-        private char       charValue;
-        private byte       byteValue;
-        private short      shortValue;
-        private Integer    integerValue;
-        private Boolean    boolObjValue;
-        private Float      floatObjValue;
-        private Double     doubleObjValue;
-        private Long       longObjValue;
-        private Short      shortObjValue;
-        private Byte       byteObjValue;
-        private BigInteger bigIntegerValue;
-        private BigDecimal bigDecimalValue;
-        private String     stringValue;
-
-        public int getIntValue() {
-            return intValue;
-        }
-
-        public void setIntValue(int intValue) {
-            this.intValue = intValue;
-        }
-
-        public float getFloatValue() {
-            return floatValue;
-        }
-
-        public void setFloatValue(float floatValue) {
-            this.floatValue = floatValue;
-        }
-
-        public double getDoubleValue() {
-            return doubleValue;
-        }
-
-        public void setDoubleValue(double doubleValue) {
-            this.doubleValue = doubleValue;
-        }
-
-        public long getLongValue() {
-            return longValue;
-        }
-
-        public void setLongValue(long longValue) {
-            this.longValue = longValue;
-        }
-
-        public char getCharValue() {
-            return charValue;
-        }
-
-        public void setCharValue(char charValue) {
-            this.charValue = charValue;
-        }
-
-        public byte getByteValue() {
-            return byteValue;
-        }
-
-        public void setByteValue(byte byteValue) {
-            this.byteValue = byteValue;
-        }
-
-        public short getShortValue() {
-            return shortValue;
-        }
-
-        public void setShortValue(short shortValue) {
-            this.shortValue = shortValue;
-        }
-
-        public Integer getIntegerValue() {
-            return integerValue;
-        }
-
-        public void setIntegerValue(Integer integerValue) {
-            this.integerValue = integerValue;
-        }
-
-        public Float getFloatObjValue() {
-            return floatObjValue;
-        }
-
-        public void setFloatObjValue(Float floatObjValue) {
-            this.floatObjValue = floatObjValue;
-        }
-
-        public Double getDoubleObjValue() {
-            return doubleObjValue;
-        }
-
-        public void setDoubleObjValue(Double doubleObjValue) {
-            this.doubleObjValue = doubleObjValue;
-        }
-
-        public Long getLongObjValue() {
-            return longObjValue;
-        }
-
-        public void setLongObjValue(Long longObjValue) {
-            this.longObjValue = longObjValue;
-        }
-
-        public Short getShortObjValue() {
-            return shortObjValue;
-        }
-
-        public void setShortObjValue(Short shortObjValue) {
-            this.shortObjValue = shortObjValue;
-        }
-
-        public Byte getByteObjValue() {
-            return byteObjValue;
-        }
-
-        public void setByteObjValue(Byte byteObjValue) {
-            this.byteObjValue = byteObjValue;
-        }
-
-        public boolean isBoolValue() {
-            return boolValue;
-        }
-
-        public void setBoolValue(boolean boolValue) {
-            this.boolValue = boolValue;
-        }
-
-        public Boolean getBoolObjValue() {
-            return boolObjValue;
-        }
-
-        public void setBoolObjValue(Boolean boolObjValue) {
-            this.boolObjValue = boolObjValue;
-        }
-
-        public BigInteger getBigIntegerValue() {
-            return bigIntegerValue;
-        }
-
-        public void setBigIntegerValue(BigInteger bigIntegerValue) {
-            this.bigIntegerValue = bigIntegerValue;
-        }
-
-        public BigDecimal getBigDecimalValue() {
-            return bigDecimalValue;
-        }
-
-        public void setBigDecimalValue(BigDecimal bigDecimalValue) {
-            this.bigDecimalValue = bigDecimalValue;
-        }
-
-        public String getStringValue() {
-            return stringValue;
-        }
-
-        public void setStringValue(String stringValue) {
-            this.stringValue = stringValue;
-        }
-    }
 }
 
 interface TestCallback {
 
     String getName();
 
-    CopyPerformance.CopyBean call(CopyPerformance.CopyBean source);
+    CopyBean call(CopyBean source);
 }
