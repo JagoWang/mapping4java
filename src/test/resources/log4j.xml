@@ -23,7 +23,7 @@
 	<!--  Root logger的定义                                                    -->
 	<!-- ===================================================================== -->
 	<root>
-		<level value="ERROR"/>
+		<level value="DEBUG"/>
 		<appender-ref ref="PROJECT"/>
 	</root>
 </log4j:configuration>

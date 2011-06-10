@@ -7,7 +7,7 @@ import com.agapple.mapping.core.BeanMappingExecutor;
 import com.agapple.mapping.core.BeanMappingParam;
 import com.agapple.mapping.core.config.BeanMappingConfigHelper;
 import com.agapple.mapping.core.config.BeanMappingObject;
-import com.agapple.mapping.core.process.SetValueProcess;
+import com.agapple.mapping.core.process.ValueProcess;
 import com.agapple.mapping.process.ClassCastValueProcess;
 import com.agapple.mapping.process.ConvetorValueProcess;
 
@@ -26,10 +26,10 @@ import com.agapple.mapping.process.ConvetorValueProcess;
  */
 public class BeanCopy {
 
-    private static final SetValueProcess convetorValueProcess  = new ConvetorValueProcess();
-    private static final SetValueProcess classCastValueProcess = new ClassCastValueProcess();
-    private BeanMappingObject            config;                                             // 对应的Bean Mapping配置
-    private boolean                      needConvetor;                                       // 是否需要进行convetor转化
+    private static final ValueProcess convetorValueProcess  = new ConvetorValueProcess();
+    private static final ValueProcess classCastValueProcess = new ClassCastValueProcess();
+    private BeanMappingObject         config;                                             // 对应的Bean Mapping配置
+    private boolean                   needConvetor;                                       // 是否需要进行convetor转化
 
     public BeanCopy(BeanMappingObject config, boolean needConvetor){
         this.config = config;
@@ -65,9 +65,9 @@ public class BeanCopy {
         param.setTargetRef(target);
         param.setConfig(this.config);
         if (this.needConvetor) {
-            param.setSetProcesses(Arrays.asList(convetorValueProcess));
+            param.setProcesses(Arrays.asList(convetorValueProcess));
         } else {
-            param.setSetProcesses(Arrays.asList(classCastValueProcess));
+            param.setProcesses(Arrays.asList(classCastValueProcess));
         }
         // 执行mapping处理
         BeanMappingExecutor.execute(param);

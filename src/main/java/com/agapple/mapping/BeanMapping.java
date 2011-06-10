@@ -7,10 +7,10 @@ import com.agapple.mapping.core.BeanMappingExecutor;
 import com.agapple.mapping.core.BeanMappingParam;
 import com.agapple.mapping.core.config.BeanMappingConfigHelper;
 import com.agapple.mapping.core.config.BeanMappingObject;
-import com.agapple.mapping.core.process.GetValueProcess;
-import com.agapple.mapping.core.process.SetValueProcess;
+import com.agapple.mapping.core.process.ValueProcess;
 import com.agapple.mapping.process.BeanCreatorValueProcess;
 import com.agapple.mapping.process.ConvetorValueProcess;
+import com.agapple.mapping.process.DebugValueProcess;
 import com.agapple.mapping.process.DefaultValueValueProcess;
 import com.agapple.mapping.process.ScriptValueProcess;
 
@@ -31,11 +31,12 @@ import com.agapple.mapping.process.ScriptValueProcess;
  */
 public class BeanMapping {
 
-    private static final SetValueProcess beanCreatorValueProcess  = new BeanCreatorValueProcess();
-    private static final SetValueProcess convetorValueProcess     = new ConvetorValueProcess();
-    private static final GetValueProcess scriptValueProcess       = new ScriptValueProcess();
-    private static final GetValueProcess defaultValueValueProcess = new DefaultValueValueProcess();
-    private BeanMappingObject            config;                                                   // 对应的Bean Mapping配置
+    private static final ValueProcess beanCreatorValueProcess  = new BeanCreatorValueProcess();
+    private static final ValueProcess convetorValueProcess     = new ConvetorValueProcess();
+    private static final ValueProcess scriptValueProcess       = new ScriptValueProcess();
+    private static final ValueProcess defaultValueValueProcess = new DefaultValueValueProcess();
+    private static final ValueProcess debugValueProcess        = new DebugValueProcess();
+    private BeanMappingObject         config;                                                   // 对应的Bean Mapping配置
 
     public BeanMapping(BeanMappingObject config){
         this.config = config;
@@ -50,7 +51,7 @@ public class BeanMapping {
     }
 
     /**
-     * 根据定义的bean-mapping配置进行对象属性的mapping拷贝 , 允许自定义{@linkplain GetValueProcess} {@linkplain SetValueProcess}
+     * 根据定义的bean-mapping配置进行对象属性的mapping拷贝 , 允许自定义{@linkplain ValueProcess} {@linkplain SetValueProcess}
      * 
      * @param src
      * @param target
@@ -61,8 +62,8 @@ public class BeanMapping {
         param.setSrcRef(src);
         param.setTargetRef(target);
         param.setConfig(this.config);
-        param.setSetProcesses(Arrays.asList(beanCreatorValueProcess, convetorValueProcess));
-        param.setGetProcesses(Arrays.asList(scriptValueProcess, defaultValueValueProcess));
+        param.setProcesses(Arrays.asList(scriptValueProcess, defaultValueValueProcess, beanCreatorValueProcess,
+                                         convetorValueProcess, debugValueProcess));
         // 执行mapping处理
         BeanMappingExecutor.execute(param);
     }

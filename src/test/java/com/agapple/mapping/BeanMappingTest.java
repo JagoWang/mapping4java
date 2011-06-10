@@ -94,7 +94,7 @@ public class BeanMappingTest extends TestCase {
         TargetMappingObject targetRef = new TargetMappingObject();// 测试一下mapping到一个HashMap对象
         BeanMappingUtil.mapping(srcRef, targetRef);
         assertNotNull(targetRef.getMapping());
-        assertEquals(targetRef.getMapping().getValue(), "10");
+        assertEquals("10", targetRef.getMapping().getValue());
         assertEquals(targetRef.getTargetName(), srcRef.getName());
 
         SrcMappingObject newSrcRef = new SrcMappingObject();
