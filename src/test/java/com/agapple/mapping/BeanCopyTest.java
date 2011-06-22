@@ -18,8 +18,8 @@ import com.agapple.mapping.object.TargetMappingObject;
  */
 public class BeanCopyTest extends TestCase {
 
-    public BeanCopy srcCopyer          = BeanCopy.create(SrcMappingObject.class, TargetMappingObject.class, true);
-    public BeanCopy targetCopyer       = BeanCopy.create(TargetMappingObject.class, SrcMappingObject.class, true);
+    public BeanCopy srcCopyer          = BeanCopy.create(SrcMappingObject.class, TargetMappingObject.class);
+    public BeanCopy targetCopyer       = BeanCopy.create(TargetMappingObject.class, SrcMappingObject.class);
     public BeanCopy nestedSrcCopyer    = BeanCopy.create(NestedSrcMappingObject.class, NestedTargetMappingObject.class);
     public BeanCopy nestedTargetCopyer = BeanCopy.create(NestedTargetMappingObject.class, NestedSrcMappingObject.class);
 

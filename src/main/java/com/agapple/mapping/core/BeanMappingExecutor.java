@@ -83,18 +83,23 @@ public class BeanMappingExecutor {
         // 处理target操作数据搜集
         List<String> targetFields = new ArrayList<String>();
         List<Class> targetArgs = new ArrayList<Class>();
+        Class locatorClass = param.getTargetRef().getClass(); // 检查一下locatorClass
         for (BeanMappingField beanField : config.getBeanFields()) {
             String targetField = beanField.getTargetField().getName();
             Class targetArg = beanField.getTargetField().getClazz();
             if (StringUtils.isEmpty(targetField) || targetArg == null) {
                 return null; // 直接不予处理
             }
+
+            if (beanField.getTargetField().getLocatorClass() != locatorClass) {
+                config.setBatch(false);// 直接改写为false，发现locatorClass存在于不同的class
+            }
             // 搜集信息
             targetFields.add(targetField);
             targetArgs.add(targetArg);
         }
         // 生成下target批量处理器
-        executor = Uberspector.getInstance().getBatchExecutor(param.getTargetRef(),
+        executor = Uberspector.getInstance().getBatchExecutor(locatorClass,
                                                               targetFields.toArray(new String[targetFields.size()]),
                                                               targetArgs.toArray(new Class[targetArgs.size()]));
         if (config.getBehavior().isDebug() && logger.isDebugEnabled()) {
@@ -116,18 +121,23 @@ public class BeanMappingExecutor {
         List<String> srcFields = new ArrayList<String>();
         List<Class> srcArgs = new ArrayList<Class>();
         // 处理src操作数据搜集
+        Class locatorClass = param.getSrcRef().getClass();
         for (BeanMappingField beanField : config.getBeanFields()) {
             String srcField = beanField.getSrcField().getName();
             Class srcArg = beanField.getSrcField().getClazz();
             if (StringUtils.isEmpty(srcField) || srcArg == null) {
                 return null; // 直接不予处理
             }
+
+            if (beanField.getSrcField().getLocatorClass() != locatorClass) {
+                config.setBatch(false);// 直接改写为false，发现locatorClass存在于不同的class
+            }
             // 搜集信息
             srcFields.add(srcField);
             srcArgs.add(srcArg);
         }
         // 生成下src批量处理器
-        executor = Uberspector.getInstance().getBatchExecutor(param.getSrcRef(),
+        executor = Uberspector.getInstance().getBatchExecutor(locatorClass,
                                                               srcFields.toArray(new String[srcFields.size()]),
                                                               srcArgs.toArray(new Class[srcArgs.size()]));
         if (config.getBehavior().isDebug() && logger.isDebugEnabled()) {
@@ -147,14 +157,23 @@ public class BeanMappingExecutor {
         // 设置getExecutor
         GetExecutor getExecutor = beanField.getGetExecutor();// 优先从beanField里取
         if (getExecutor == null && StringUtils.isNotEmpty(beanField.getSrcField().getName())) {// 如果不为空,可能存在script
-            getExecutor = Uberspector.getInstance().getGetExecutor(param.getSrcRef(), beanField.getSrcField().getName());
+            Class locatorClass = beanField.getSrcField().getLocatorClass();// 从locatorClass中获取
+            if (locatorClass == null) {
+                locatorClass = param.getSrcRef().getClass();
+                beanField.getSrcField().setLocatorClass(locatorClass);
+            }
+            getExecutor = Uberspector.getInstance().getGetExecutor(locatorClass, beanField.getSrcField().getName());
             beanField.setGetExecutor(getExecutor);
         }
         // 设置setExecutor
         SetExecutor setExecutor = beanField.getSetExecutor();// 优先从beanField里取
         if (setExecutor == null && StringUtils.isNotEmpty(beanField.getTargetField().getName())) {
-            setExecutor = Uberspector.getInstance().getSetExecutor(param.getTargetRef(),
-                                                                   beanField.getTargetField().getName(),
+            Class locatorClass = beanField.getTargetField().getLocatorClass();// 从locatorClass中获取
+            if (locatorClass == null) {
+                locatorClass = param.getTargetRef().getClass();
+                beanField.getTargetField().setLocatorClass(locatorClass);
+            }
+            setExecutor = Uberspector.getInstance().getSetExecutor(locatorClass, beanField.getTargetField().getName(),
                                                                    beanField.getTargetField().getClazz());
             beanField.setSetExecutor(setExecutor);
 
@@ -200,17 +219,27 @@ public class BeanMappingExecutor {
                                                                    param.getCustomValueContext());
         // 检查一下targetClass是否有设置，针对bean对象有效
         // 如果目标对象是map，需要客户端强制设定targetClass
-        SetExecutor setExecutor = beanField.getSetExecutor();
-        if (setExecutor == null && StringUtils.isNotEmpty(beanField.getTargetField().getName())) {// 可能存在为空
-            setExecutor = Uberspector.getInstance().getSetExecutor(param.getTargetRef(),
-                                                                   beanField.getTargetField().getName(),
-                                                                   beanField.getTargetField().getClazz());
-            beanField.setSetExecutor(setExecutor);
-        }
         GetExecutor getExecutor = beanField.getGetExecutor();
         if (getExecutor == null && StringUtils.isNotEmpty(beanField.getSrcField().getName())) {// 可能存在为空
-            getExecutor = Uberspector.getInstance().getGetExecutor(param.getSrcRef(), beanField.getSrcField().getName());
+            Class locatorClass = beanField.getSrcField().getLocatorClass();// 从locatorClass中获取
+            if (locatorClass == null) {
+                locatorClass = param.getSrcRef().getClass();
+                beanField.getSrcField().setLocatorClass(locatorClass);
+            }
+            getExecutor = Uberspector.getInstance().getGetExecutor(locatorClass, beanField.getSrcField().getName());
             beanField.setGetExecutor(getExecutor);
+        }
+
+        SetExecutor setExecutor = beanField.getSetExecutor();
+        if (setExecutor == null && StringUtils.isNotEmpty(beanField.getTargetField().getName())) {// 可能存在为空
+            Class locatorClass = beanField.getTargetField().getLocatorClass();// 从locatorClass中获取
+            if (locatorClass == null) {
+                locatorClass = param.getTargetRef().getClass();
+                beanField.getTargetField().setLocatorClass(locatorClass);
+            }
+            setExecutor = Uberspector.getInstance().getSetExecutor(locatorClass, beanField.getTargetField().getName(),
+                                                                   beanField.getTargetField().getClazz());
+            beanField.setSetExecutor(setExecutor);
         }
 
         // 获取新的srcRef

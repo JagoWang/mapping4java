@@ -28,7 +28,7 @@ public class CopyPerformance extends AbstractPerformance {
         CopyBean bean = getBean();
         // BeanMapping copy测试
         final CopyBean beanMappingTarget = new CopyBean();
-        final BeanCopy beanCopy = BeanCopy.create(CopyBean.class, CopyBean.class, true);
+        final BeanCopy beanCopy = BeanCopy.create(CopyBean.class, CopyBean.class);
         testTemplate(new TestCallback() {
 
             public String getName() {
@@ -42,25 +42,6 @@ public class CopyPerformance extends AbstractPerformance {
                     e.printStackTrace();
                 }
                 return beanMappingTarget;
-            }
-
-        }, bean, testCount);
-        // BeanMapping simpleCopy测试
-        final CopyBean beanMappingSimpleTarget = new CopyBean();
-        final BeanCopy beanSimpleCopy = BeanCopy.create(CopyBean.class, CopyBean.class, false);
-        testTemplate(new TestCallback() {
-
-            public String getName() {
-                return "BeanMapping.simpleCopy";
-            }
-
-            public CopyBean call(CopyBean source) {
-                try {
-                    beanSimpleCopy.copy(source, beanMappingSimpleTarget);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return beanMappingSimpleTarget;
             }
 
         }, bean, testCount);

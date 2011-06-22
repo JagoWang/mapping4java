@@ -29,15 +29,15 @@ public class BehaviorValueProcess implements ValueProcess {
             return value;
         }
 
+        // 进行trim处理
+        if (value instanceof String && behavior.isTrimStrings()) {
+            value = StringUtils.trim((String) value);
+        }
+
         // 判断一下String的null / empty情况
         if ((value == null || (value instanceof String && StringUtils.isEmpty((String) value)))
             && behavior.isMappingEmptyStrings() == false) {
             return value;
-        }
-
-        // 进行trim处理
-        if (value instanceof String && behavior.isTrimStrings()) {
-            value = StringUtils.trim((String) value);
         }
 
         return invocation.proceed(value);

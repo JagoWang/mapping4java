@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 
+import com.agapple.mapping.core.builder.BeanMappingBuilder;
+
 /**
  * Bean Mapping配置操作的相关helper类
  * 
@@ -83,6 +85,13 @@ public class BeanMappingConfigHelper {
      */
     public void register(BeanMappingObject object) {
         repository.register(object);
+    }
+
+    /**
+     * 直接注册一个解析好的{@linkplain BeanMappingBuilder}
+     */
+    public void register(BeanMappingBuilder builder) {
+        repository.register(builder);
     }
 
     public void registerConfig(String file) {

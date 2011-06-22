@@ -19,10 +19,10 @@ public class BeanMappingField implements Serializable {
     private static final long          serialVersionUID = 3673414855182044438L;
     private BeanMappingFieldAttributes srcField         = new BeanMappingFieldAttributes(); // 源属性配置信息
     private BeanMappingFieldAttributes targetField      = new BeanMappingFieldAttributes(); // 目标属性配置信息
-    private String                     defaultValue;                                       // 默认值,配置文件中定义的字符串
-    private String                     convertor;                                          // 自定义conveterName
-    private Class                      convertorClass;                                     // 指定convertor的class
-    private String                     script;                                             // format script字符串
+    private String                     defaultValue     = null;                            // 默认值,配置文件中定义的字符串
+    private String                     convertor        = null;                            // 自定义conveterName
+    private Class                      convertorClass   = null;                            // 指定convertor的class
+    private String                     script           = null;                            // format script字符串
     private boolean                    mapping          = false;                           // 是否深度递归mapping
     private BeanMappingBehavior        behavior         = null;                            // mapping的处理行为参数
 

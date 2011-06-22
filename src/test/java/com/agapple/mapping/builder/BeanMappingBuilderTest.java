@@ -8,6 +8,7 @@ import junit.framework.TestCase;
 
 import com.agapple.mapping.core.builder.BeanMappingBuilder;
 import com.agapple.mapping.core.config.BeanMappingBehavior;
+import com.agapple.mapping.core.config.BeanMappingConfigHelper;
 import com.agapple.mapping.core.config.BeanMappingField;
 import com.agapple.mapping.core.config.BeanMappingObject;
 import com.agapple.mapping.process.convetor.StringAndCommonConvertor.StringToCommon;
@@ -110,6 +111,25 @@ public class BeanMappingBuilderTest extends TestCase {
         assertEquals(three.getTargetField().getName(), "threeOther");
         assertEquals(three.getTargetField().getClazz(), HashSet.class);
         assertEquals(three.isMapping(), true);
+
+    }
+
+    public void testRegister() {
+        BeanMappingBuilder builder = new BeanMappingBuilder() {
+
+            protected void configure() {
+                mapping(HashMap.class, HashMap.class);
+                fields(srcField("one"), targetField("oneOther"));
+            }
+
+        };
+
+        BeanMappingConfigHelper.getInstance().register(builder); // 进行注册
+
+        BeanMappingObject object = BeanMappingConfigHelper.getInstance().getBeanMappingObject(HashMap.class,
+                                                                                              HashMap.class);
+
+        assertNotNull(object);
 
     }
 }

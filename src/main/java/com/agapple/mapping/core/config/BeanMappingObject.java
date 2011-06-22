@@ -17,10 +17,10 @@ import com.agapple.mapping.core.introspect.BatchExecutor;
 public class BeanMappingObject implements Serializable {
 
     private static final long      serialVersionUID = 9099474060890980056L;
-    private String                 srcKey;                                              // format上下文中src key，默认:src
-    private Class                  srcClass;                                            // mapping的原始class
-    private String                 targetKey;                                           // format上下文中targetkey,默认:target
-    private Class                  targetClass;                                         // mapping的目标class
+    private String                 srcKey           = "src";                            // format上下文中src key，默认:src
+    private Class                  srcClass         = null;                             // mapping的原始class
+    private String                 targetKey        = "target";                         // format上下文中targetkey,默认:target
+    private Class                  targetClass      = null;                             // mapping的目标class
     private boolean                reversable       = true;                             // 原始和目标的mapping是否可逆，如果有自定义的convertor,强制修改为不可逆
     private List<BeanMappingField> beanFields       = new ArrayList<BeanMappingField>(); // 具体字段的mapping配置
     private boolean                batch            = false;                            // 优化参数，是否开启批量处理操作.

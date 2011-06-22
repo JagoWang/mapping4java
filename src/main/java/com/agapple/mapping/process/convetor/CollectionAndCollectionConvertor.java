@@ -67,7 +67,7 @@ public class CollectionAndCollectionConvertor {
                         config.beanMap = BeanMap.create(srcClass);
                         config.populate = false;
                     } else {
-                        config.beanCopy = BeanCopy.create(srcClass, targetClass, true); // 默认进行类型转化
+                        config.beanCopy = BeanCopy.create(srcClass, targetClass); // 默认进行类型转化
                     }
 
                 }
