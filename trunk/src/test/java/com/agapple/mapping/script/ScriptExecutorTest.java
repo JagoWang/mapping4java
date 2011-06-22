@@ -1,4 +1,4 @@
-package com.agapple.mapping;
+package com.agapple.mapping.script;
 
 import java.util.HashMap;
 import java.util.Map;

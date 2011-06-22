@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.agapple.mapping.core.config.BeanMappingConfigHelper;
 import com.agapple.mapping.core.config.BeanMappingField;
@@ -27,11 +29,19 @@ import com.agapple.mapping.core.process.ValueProcessInvocation;
  */
 public class BeanMappingExecutor {
 
+    private final static Logger logger = LoggerFactory.getLogger(BeanMappingExecutor.class);
+
     /**
      * 根据传递的param，进行mapping处理
      */
     public static void execute(BeanMappingParam param) {
         BeanMappingObject config = param.getConfig();
+        boolean isDebug = config.getBehavior().isDebug();
+        if (isDebug && logger.isDebugEnabled()) {
+            logger.debug("====================== start mapping \n\t srcClass["
+                         + param.getSrcRef().getClass().toString() + "] \n\t targetClass["
+                         + param.getTargetRef().getClass().toString() + "]");
+        }
         BatchObjectHolder holder = null;
         BatchExecutor getBatchExecutor = null;
         BatchExecutor setBatchExecutor = null;
@@ -55,6 +65,10 @@ public class BeanMappingExecutor {
         if (config.isBatch() && setBatchExecutor != null && holder != null) { // 执行一次batch set操作
             setBatchExecutor.sets(param.getTargetRef(), holder.getBatchValues());
         }
+
+        if (isDebug && logger.isDebugEnabled()) {
+            logger.debug("====================== end mapping");
+        }
     }
 
     /**
@@ -70,8 +84,8 @@ public class BeanMappingExecutor {
         List<String> targetFields = new ArrayList<String>();
         List<Class> targetArgs = new ArrayList<Class>();
         for (BeanMappingField beanField : config.getBeanFields()) {
-            String targetField = beanField.getTargetName();
-            Class targetArg = beanField.getTargetClass();
+            String targetField = beanField.getTargetField().getName();
+            Class targetArg = beanField.getTargetField().getClazz();
             if (StringUtils.isEmpty(targetField) || targetArg == null) {
                 return null; // 直接不予处理
             }
@@ -83,6 +97,9 @@ public class BeanMappingExecutor {
         executor = Uberspector.getInstance().getBatchExecutor(param.getTargetRef(),
                                                               targetFields.toArray(new String[targetFields.size()]),
                                                               targetArgs.toArray(new Class[targetArgs.size()]));
+        if (config.getBehavior().isDebug() && logger.isDebugEnabled()) {
+            logger.debug("TargetClass[" + param.getTargetRef().getClass() + "]SetBatchExecutor is init");
+        }
         config.setSetBatchExecutor(executor);
         return executor;
     }
@@ -100,8 +117,8 @@ public class BeanMappingExecutor {
         List<Class> srcArgs = new ArrayList<Class>();
         // 处理src操作数据搜集
         for (BeanMappingField beanField : config.getBeanFields()) {
-            String srcField = beanField.getSrcName();
-            Class srcArg = beanField.getSrcClass();
+            String srcField = beanField.getSrcField().getName();
+            Class srcArg = beanField.getSrcField().getClazz();
             if (StringUtils.isEmpty(srcField) || srcArg == null) {
                 return null; // 直接不予处理
             }
@@ -113,6 +130,9 @@ public class BeanMappingExecutor {
         executor = Uberspector.getInstance().getBatchExecutor(param.getSrcRef(),
                                                               srcFields.toArray(new String[srcFields.size()]),
                                                               srcArgs.toArray(new Class[srcArgs.size()]));
+        if (config.getBehavior().isDebug() && logger.isDebugEnabled()) {
+            logger.debug("SrcClass[" + param.getSrcRef().getClass() + "]GetBatchExecutor is init");
+        }
         config.setGetBatchExecutor(executor);
         return executor;
     }
@@ -126,15 +146,16 @@ public class BeanMappingExecutor {
                                                                    param.getCustomValueContext());
         // 设置getExecutor
         GetExecutor getExecutor = beanField.getGetExecutor();// 优先从beanField里取
-        if (getExecutor == null && StringUtils.isNotEmpty(beanField.getSrcName())) {// 如果不为空,可能存在script
-            getExecutor = Uberspector.getInstance().getGetExecutor(param.getSrcRef(), beanField.getSrcName());
+        if (getExecutor == null && StringUtils.isNotEmpty(beanField.getSrcField().getName())) {// 如果不为空,可能存在script
+            getExecutor = Uberspector.getInstance().getGetExecutor(param.getSrcRef(), beanField.getSrcField().getName());
             beanField.setGetExecutor(getExecutor);
         }
         // 设置setExecutor
         SetExecutor setExecutor = beanField.getSetExecutor();// 优先从beanField里取
-        if (setExecutor == null && StringUtils.isNotEmpty(beanField.getTargetName())) {
-            setExecutor = Uberspector.getInstance().getSetExecutor(param.getTargetRef(), beanField.getTargetName(),
-                                                                   beanField.getTargetClass());
+        if (setExecutor == null && StringUtils.isNotEmpty(beanField.getTargetField().getName())) {
+            setExecutor = Uberspector.getInstance().getSetExecutor(param.getTargetRef(),
+                                                                   beanField.getTargetField().getName(),
+                                                                   beanField.getTargetField().getClazz());
             beanField.setSetExecutor(setExecutor);
 
         }
@@ -144,26 +165,26 @@ public class BeanMappingExecutor {
                                                                        param.getProcesses());
         Object getResult = invocation.getInitialValue();
         // 设置下srcClass
-        if (getExecutor != null && beanField.getSrcClass() == null) {
+        if (getExecutor != null && beanField.getSrcField().getClazz() == null) {
             // 设置为自动提取的targetClasss
             if (getExecutor instanceof MapGetExecutor) {
                 if (getResult != null) {
-                    beanField.setSrcClass(getResult.getClass());// 优先设置为getResult的class对象
+                    beanField.getSrcField().setClazz(getResult.getClass());// 优先设置为getResult的class对象
                 }
             } else {
-                beanField.setSrcClass(getSrcClass(getExecutor)); // 获取getExecutor方法的返回结果类型
+                beanField.getSrcField().setClazz(getSrcClass(getExecutor)); // 获取getExecutor方法的返回结果类型
             }
         }
 
         // 设置下targetClass
-        if (setExecutor != null && beanField.getTargetClass() == null) {
+        if (setExecutor != null && beanField.getTargetField().getClazz() == null) {
             // 设置为自动提取的targetClasss
             if (setExecutor instanceof MapSetExecutor) {
                 if (getResult != null) {
-                    beanField.setTargetClass(getResult.getClass());// 优先设置为getResult的class对象
+                    beanField.getTargetField().setClazz(getResult.getClass());// 优先设置为getResult的class对象
                 }
             } else {
-                beanField.setTargetClass(getTargetClass(setExecutor));
+                beanField.getTargetField().setClazz(getTargetClass(setExecutor));
             }
         }
         // 开始ValueProcess流程
@@ -180,14 +201,15 @@ public class BeanMappingExecutor {
         // 检查一下targetClass是否有设置，针对bean对象有效
         // 如果目标对象是map，需要客户端强制设定targetClass
         SetExecutor setExecutor = beanField.getSetExecutor();
-        if (setExecutor == null && StringUtils.isNotEmpty(beanField.getTargetName())) {// 可能存在为空
-            setExecutor = Uberspector.getInstance().getSetExecutor(param.getTargetRef(), beanField.getTargetName(),
-                                                                   beanField.getTargetClass());
+        if (setExecutor == null && StringUtils.isNotEmpty(beanField.getTargetField().getName())) {// 可能存在为空
+            setExecutor = Uberspector.getInstance().getSetExecutor(param.getTargetRef(),
+                                                                   beanField.getTargetField().getName(),
+                                                                   beanField.getTargetField().getClazz());
             beanField.setSetExecutor(setExecutor);
         }
         GetExecutor getExecutor = beanField.getGetExecutor();
-        if (getExecutor == null && StringUtils.isNotEmpty(beanField.getSrcName())) {// 可能存在为空
-            getExecutor = Uberspector.getInstance().getGetExecutor(param.getSrcRef(), beanField.getSrcName());
+        if (getExecutor == null && StringUtils.isNotEmpty(beanField.getSrcField().getName())) {// 可能存在为空
+            getExecutor = Uberspector.getInstance().getGetExecutor(param.getSrcRef(), beanField.getSrcField().getName());
             beanField.setGetExecutor(getExecutor);
         }
 
@@ -197,22 +219,22 @@ public class BeanMappingExecutor {
                                                                        param.getProcesses());
         Object srcRef = invocation.getInitialValue();
         // 设置下srcClass
-        if (getExecutor != null && beanField.getSrcClass() == null) {
+        if (getExecutor != null && beanField.getSrcField().getClazz() == null) {
             // 设置为自动提取的targetClasss
             if (getExecutor instanceof MapGetExecutor) {
                 if (srcRef != null) {
-                    beanField.setSrcClass(srcRef.getClass());// 优先设置为getResult的class对象
+                    beanField.getSrcField().setClazz(srcRef.getClass());// 优先设置为getResult的class对象
                 }
             } else {
-                beanField.setSrcClass(getSrcClass(getExecutor));
+                beanField.getSrcField().setClazz(getSrcClass(getExecutor));
             }
         }
 
-        if (setExecutor != null && beanField.getTargetClass() == null) {
+        if (setExecutor != null && beanField.getTargetField().getClazz() == null) {
             if (setExecutor instanceof MapSetExecutor) {
-                beanField.setTargetClass(HashMap.class);// 针对Map处理,嵌套代码的复制默认设置为HashMap.class
+                beanField.getTargetField().setClazz(HashMap.class);// 针对Map处理,嵌套代码的复制默认设置为HashMap.class
             } else {
-                beanField.setTargetClass(getTargetClass(setExecutor));
+                beanField.getTargetField().setClazz(getTargetClass(setExecutor));
             }
         }
 
@@ -223,12 +245,12 @@ public class BeanMappingExecutor {
             return; // 如果为null，则不做递归处理
         }
 
-        if (beanField.getSrcClass() == null || beanField.getTargetClass() == null) {
+        if (beanField.getSrcField().getClazz() == null || beanField.getTargetField().getClazz() == null) {
             throw new BeanMappingException("srcClass or targetClass is null , " + beanField.toString());
         }
         BeanMappingObject object = BeanMappingConfigHelper.getInstance().getBeanMappingObject(
-                                                                                              beanField.getSrcClass(),
-                                                                                              beanField.getTargetClass());
+                                                                                              beanField.getSrcField().getClazz(),
+                                                                                              beanField.getTargetField().getClazz());
         if (object == null) {
             throw new BeanMappingException("no bean mapping config for " + beanField.toString());
         }

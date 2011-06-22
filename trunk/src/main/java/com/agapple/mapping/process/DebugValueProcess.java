@@ -26,19 +26,22 @@ public class DebugValueProcess implements ValueProcess {
 
     @Override
     public Object process(Object value, ValueProcessInvocation invocation) throws BeanMappingException {
-        BeanMappingField field = invocation.getContext().getCurrentField();
-        if (logger.isDebugEnabled()) {
+        BeanMappingField currentField = invocation.getContext().getCurrentField();
+        if (currentField.isMapping() == false && invocation.getContext().getBeanObject().getBehavior().isDebug()
+            && logger.isDebugEnabled()) {
             StringBuilder builder = new StringBuilder();
-            builder.append("srcName[" + field.getSrcName());
-            builder.append("],targetName[" + field.getTargetName());
-            if (StringUtils.isNotEmpty(field.getDefaultValue())) {
-                builder.append("],[defaultValue=" + field.getDefaultValue());
+            builder.append("srcName[" + currentField.getSrcField().getName());
+            builder.append("],srcClass[" + ObjectUtils.toString(currentField.getSrcField().getClazz(), "null"));
+            builder.append("],targetName[" + currentField.getTargetField().getName());
+            builder.append("],targetClass[" + ObjectUtils.toString(currentField.getTargetField().getClazz(), "null"));
+            if (StringUtils.isNotEmpty(currentField.getDefaultValue())) {
+                builder.append("],[defaultValue=" + currentField.getDefaultValue());
             }
-            if (StringUtils.isNotEmpty(field.getConvertor())) {
-                builder.append("],[convetor=" + field.getConvertor());
+            if (StringUtils.isNotEmpty(currentField.getConvertor())) {
+                builder.append("],[convetor=" + currentField.getConvertor());
             }
-            if (StringUtils.isNotEmpty(field.getScript())) {
-                builder.append("],[script=" + field.getScript());
+            if (StringUtils.isNotEmpty(currentField.getScript())) {
+                builder.append("],[script=" + currentField.getScript());
             }
             builder.append("], Value = " + ObjectUtils.toString(value, "null"));
             logger.debug(builder.toString());

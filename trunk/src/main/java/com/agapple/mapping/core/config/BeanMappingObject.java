@@ -24,6 +24,7 @@ public class BeanMappingObject implements Serializable {
     private boolean                reversable       = true;                             // 原始和目标的mapping是否可逆，如果有自定义的convertor,强制修改为不可逆
     private List<BeanMappingField> beanFields       = new ArrayList<BeanMappingField>(); // 具体字段的mapping配置
     private boolean                batch            = false;                            // 优化参数，是否开启批量处理操作.
+    private BeanMappingBehavior    behavior         = null;                             // mapping的处理行为参数
 
     // ======================= 内部数据，外部请勿直接操作 ==================
     private BatchExecutor          getBatchExecutor = null;                             // get操作的batch执行引擎
@@ -59,6 +60,14 @@ public class BeanMappingObject implements Serializable {
 
     public void setBeanFields(List<BeanMappingField> beanFields) {
         this.beanFields = beanFields;
+    }
+
+    public void addBeanField(BeanMappingField beanField) {
+        if (beanFields == null) {
+            beanFields = new ArrayList<BeanMappingField>();
+        }
+
+        beanFields.add(beanField);
     }
 
     public String getSrcKey() {
@@ -99,6 +108,14 @@ public class BeanMappingObject implements Serializable {
 
     public void setSetBatchExecutor(BatchExecutor setBatchExecutor) {
         this.setBatchExecutor = setBatchExecutor;
+    }
+
+    public BeanMappingBehavior getBehavior() {
+        return behavior;
+    }
+
+    public void setBehavior(BeanMappingBehavior behavior) {
+        this.behavior = behavior;
     }
 
     @Override

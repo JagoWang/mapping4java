@@ -7,6 +7,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 
 import com.agapple.mapping.core.introspect.GetExecutor;
 import com.agapple.mapping.core.introspect.SetExecutor;
+import com.agapple.mapping.process.convetor.Convertor;
 
 /**
  * 解析完成后的一个BeanMapping的field配置对象
@@ -15,51 +16,20 @@ import com.agapple.mapping.core.introspect.SetExecutor;
  */
 public class BeanMappingField implements Serializable {
 
-    private static final long serialVersionUID = 3673414855182044438L;
-    private String            targetName;                             // 目标数据的name
-    private Class             targetClass;                            // 目标数据的class
-    private String            srcName;                                // 源数据的name
-    private Class             srcClass;                               // 源数据的class
-    private String            defaultValue;                           // 默认值,配置文件中定义的字符串
-    private String            convertor;                              // 自定义conveterName
-    private String            script;                                 // format script字符串
-    private boolean           mapping          = false;               // 是否深度递归mapping
+    private static final long          serialVersionUID = 3673414855182044438L;
+    private BeanMappingFieldAttributes srcField         = new BeanMappingFieldAttributes(); // 源属性配置信息
+    private BeanMappingFieldAttributes targetField      = new BeanMappingFieldAttributes(); // 目标属性配置信息
+    private String                     defaultValue;                                       // 默认值,配置文件中定义的字符串
+    private String                     convertor;                                          // 自定义conveterName
+    private Class                      convertorClass;                                     // 指定convertor的class
+    private String                     script;                                             // format script字符串
+    private boolean                    mapping          = false;                           // 是否深度递归mapping
+    private BeanMappingBehavior        behavior         = null;                            // mapping的处理行为参数
 
     // ======================= 内部数据，外部请勿直接操作 ==================
-    private GetExecutor       getExecutor      = null;                // get操作的执行引擎
-    private SetExecutor       setExecutor      = null;                // set操作的执行引擎
-
-    public String getTargetName() {
-        return targetName;
-    }
-
-    public void setTargetName(String targetName) {
-        this.targetName = targetName;
-    }
-
-    public Class getTargetClass() {
-        return targetClass;
-    }
-
-    public void setTargetClass(Class targetClass) {
-        this.targetClass = targetClass;
-    }
-
-    public String getSrcName() {
-        return srcName;
-    }
-
-    public void setSrcName(String srcName) {
-        this.srcName = srcName;
-    }
-
-    public Class getSrcClass() {
-        return srcClass;
-    }
-
-    public void setSrcClass(Class srcClass) {
-        this.srcClass = srcClass;
-    }
+    private Convertor                  convertorRef     = null;                            // convertor对应的对象引用
+    private GetExecutor                getExecutor      = null;                            // get操作的执行引擎
+    private SetExecutor                setExecutor      = null;                            // set操作的执行引擎
 
     public String getDefaultValue() {
         return defaultValue;
@@ -67,6 +37,14 @@ public class BeanMappingField implements Serializable {
 
     public void setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
+    }
+
+    public String getConvertor() {
+        return convertor;
+    }
+
+    public void setConvertor(String convertor) {
+        this.convertor = convertor;
     }
 
     public String getScript() {
@@ -85,12 +63,28 @@ public class BeanMappingField implements Serializable {
         this.mapping = mapping;
     }
 
-    public String getConvertor() {
-        return convertor;
+    public Class getConvertorClass() {
+        return convertorClass;
     }
 
-    public void setConvertor(String convertor) {
-        this.convertor = convertor;
+    public void setConvertorClass(Class convertorClass) {
+        this.convertorClass = convertorClass;
+    }
+
+    public Convertor getConvertorRef() {
+        return convertorRef;
+    }
+
+    public void setConvertorRef(Convertor convertorRef) {
+        this.convertorRef = convertorRef;
+    }
+
+    public BeanMappingBehavior getBehavior() {
+        return behavior;
+    }
+
+    public void setBehavior(BeanMappingBehavior behavior) {
+        this.behavior = behavior;
     }
 
     public GetExecutor getGetExecutor() {
@@ -107,6 +101,22 @@ public class BeanMappingField implements Serializable {
 
     public void setSetExecutor(SetExecutor setExecutor) {
         this.setExecutor = setExecutor;
+    }
+
+    public BeanMappingFieldAttributes getSrcField() {
+        return srcField;
+    }
+
+    public void setSrcField(BeanMappingFieldAttributes srcField) {
+        this.srcField = srcField;
+    }
+
+    public BeanMappingFieldAttributes getTargetField() {
+        return targetField;
+    }
+
+    public void setTargetField(BeanMappingFieldAttributes targetField) {
+        this.targetField = targetField;
     }
 
     @Override

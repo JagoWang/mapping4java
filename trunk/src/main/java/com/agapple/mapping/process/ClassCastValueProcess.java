@@ -21,8 +21,8 @@ public class ClassCastValueProcess implements ValueProcess {
 
     public Object process(Object value, ValueProcessInvocation invocation) throws BeanMappingException {
         BeanMappingField field = invocation.getContext().getCurrentField();
-        if (field.getTargetClass() != null && value != null) {
-            if (checkcast(value.getClass(), field.getTargetClass()) == false) {
+        if (field.getTargetField().getClazz() != null && value != null) {
+            if (checkcast(value.getClass(), field.getTargetField().getClazz()) == false) {
                 // 不调用invocation.proceed()，直接退出
                 return value;
             }

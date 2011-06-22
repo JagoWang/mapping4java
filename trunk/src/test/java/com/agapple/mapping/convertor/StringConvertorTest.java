@@ -1,10 +1,9 @@
-package com.agapple.mapping;
+package com.agapple.mapping.convertor;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -18,7 +17,7 @@ import com.agapple.mapping.process.convetor.ConvertorHelper;
  * 
  * @author jianghang 2011-5-26 上午11:17:36
  */
-public class ConvertorTest extends TestCase {
+public class StringConvertorTest extends TestCase {
 
     private ConvertorHelper helper = new ConvertorHelper();
 
@@ -44,21 +43,41 @@ public class ConvertorTest extends TestCase {
 
     @Test
     public void testStringToCommon() {
-        Convertor intConvetor = helper.getConvertor(String.class, int.class);
-        Convertor integerConvetor = helper.getConvertor(String.class, Integer.class);
-        String VALUE = "1";
+        String strValue = "10";
+        int value = 10;
         // 基本变量
-        Object intValue = intConvetor.convert(VALUE, int.class);
-        assertEquals(intValue, 1);
-        Object integerValue = integerConvetor.convert(VALUE, Integer.class);
-        assertEquals(integerValue, 1);
-        // BigDecimal/BigInteger
-        Convertor bigDecimalConvetor = helper.getConvertor(String.class, BigDecimal.class);
-        Convertor bigIntegerConvetor = helper.getConvertor(String.class, BigInteger.class);
-        Object bigDecimalValue = bigDecimalConvetor.convert(VALUE, BigDecimal.class);
-        assertEquals(bigDecimalValue, BigDecimal.ONE);
-        Object bigIntegerValue = bigIntegerConvetor.convert(VALUE, BigInteger.class);
-        assertEquals(bigIntegerValue, BigInteger.ONE);
+        Object intValue = helper.getConvertor(String.class, int.class).convert(strValue, int.class);
+        assertEquals(intValue, value);
+
+        Object integerValue = helper.getConvertor(String.class, Integer.class).convert(strValue, Integer.class);
+        assertEquals(integerValue, value);
+
+        Object byteValue = helper.getConvertor(String.class, byte.class).convert(strValue, byte.class);
+        assertEquals(byteValue, Byte.valueOf((byte) value));
+
+        Object shortValue = helper.getConvertor(String.class, short.class).convert(strValue, short.class);
+        assertEquals(shortValue, Short.valueOf((short) value));
+
+        Object longValue = helper.getConvertor(String.class, long.class).convert(strValue, long.class);
+        assertEquals(longValue, Long.valueOf((long) value));
+
+        Object floatValue = helper.getConvertor(String.class, float.class).convert(strValue, float.class);
+        assertEquals(floatValue, Float.valueOf((float) value));
+
+        Object doubleValue = helper.getConvertor(String.class, double.class).convert(strValue, double.class);
+        assertEquals(doubleValue, Double.valueOf((double) value));
+
+        Object bigIntegerValue = helper.getConvertor(String.class, BigInteger.class).convert(strValue, BigInteger.class);
+        assertEquals(bigIntegerValue, BigInteger.valueOf(value));
+
+        Object bigDecimalValue = helper.getConvertor(String.class, BigDecimal.class).convert(strValue, BigDecimal.class);
+        assertEquals(bigDecimalValue, BigDecimal.valueOf(value));
+
+        Object boolValue = helper.getConvertor(String.class, boolean.class).convert(strValue, boolean.class);
+        assertEquals(boolValue, Boolean.valueOf(value > 0 ? true : false));
+
+        Object charValue = helper.getConvertor(String.class, char.class).convert(strValue, char.class);
+        assertEquals(charValue, Character.valueOf((char) value));
     }
 
     @Test
@@ -131,69 +150,4 @@ public class ConvertorTest extends TestCase {
 
     }
 
-    @Test
-    public void testStringAndListAlias() {
-        Convertor intList = helper.getConvertor(int[].class, List.class);
-        Convertor integerList = helper.getConvertor(Integer[].class, List.class);
-
-        int[] intArray = new int[] { 1, 2 };
-        Integer[] integerArray = new Integer[] { 1, 2 };
-        List intListValue = (List) intList.convert(intArray, List.class);
-        List integerListValue = (List) integerList.convert(integerArray, List.class);
-        assertEquals(intListValue.size(), intArray.length);
-        assertEquals(integerListValue.size(), integerArray.length);
-
-        // BigDecimal & BigInteger
-        Convertor bigDecimalList = helper.getConvertor(BigDecimal[].class, List.class);
-        Convertor bigIntegerList = helper.getConvertor(BigInteger[].class, List.class);
-
-        BigDecimal[] bigDecimalArray = new BigDecimal[] { BigDecimal.ZERO, BigDecimal.ONE };
-        BigInteger[] bigIntegerArray = new BigInteger[] { BigInteger.ZERO, BigInteger.ONE };
-        List bigDecimalListValue = (List) bigDecimalList.convert(bigDecimalArray, List.class);
-        List bigIntegerListValue = (List) bigIntegerList.convert(bigIntegerArray, List.class);
-        assertEquals(bigDecimalListValue.size(), bigDecimalArray.length);
-        assertEquals(bigIntegerListValue.size(), bigIntegerArray.length);
-
-        // Object Array
-        Convertor modelList = helper.getConvertor(ConvertorModel[].class, List.class);
-        ConvertorModel[] modelArray = new ConvertorModel[] { new ConvertorModel(), new ConvertorModel() };
-        List modelListValue = (List) modelList.convert(modelArray, List.class);
-        assertEquals(modelListValue.size(), modelArray.length);
-    }
-
-    public static class ConvertorModel {
-
-        private int        i;
-        private Integer    integer;
-        private BigDecimal bigDecimal;
-
-        public int getI() {
-            return i;
-        }
-
-        public void setI(int i) {
-            this.i = i;
-        }
-
-        public Integer getInteger() {
-            return integer;
-        }
-
-        public void setInteger(Integer integer) {
-            this.integer = integer;
-        }
-
-        public BigDecimal getBigDecimal() {
-            return bigDecimal;
-        }
-
-        public void setBigDecimal(BigDecimal bigDecimal) {
-            this.bigDecimal = bigDecimal;
-        }
-
-        @Override
-        public String toString() {
-            return "ConvertorModel [bigDecimal=" + bigDecimal + ", i=" + i + ", integer=" + integer + "]";
-        }
-    }
 }

@@ -30,7 +30,7 @@ public class BeanMap {
     private BeanMappingObject describeConfig; // 对应的Bean Mapping配置
     private BeanMappingObject populateConfig; // 对应的Bean Mapping配置
 
-    public BeanMap(BeanMappingObject describeConfig, BeanMappingObject populateConfig){
+    BeanMap(BeanMappingObject describeConfig, BeanMappingObject populateConfig){
         this.describeConfig = describeConfig;
         this.populateConfig = populateConfig;
     }

@@ -9,7 +9,7 @@ import com.agapple.mapping.core.config.BeanMappingConfigHelper;
 import com.agapple.mapping.core.config.BeanMappingObject;
 import com.agapple.mapping.core.process.ValueProcess;
 import com.agapple.mapping.process.ClassCastValueProcess;
-import com.agapple.mapping.process.ConvetorValueProcess;
+import com.agapple.mapping.process.ConvertorValueProcess;
 
 /**
  * Bean copy操作的处理单元
@@ -26,12 +26,12 @@ import com.agapple.mapping.process.ConvetorValueProcess;
  */
 public class BeanCopy {
 
-    private static final ValueProcess convetorValueProcess  = new ConvetorValueProcess();
+    private static final ValueProcess convetorValueProcess  = new ConvertorValueProcess();
     private static final ValueProcess classCastValueProcess = new ClassCastValueProcess();
     private BeanMappingObject         config;                                             // 对应的Bean Mapping配置
     private boolean                   needConvetor;                                       // 是否需要进行convetor转化
 
-    public BeanCopy(BeanMappingObject config, boolean needConvetor){
+    BeanCopy(BeanMappingObject config, boolean needConvetor){
         this.config = config;
         this.needConvetor = needConvetor;
     }

@@ -1,12 +1,14 @@
 package com.agapple.mapping.process.convetor;
 
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.apache.commons.lang.ObjectUtils;
 
 /**
  * convert转化helper类，注册一些默认的convertor
@@ -24,7 +26,18 @@ public class ConvertorHelper {
     public static final String              ALIAS_STRING_TO_CALENDAR_TIME = StringAndDateConvertor.StringToCalendarTime.class.getSimpleName();
     public static final String              ALIAS_STRING_TO_CALENDAR_DAY  = StringAndDateConvertor.StringToCalendarDay.class.getSimpleName();
 
+    // ommon对象范围：8种Primitive和对应的Java类型，BigDecimal, BigInteger
+    private static Map<Class, Object>       commonTypes                   = new HashMap<Class, Object>();
+    private static final Convertor          stringToCommon                = new StringAndCommonConvertor.StringToCommon();
+    private static final Convertor          commonToCommon                = new CommonAndCommonConvertor.CommonToCommon();
+    private static final Convertor          arrayToArray                  = new CollectionAndCollectionConvertor.ArrayToArray();
+    private static final Convertor          arrayToCollection             = new CollectionAndCollectionConvertor.ArrayToCollection();
+    private static final Convertor          collectionToArray             = new CollectionAndCollectionConvertor.CollectionToArray();
+    private static final Convertor          collectionToCollection        = new CollectionAndCollectionConvertor.CollectionToCollection();
+    private static final Convertor          objectToString                = new StringAndObjectConvetor.ObjectToString();
+
     private static volatile ConvertorHelper singleton                     = null;
+
     private ConvertorRepository             repository                    = null;
 
     public ConvertorHelper(){
@@ -66,17 +79,39 @@ public class ConvertorHelper {
         // 按照src->dest来取映射
         Convertor convertor = repository.getConvertor(src, dest);
 
+        // 处理下Array|Collection的映射
         // 如果src|dest是array类型，取一下Array.class的映射，因为默认数组处理的注册直接注册了Array.class
-        if (convertor == null && src.isArray()) {
-            convertor = repository.getConvertor(Array.class, dest);
-        }
-        if (convertor == null && dest.isArray()) {
-            convertor = repository.getConvertor(src, Array.class);
+        boolean isSrcArray = src.isArray();
+        boolean isDestArray = dest.isArray();
+        if (convertor == null && src.isArray() && dest.isArray()) {
+            convertor = arrayToArray;
+        } else {
+            boolean isSrcCollection = Collection.class.isAssignableFrom(src);
+            boolean isDestCollection = Collection.class.isAssignableFrom(dest);
+            if (convertor == null && isSrcArray && isDestCollection) {
+                convertor = arrayToCollection;
+            }
+            if (convertor == null && isDestArray && isSrcCollection) {
+                convertor = collectionToArray;
+            }
+            if (convertor == null && isSrcCollection && isDestCollection) {
+                convertor = collectionToCollection;
+            }
         }
 
         // 如果dest是string，获取一下object->string. (系统默认注册了一个Object.class -> String.class的转化)
         if (convertor == null && dest == String.class) {
-            convertor = repository.getConvertor(Object.class, String.class);
+            convertor = objectToString;
+        }
+
+        // 如果是其中一个是String类型，另一个是Common类型，进行特殊处理
+        if (convertor == null && src == String.class && commonTypes.containsKey(dest)) {
+            convertor = stringToCommon;
+        }
+
+        // 如果src/dest都是Common类型，进行特殊处理
+        if (convertor == null && commonTypes.containsKey(src) && commonTypes.containsKey(dest)) {
+            convertor = commonToCommon;
         }
 
         return convertor;
@@ -108,12 +143,8 @@ public class ConvertorHelper {
     // ======================= register处理 ======================
 
     public void initDefaultRegister() {
-        commonRegister();
-        arrayListRegister();
+        initCommonTypes();
         StringDateRegister();
-        // 注册Objet -> String对象处理
-        Convertor objectToString = new StringAndObjectConvetor.ObjectToString();
-        repository.registerConvertor(Object.class, String.class, objectToString);
     }
 
     private void StringDateRegister() {
@@ -142,36 +173,25 @@ public class ConvertorHelper {
         repository.registerConvertor(ALIAS_CALENDAR_TIME_TO_STRING, calendarTimeToString);
     }
 
-    private void arrayListRegister() {
-        // 注册array <-> list对象处理
-        Convertor arrayToList = new ArrayAndListConvertor.ArrayToList();
-        Convertor listToArray = new ArrayAndListConvertor.ListToArray();
-        repository.registerConvertor(Array.class, List.class, arrayToList);
-        repository.registerConvertor(List.class, Array.class, listToArray);
-    }
-
-    private void commonRegister() {
-        // 注册string->common对象处理
-        Convertor stringToCommon = new StringAndCommonConvertor.StringToCommon();
-        repository.registerConvertor(String.class, int.class, stringToCommon);
-        repository.registerConvertor(String.class, Integer.class, stringToCommon);
-        repository.registerConvertor(String.class, short.class, stringToCommon);
-        repository.registerConvertor(String.class, Short.class, stringToCommon);
-        repository.registerConvertor(String.class, long.class, stringToCommon);
-        repository.registerConvertor(String.class, Long.class, stringToCommon);
-        repository.registerConvertor(String.class, boolean.class, stringToCommon);
-        repository.registerConvertor(String.class, Boolean.class, stringToCommon);
-        repository.registerConvertor(String.class, byte.class, stringToCommon);
-        repository.registerConvertor(String.class, Byte.class, stringToCommon);
-        repository.registerConvertor(String.class, char.class, stringToCommon);
-        repository.registerConvertor(String.class, Character.class, stringToCommon);
-        repository.registerConvertor(String.class, float.class, stringToCommon);
-        repository.registerConvertor(String.class, Float.class, stringToCommon);
-        repository.registerConvertor(String.class, double.class, stringToCommon);
-        repository.registerConvertor(String.class, Double.class, stringToCommon);
-
-        repository.registerConvertor(String.class, BigDecimal.class, stringToCommon);
-        repository.registerConvertor(String.class, BigInteger.class, stringToCommon);
+    private void initCommonTypes() {
+        commonTypes.put(int.class, ObjectUtils.NULL);
+        commonTypes.put(Integer.class, ObjectUtils.NULL);
+        commonTypes.put(short.class, ObjectUtils.NULL);
+        commonTypes.put(Short.class, ObjectUtils.NULL);
+        commonTypes.put(long.class, ObjectUtils.NULL);
+        commonTypes.put(Long.class, ObjectUtils.NULL);
+        commonTypes.put(boolean.class, ObjectUtils.NULL);
+        commonTypes.put(Boolean.class, ObjectUtils.NULL);
+        commonTypes.put(byte.class, ObjectUtils.NULL);
+        commonTypes.put(Byte.class, ObjectUtils.NULL);
+        commonTypes.put(char.class, ObjectUtils.NULL);
+        commonTypes.put(Character.class, ObjectUtils.NULL);
+        commonTypes.put(float.class, ObjectUtils.NULL);
+        commonTypes.put(Float.class, ObjectUtils.NULL);
+        commonTypes.put(double.class, ObjectUtils.NULL);
+        commonTypes.put(Double.class, ObjectUtils.NULL);
+        commonTypes.put(BigDecimal.class, ObjectUtils.NULL);
+        commonTypes.put(BigInteger.class, ObjectUtils.NULL);
     }
 
     // ========================= setter / getter ===================
