@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.agapple.mapping.core.BeanMappingException;
 import com.agapple.mapping.core.config.BeanMappingField;
+import com.agapple.mapping.core.helper.ReflectionHelper;
 import com.agapple.mapping.core.process.ValueProcess;
 import com.agapple.mapping.core.process.ValueProcessInvocation;
 import com.agapple.mapping.process.convetor.Convertor;
@@ -28,10 +29,18 @@ public class ConvertorValueProcess implements ValueProcess {
         if (value != null && invocation.getContext().getCurrentField().isMapping() == false) {
             BeanMappingField currentField = invocation.getContext().getCurrentField();
             String customConvertorName = currentField.getConvertor();
-            Convertor convertor = null;
+            Convertor convertor = currentField.getConvertorRef();// 取上一次实例化后的convertor对象
+
+            if (convertor == null && currentField.getConvertorClass() != null) {
+                // 进行自定义convertor初始化
+                Class clazz = currentField.getConvertorClass();
+                convertor = (Convertor) ReflectionHelper.newInstance(clazz);
+                currentField.setConvertorRef(convertor);
+            }
+
             if (StringUtils.isNotEmpty(customConvertorName)) { // 判断是否有自定义的convertor
                 convertor = ConvertorHelper.getInstance().getConvertor(customConvertorName);
-            } else {
+            } else if (convertor == null) {
                 // srcClass针对直接使用script的情况，会出现为空，这时候需要依赖value.getClass进行转化
                 // 优先不选择使用value.getClass()的原因：原生类型会返回对应的Object类型，导出会出现不必要的convetor转化
                 Class srcClass = currentField.getSrcField().getClazz();

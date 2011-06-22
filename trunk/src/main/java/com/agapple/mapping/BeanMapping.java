@@ -10,6 +10,7 @@ import com.agapple.mapping.core.config.BeanMappingConfigHelper;
 import com.agapple.mapping.core.config.BeanMappingObject;
 import com.agapple.mapping.core.process.ValueProcess;
 import com.agapple.mapping.process.BeanCreatorValueProcess;
+import com.agapple.mapping.process.BehaviorValueProcess;
 import com.agapple.mapping.process.ConvertorValueProcess;
 import com.agapple.mapping.process.DebugValueProcess;
 import com.agapple.mapping.process.DefaultValueValueProcess;
@@ -36,6 +37,7 @@ public class BeanMapping {
     private static final ValueProcess convetorValueProcess     = new ConvertorValueProcess();
     private static final ValueProcess scriptValueProcess       = new ScriptValueProcess();
     private static final ValueProcess defaultValueValueProcess = new DefaultValueValueProcess();
+    private static final ValueProcess behaviorValueProcess     = new BehaviorValueProcess();
     private static final ValueProcess debugValueProcess        = new DebugValueProcess();
     private BeanMappingObject         config;                                                   // 对应的Bean Mapping配置
 
@@ -73,7 +75,7 @@ public class BeanMapping {
         param.setTargetRef(target);
         param.setConfig(this.config);
         param.setProcesses(Arrays.asList(scriptValueProcess, defaultValueValueProcess, convetorValueProcess,
-                                         beanCreatorValueProcess, debugValueProcess));
+                                         beanCreatorValueProcess, behaviorValueProcess, debugValueProcess));
         // 执行mapping处理
         BeanMappingExecutor.execute(param);
     }

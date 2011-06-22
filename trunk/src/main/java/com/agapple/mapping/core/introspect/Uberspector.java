@@ -34,8 +34,8 @@ public class Uberspector {
         return singleton;
     }
 
-    public BatchExecutor getBatchExecutor(Object obj, String[] identifier, Class[] args) {
-        final Class<?> clazz = obj.getClass();
+    public BatchExecutor getBatchExecutor(Class locatorClass, String[] identifier, Class[] args) {
+        final Class<?> clazz = locatorClass;
         // 尝试一下map处理
         MapBatchExecutor mBatchExecutor = new MapBatchExecutor(getIntrospector(), clazz, identifier);
         if (mBatchExecutor.isAlive()) {
@@ -54,8 +54,8 @@ public class Uberspector {
         return null;
     }
 
-    public GetExecutor getGetExecutor(Object obj, Object identifier) {
-        final Class<?> clazz = obj.getClass();
+    public GetExecutor getGetExecutor(Class locatorClass, Object identifier) {
+        final Class<?> clazz = locatorClass;
         final String property = (identifier == null ? null : identifier.toString());
 
         // 尝试一下bean处理
@@ -76,8 +76,8 @@ public class Uberspector {
                                        + identifier + "]");
     }
 
-    public SetExecutor getSetExecutor(Object obj, Object identifier, Class arg) {
-        final Class<?> clazz = obj.getClass();
+    public SetExecutor getSetExecutor(Class locatorClass, Object identifier, Class arg) {
+        final Class<?> clazz = locatorClass;
         final String property = (identifier == null ? null : identifier.toString());
 
         // 尝试一下bean处理

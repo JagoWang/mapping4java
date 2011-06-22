@@ -29,18 +29,7 @@ public class BeanMappingUtil {
      * @param target
      */
     public static void copy(Object src, Object target) throws BeanMappingException {
-        BeanCopy copy = BeanCopy.create(src.getClass(), target.getClass(), true);
-        copy.copy(src, target);
-    }
-
-    /**
-     * 简单的拷贝模式，不做属性转化处理，与PropertyUtils功能类似
-     * 
-     * @param src
-     * @param target
-     */
-    public static void simpleCopy(Object src, Object target) throws BeanMappingException {
-        BeanCopy copy = BeanCopy.create(src.getClass(), target.getClass(), false);
+        BeanCopy copy = BeanCopy.create(src.getClass(), target.getClass());
         copy.copy(src, target);
     }
 

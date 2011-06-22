@@ -28,7 +28,7 @@ public class ScriptValueProcess implements ValueProcess {
     @Override
     public Object process(Object value, ValueProcessInvocation invocation) throws BeanMappingException {
         BeanMappingField currentField = invocation.getContext().getCurrentField();
-        if (StringUtils.isNotEmpty(currentField.getScript()) && currentField.isMapping() == false) {
+        if (StringUtils.isNotEmpty(currentField.getScript())) {
             BeanMappingObject beanObject = invocation.getContext().getBeanObject();
 
             Map param = new HashMap();

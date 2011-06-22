@@ -8,7 +8,6 @@ import com.agapple.mapping.core.BeanMappingParam;
 import com.agapple.mapping.core.config.BeanMappingConfigHelper;
 import com.agapple.mapping.core.config.BeanMappingObject;
 import com.agapple.mapping.core.process.ValueProcess;
-import com.agapple.mapping.process.ClassCastValueProcess;
 import com.agapple.mapping.process.ConvertorValueProcess;
 
 /**
@@ -26,30 +25,20 @@ import com.agapple.mapping.process.ConvertorValueProcess;
  */
 public class BeanCopy {
 
-    private static final ValueProcess convetorValueProcess  = new ConvertorValueProcess();
-    private static final ValueProcess classCastValueProcess = new ClassCastValueProcess();
-    private BeanMappingObject         config;                                             // 对应的Bean Mapping配置
-    private boolean                   needConvetor;                                       // 是否需要进行convetor转化
+    private static final ValueProcess convetorValueProcess = new ConvertorValueProcess();
+    private BeanMappingObject         config;                                            // 对应的Bean Mapping配置
 
-    BeanCopy(BeanMappingObject config, boolean needConvetor){
+    BeanCopy(BeanMappingObject config){
         this.config = config;
-        this.needConvetor = needConvetor;
     }
 
     /**
      * 创建srcClass和targetClass之间的BeanCopy操作
      */
     public static BeanCopy create(Class srcClass, Class targetClass) {
-        return create(srcClass, targetClass, false);
-    }
-
-    /**
-     * 创建srcClass和targetClass之间的BeanCopy操作
-     */
-    public static BeanCopy create(Class srcClass, Class targetClass, boolean needConvetor) {
         BeanMappingObject config = BeanMappingConfigHelper.getInstance().getBeanMappingObject(srcClass, targetClass,
                                                                                               true);
-        return new BeanCopy(config, needConvetor);
+        return new BeanCopy(config);
     }
 
     /**
@@ -64,11 +53,8 @@ public class BeanCopy {
         param.setSrcRef(src);
         param.setTargetRef(target);
         param.setConfig(this.config);
-        if (this.needConvetor) {
-            param.setProcesses(Arrays.asList(convetorValueProcess));
-        } else {
-            param.setProcesses(Arrays.asList(classCastValueProcess));
-        }
+        param.setProcesses(Arrays.asList(convetorValueProcess));
+
         // 执行mapping处理
         BeanMappingExecutor.execute(param);
     }

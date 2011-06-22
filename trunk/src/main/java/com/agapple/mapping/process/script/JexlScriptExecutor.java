@@ -1,17 +1,23 @@
 package com.agapple.mapping.process.script;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.jexl2.Expression;
 import org.apache.commons.jexl2.JexlContext;
 import org.apache.commons.jexl2.JexlEngine;
 
 /**
+ * Jexl的script实现
+ * 
  * @author jianghang 2011-5-25 下午08:08:45
  */
 public class JexlScriptExecutor implements ScriptExecutor {
 
-    private static final int DEFAULT_CACHE_SIZE = 1000;
-    private JexlEngine       engine;
-    private int              cacheSize          = DEFAULT_CACHE_SIZE;
+    private static final int    DEFAULT_CACHE_SIZE = 1000;
+    private JexlEngine          engine;
+    private Map<String, Object> functions;
+    private int                 cacheSize          = DEFAULT_CACHE_SIZE;
 
     public JexlScriptExecutor(){
         initialize();
@@ -25,8 +31,10 @@ public class JexlScriptExecutor implements ScriptExecutor {
             cacheSize = DEFAULT_CACHE_SIZE;
         }
 
+        functions = new HashMap<String, Object>();
         engine = new JexlEngine();
         engine.setCache(cacheSize);
+        engine.setFunctions(functions); // 注册functions
     }
 
     /**
@@ -44,6 +52,11 @@ public class JexlScriptExecutor implements ScriptExecutor {
 
     public void setCacheSize(int cacheSize) {
         this.cacheSize = cacheSize;
+    }
+
+    @Override
+    public void addFunction(String funcKey, Class funcClass) {
+        functions.put(funcKey, funcClass);
     }
 
 }
