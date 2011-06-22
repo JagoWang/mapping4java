@@ -80,6 +80,13 @@ public class ValueProcessInvocation {
     }
 
     /**
+     * 判断当前是否处于debug模式
+     */
+    public boolean isDebug() {
+        return getContext().getBeanObject().getBehavior().isDebug();
+    }
+
+    /**
      * 判断一下是否处于get batch处理模式
      */
     private boolean isGetBatch() {

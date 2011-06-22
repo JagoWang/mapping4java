@@ -70,6 +70,10 @@ public class ReflectionHelper {
         aliasClassMap.put(alias_set_name, HashSet.class);
     }
 
+    public static void registerClassAlias(String alias, Class clazz) {
+        aliasClassMap.put(alias, clazz);
+    }
+
     public static PropertyDescriptor[] getPropertyDescriptors(Class clazz) {
         BeanInfo beanInfo = null;
         PropertyDescriptor[] descriptors = null;

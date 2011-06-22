@@ -1,8 +1,3 @@
-/*
- * Copyright 1999-2004 Alibaba.com All right reserved. This software is the confidential and proprietary information of
- * Alibaba.com ("Confidential Information"). You shall not disclose such Confidential Information and shall use it only
- * in accordance with the terms of the license agreement you entered into with Alibaba.com.
- */
 package com.agapple.mapping.performace;
 
 import java.util.HashMap;
@@ -20,7 +15,7 @@ import com.agapple.mapping.BeanMap;
 public class MapPerformance extends AbstractPerformance {
 
     public static void main(String args[]) throws Exception {
-        final int testCount = 1000 * 100 * 5;
+        final int testCount = 1000 * 100 * 20;
         CopyBean bean = getBean();
         // BeanMap测试
         final CopyBean beanMapTarget = new CopyBean();

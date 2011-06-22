@@ -5,11 +5,12 @@ import java.util.Arrays;
 import com.agapple.mapping.core.BeanMappingException;
 import com.agapple.mapping.core.BeanMappingExecutor;
 import com.agapple.mapping.core.BeanMappingParam;
+import com.agapple.mapping.core.builder.BeanMappingBuilder;
 import com.agapple.mapping.core.config.BeanMappingConfigHelper;
 import com.agapple.mapping.core.config.BeanMappingObject;
 import com.agapple.mapping.core.process.ValueProcess;
 import com.agapple.mapping.process.BeanCreatorValueProcess;
-import com.agapple.mapping.process.ConvetorValueProcess;
+import com.agapple.mapping.process.ConvertorValueProcess;
 import com.agapple.mapping.process.DebugValueProcess;
 import com.agapple.mapping.process.DefaultValueValueProcess;
 import com.agapple.mapping.process.ScriptValueProcess;
@@ -32,14 +33,18 @@ import com.agapple.mapping.process.ScriptValueProcess;
 public class BeanMapping {
 
     private static final ValueProcess beanCreatorValueProcess  = new BeanCreatorValueProcess();
-    private static final ValueProcess convetorValueProcess     = new ConvetorValueProcess();
+    private static final ValueProcess convetorValueProcess     = new ConvertorValueProcess();
     private static final ValueProcess scriptValueProcess       = new ScriptValueProcess();
     private static final ValueProcess defaultValueValueProcess = new DefaultValueValueProcess();
     private static final ValueProcess debugValueProcess        = new DebugValueProcess();
     private BeanMappingObject         config;                                                   // 对应的Bean Mapping配置
 
-    public BeanMapping(BeanMappingObject config){
+    BeanMapping(BeanMappingObject config){
         this.config = config;
+    }
+
+    public BeanMapping(BeanMappingBuilder builder){
+        this.config = builder.get();
     }
 
     /**
@@ -47,6 +52,11 @@ public class BeanMapping {
      */
     public static BeanMapping create(Class srcClass, Class targetClass) {
         BeanMappingObject config = BeanMappingConfigHelper.getInstance().getBeanMappingObject(srcClass, targetClass);
+        if (config == null) {
+            throw new BeanMappingException("can not found mapping config for srcClass[" + srcClass.toString()
+                                           + "] targetClass[" + targetClass + "]");
+        }
+
         return new BeanMapping(config);
     }
 
@@ -62,8 +72,8 @@ public class BeanMapping {
         param.setSrcRef(src);
         param.setTargetRef(target);
         param.setConfig(this.config);
-        param.setProcesses(Arrays.asList(scriptValueProcess, defaultValueValueProcess, beanCreatorValueProcess,
-                                         convetorValueProcess, debugValueProcess));
+        param.setProcesses(Arrays.asList(scriptValueProcess, defaultValueValueProcess, convetorValueProcess,
+                                         beanCreatorValueProcess, debugValueProcess));
         // 执行mapping处理
         BeanMappingExecutor.execute(param);
     }

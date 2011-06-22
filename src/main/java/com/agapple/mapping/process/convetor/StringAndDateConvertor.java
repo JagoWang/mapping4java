@@ -21,7 +21,7 @@ public class StringAndDateConvertor {
     /**
      * string(格式为："2010-10-01") -> Calendar
      */
-    public static class StringToDateDay implements Convertor {
+    public static class StringToDateDay extends AbastactConvertor {
 
         @Override
         public Object convert(Object src, Class destClass) {
@@ -40,7 +40,7 @@ public class StringAndDateConvertor {
     /**
      * string(格式为："2010-10-01 00:00:00") -> Date
      */
-    public static class StringToDateTime implements Convertor {
+    public static class StringToDateTime extends AbastactConvertor {
 
         @Override
         public Object convert(Object src, Class destClass) {
@@ -60,7 +60,7 @@ public class StringAndDateConvertor {
     /**
      * Date -> string(格式为："2010-10-01")
      */
-    public static class DateDayToString implements Convertor {
+    public static class DateDayToString extends AbastactConvertor {
 
         @Override
         public Object convert(Object src, Class destClass) {
@@ -76,7 +76,7 @@ public class StringAndDateConvertor {
     /**
      * Date -> string(格式为："2010-10-01 00:00:00")
      */
-    public static class DateTimeToString implements Convertor {
+    public static class DateTimeToString extends AbastactConvertor {
 
         @Override
         public Object convert(Object src, Class destClass) {
@@ -92,7 +92,7 @@ public class StringAndDateConvertor {
     /**
      * string(格式为："2010-10-01") -> Calendar
      */
-    public static class StringToCalendarDay implements Convertor {
+    public static class StringToCalendarDay extends AbastactConvertor {
 
         @Override
         public Object convert(Object src, Class destClass) {
@@ -110,7 +110,7 @@ public class StringAndDateConvertor {
     /**
      * string(格式为："2010-10-01 00:00:00") -> Calendar
      */
-    public static class StringToCalendarTime implements Convertor {
+    public static class StringToCalendarTime extends AbastactConvertor {
 
         @Override
         public Object convert(Object src, Class destClass) {
@@ -128,7 +128,7 @@ public class StringAndDateConvertor {
     /**
      * Calendar -> string(格式为："2010-10-01")
      */
-    public static class CalendarDayToString implements Convertor {
+    public static class CalendarDayToString extends AbastactConvertor {
 
         @Override
         public Object convert(Object src, Class destClass) {
@@ -144,7 +144,7 @@ public class StringAndDateConvertor {
     /**
      * Calendar -> string(格式为："2010-10-01 00:00:00")
      */
-    public static class CalendarTimeToString implements Convertor {
+    public static class CalendarTimeToString extends AbastactConvertor {
 
         @Override
         public Object convert(Object src, Class destClass) {

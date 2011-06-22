@@ -14,16 +14,19 @@ public class BeanMappingConfigHelper {
     private static volatile BeanMappingConfigHelper singleton      = null;
     private BeanMappingConfigRespository            repository     = null; // 基于文件的配置
     private BeanMappingConfigRespository            autoRepository = null; // 自动注册的配置
+    private volatile BeanMappingBehavior            globalBehavior = null; // 定义为voolatile，允许动态修改
 
     public BeanMappingConfigHelper(){
         repository = new BeanMappingConfigRespository();
         autoRepository = new BeanMappingConfigRespository();
+        globalBehavior = new BeanMappingBehavior();
     }
 
     public BeanMappingConfigHelper(BeanMappingConfigRespository repository){
         // 允许传入自定义仓库
         this.repository = repository;
         autoRepository = new BeanMappingConfigRespository();
+        globalBehavior = new BeanMappingBehavior();
     }
 
     /**
@@ -76,7 +79,7 @@ public class BeanMappingConfigHelper {
     }
 
     /**
-     * 直接注册一个解析号的{@linkplain BeanMappingObject}
+     * 直接注册一个解析好的{@linkplain BeanMappingObject}
      */
     public void register(BeanMappingObject object) {
         repository.register(object);
@@ -112,4 +115,13 @@ public class BeanMappingConfigHelper {
     public void setRepository(BeanMappingConfigRespository repository) {
         this.repository = repository;
     }
+
+    public BeanMappingBehavior getGlobalBehavior() {
+        return globalBehavior;
+    }
+
+    public void setGlobalBehavior(BeanMappingBehavior globalBehavior) {
+        this.globalBehavior = globalBehavior;
+    }
+
 }

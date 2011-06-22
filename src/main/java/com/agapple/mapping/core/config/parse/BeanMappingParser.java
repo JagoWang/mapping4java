@@ -1,4 +1,4 @@
-package com.agapple.mapping.core.config;
+package com.agapple.mapping.core.config.parse;
 
 import java.beans.PropertyDescriptor;
 import java.io.InputStream;
@@ -9,10 +9,14 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.agapple.mapping.core.BeanMappingException;
+import com.agapple.mapping.core.config.BeanMappingBehavior;
+import com.agapple.mapping.core.config.BeanMappingConfigHelper;
+import com.agapple.mapping.core.config.BeanMappingField;
+import com.agapple.mapping.core.config.BeanMappingFieldAttributes;
+import com.agapple.mapping.core.config.BeanMappingObject;
 import com.agapple.mapping.core.helper.ReflectionHelper;
 import com.agapple.mapping.core.helper.XmlHelper;
 
@@ -40,6 +44,7 @@ public class BeanMappingParser {
         return result;
     }
 
+    // 自动解析下src/target匹配的属性
     public static List<BeanMappingObject> parseMapping(Class src, Class target) throws BeanMappingException {
         List<BeanMappingObject> result = new ArrayList<BeanMappingObject>(2);
         PropertyDescriptor[] targetPds = ReflectionHelper.getPropertyDescriptors(target);
@@ -48,6 +53,7 @@ public class BeanMappingParser {
         object.setSrcClass(src);
         object.setTargetClass(target);
         object.setBatch(true);
+        BeanMappingBehavior globalBehavior = BeanMappingConfigHelper.getInstance().getGlobalBehavior();
         List<BeanMappingField> fields = new ArrayList<BeanMappingField>();
         for (PropertyDescriptor targetPd : targetPds) {
             String property = targetPd.getName();
@@ -58,15 +64,22 @@ public class BeanMappingParser {
 
             if (targetPd.getWriteMethod() != null && srcPd.getReadMethod() != null) {
                 BeanMappingField field = new BeanMappingField();
-                field.setSrcName(property);
-                field.setTargetName(property);
-                field.setTargetClass(targetPd.getPropertyType());
-                field.setSrcClass(srcPd.getPropertyType());
+                BeanMappingFieldAttributes srcFieldAttribute = new BeanMappingFieldAttributes();
+                srcFieldAttribute.setName(property);
+                srcFieldAttribute.setClazz(srcPd.getPropertyType());
+                BeanMappingFieldAttributes targetFieldAttribute = new BeanMappingFieldAttributes();
+                targetFieldAttribute.setName(property);
+                targetFieldAttribute.setClazz(targetPd.getPropertyType());
+                // 添加记录
+                field.setSrcField(srcFieldAttribute);
+                field.setTargetField(targetFieldAttribute);
+                field.setBehavior(globalBehavior);
                 fields.add(field);
             }
 
         }
         object.setBeanFields(fields);
+        object.setBehavior(globalBehavior);// 设置为global
         result.add(object);
         if (object.isReversable()) {
             BeanMappingObject reverseObject = reverse(object);
@@ -77,6 +90,7 @@ public class BeanMappingParser {
         return result;
     }
 
+    // 解析class的属性为BeanMapping对象
     public static List<BeanMappingObject> parseMapMapping(Class src) throws BeanMappingException {
         List<BeanMappingObject> result = new ArrayList<BeanMappingObject>(2);
         PropertyDescriptor[] targetPds = ReflectionHelper.getPropertyDescriptors(src);
@@ -85,18 +99,24 @@ public class BeanMappingParser {
         object.setTargetClass(HashMap.class);
         object.setBatch(true);
         List<BeanMappingField> fields = new ArrayList<BeanMappingField>();
+        BeanMappingBehavior globalBehavior = BeanMappingConfigHelper.getInstance().getGlobalBehavior();
         for (PropertyDescriptor targetPd : targetPds) {
             if (targetPd.getWriteMethod() != null && targetPd.getReadMethod() != null) {
                 BeanMappingField field = new BeanMappingField();
-                field.setSrcName(targetPd.getName());
-                field.setSrcClass(targetPd.getPropertyType());
-                field.setTargetName(targetPd.getName());
-                field.setTargetClass(targetPd.getPropertyType());
+                BeanMappingFieldAttributes srcFieldAttribute = new BeanMappingFieldAttributes();
+                srcFieldAttribute.setName(targetPd.getName());
+                srcFieldAttribute.setClazz(targetPd.getPropertyType());
+                BeanMappingFieldAttributes targetFieldAttribute = new BeanMappingFieldAttributes();
+                targetFieldAttribute.setName(targetPd.getName());
+                targetFieldAttribute.setClazz(targetPd.getPropertyType());
+                field.setSrcField(srcFieldAttribute);
+                field.setTargetField(targetFieldAttribute);
+                field.setBehavior(globalBehavior);// 设置为global
                 fields.add(field);
             }
-
         }
         object.setBeanFields(fields);
+        object.setBehavior(globalBehavior);// 设置为global
         result.add(object);
         if (object.isReversable()) {
             BeanMappingObject reverseObject = reverse(object);
@@ -107,6 +127,7 @@ public class BeanMappingParser {
         return result;
     }
 
+    // 反转处理BeanMappingObject对象
     private static BeanMappingObject reverse(BeanMappingObject object) {
         BeanMappingObject newObject = new BeanMappingObject();
         // 反转一下属性，主要是一些srcName,srcClass等
@@ -116,16 +137,23 @@ public class BeanMappingParser {
         newObject.setBatch(object.isBatch());
         newObject.setSrcKey(object.getSrcKey());
         newObject.setTargetKey(object.getTargetKey());
-
+        newObject.setBehavior(object.getBehavior());
         List<BeanMappingField> fields = newObject.getBeanFields();
         for (BeanMappingField field : object.getBeanFields()) {
+            // 倒转一下
             BeanMappingField newField = new BeanMappingField();
-            newField.setSrcName(field.getTargetName());
-            newField.setTargetName(field.getSrcName());
-            newField.setSrcClass(field.getTargetClass());
-            newField.setTargetClass(field.getSrcClass());
+            BeanMappingFieldAttributes srcFieldAttribute = new BeanMappingFieldAttributes();
+            srcFieldAttribute.setName(field.getTargetField().getName());
+            srcFieldAttribute.setClazz(field.getTargetField().getClazz());
+            BeanMappingFieldAttributes targetFieldAttribute = new BeanMappingFieldAttributes();
+            targetFieldAttribute.setName(field.getSrcField().getName());
+            targetFieldAttribute.setClazz(field.getSrcField().getClazz());
+
+            newField.setSrcField(srcFieldAttribute);
+            newField.setTargetField(targetFieldAttribute);
             newField.setDefaultValue(field.getDefaultValue());
             newField.setMapping(field.isMapping());
+            newField.setBehavior(field.getBehavior());
             if (StringUtils.isNotEmpty(field.getConvertor()) || StringUtils.isNotEmpty(field.getScript())) {
                 object.setReversable(false);// 强制设置为false
                 return null;
@@ -153,107 +181,38 @@ public class BeanMappingParser {
                                                 Thread.currentThread().getContextClassLoader().getResourceAsStream(
                                                                                                                    MAPPING_SCHEMA));
         Element root = doc.getDocumentElement();
+
+        NodeList globalNodeList = root.getElementsByTagName("global-configurations");
+        if (globalNodeList.getLength() > 1) {
+            throw new BeanMappingException("global-configurations is exceed one node!");
+        }
+
+        BeanMappingBehavior globalBehavior = BeanMappingConfigHelper.getInstance().getGlobalBehavior();
+        if (globalNodeList.getLength() == 1) {
+            globalBehavior = BeanMappingBehaviorParse.parse(globalNodeList.item(0), globalBehavior);
+            BeanMappingConfigHelper.getInstance().setGlobalBehavior(globalBehavior);
+        }
+
+        NodeList classAliasNodeList = root.getElementsByTagName("class-alias-configurations");
+        for (int i = 0; i < classAliasNodeList.getLength(); i++) {
+            ClassAliasParse.parseAndRegister(classAliasNodeList.item(i));
+        }
+
+        NodeList convetorNodeList = root.getElementsByTagName("convetors-configurations");
+        for (int i = 0; i < convetorNodeList.getLength(); i++) {
+            ConvertorParse.parseAndRegister(convetorNodeList.item(i));
+        }
+
         NodeList nodeList = root.getElementsByTagName("bean-mapping");
         List<BeanMappingObject> mappings = new ArrayList<BeanMappingObject>();
         // 解析BeanMappingObject属性
         for (int i = 0; i < nodeList.getLength(); i++) {
-            BeanMappingObject config = new BeanMappingObject();
-            Node node = nodeList.item(i);
-            // mapping source class
-            Node srcNode = node.getAttributes().getNamedItem("srcClass");
-            // mapping target class
-            Node targetNode = node.getAttributes().getNamedItem("targetClass");
-
-            if (srcNode == null || targetNode == null) {
-                throw new BeanMappingException("Parse error for bean-mapping srcClass or targetClass is null");
-            }
-            Node srcKeyNode = node.getAttributes().getNamedItem("srcKey");
-            Node targetKeyNode = node.getAttributes().getNamedItem("targetKey");
-            // 设置reversable
-            Node reversableNode = node.getAttributes().getNamedItem("reversable");
-            Node batchNode = node.getAttributes().getNamedItem("batch");
-
-            String src = srcNode.getNodeValue();
-            String target = targetNode.getNodeValue();
-            config.setSrcClass(ReflectionHelper.forName(src));
-            config.setTargetClass(ReflectionHelper.forName(target));
-            if (srcKeyNode != null) {
-                config.setSrcKey(srcKeyNode.getNodeValue());
-            }
-            if (targetNode != null) {
-                config.setTargetKey(targetKeyNode.getNodeValue());
-            }
-            if (reversableNode != null) {
-                config.setReversable(Boolean.valueOf(reversableNode.getNodeValue()));
-            }
-            if (batchNode != null) {
-                config.setBatch(Boolean.valueOf(batchNode.getNodeValue()));
-            }
-
-            // 解析bean fields
-            List<BeanMappingField> beanFields = parseMappingField(node);
-            config.setBeanFields(beanFields);
+            BeanMappingObject config = BeanMappingParse.parse(nodeList.item(i), globalBehavior);
             // 添加到返回结果
             mappings.add(config);
         }
 
         return mappings;
-    }
-
-    // 解析一下field-mapping
-    private static List<BeanMappingField> parseMappingField(Node beanNode) {
-        NodeList nodeList = beanNode.getChildNodes();
-        List<BeanMappingField> beanFields = new ArrayList<BeanMappingField>(10);
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            BeanMappingField beanField = new BeanMappingField();
-            Node node = nodeList.item(i);
-            if ("field-mapping".equals(node.getNodeName())) {
-                Node srcNameNode = node.getAttributes().getNamedItem("srcName");
-                Node srcClassNode = node.getAttributes().getNamedItem("srcClass");
-                Node targetNameNode = node.getAttributes().getNamedItem("targetName");
-                Node targetClassNode = node.getAttributes().getNamedItem("targetClass");
-                Node defaultValueNode = node.getAttributes().getNamedItem("defaultValue");
-                Node convetorNode = node.getAttributes().getNamedItem("convetor");
-                Node scriptNode = node.getAttributes().getNamedItem("script");
-                if (scriptNode == null && srcNameNode == null) {
-                    throw new BeanMappingException("srcName or script is requied");
-                }
-                if (targetNameNode == null) {
-                    throw new BeanMappingException("targetName is requied");
-                }
-
-                if (srcNameNode != null) {
-                    beanField.setSrcName(srcNameNode.getNodeValue());
-                }
-                if (srcClassNode != null) {
-                    beanField.setSrcClass(ReflectionHelper.forName(srcClassNode.getNodeValue()));
-                }
-                if (targetNameNode != null) {
-                    beanField.setTargetName(targetNameNode.getNodeValue());
-                }
-                if (targetClassNode != null) {
-                    beanField.setTargetClass(ReflectionHelper.forName(targetClassNode.getNodeValue()));
-                }
-                if (defaultValueNode != null) {
-                    beanField.setDefaultValue(defaultValueNode.getNodeValue());
-                }
-                if (convetorNode != null) {
-                    beanField.setConvertor(convetorNode.getNodeValue());
-                }
-                if (scriptNode != null) {
-                    beanField.setScript(scriptNode.getNodeValue());
-                }
-                // 处理下mapping
-                Node mappingNode = node.getAttributes().getNamedItem("mapping");
-                if (mappingNode != null) {
-                    beanField.setMapping(Boolean.valueOf(mappingNode.getNodeValue()));
-                }
-
-                beanFields.add(beanField);
-            }
-        }
-        return beanFields;
-
     }
 
 }

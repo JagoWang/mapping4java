@@ -20,7 +20,7 @@ public class BeanCreatorValueProcess implements ValueProcess {
             if (currentField.isMapping()) {
                 // 判断下是否在处理嵌套的mapping
                 // 这里的value代表从get取出来的嵌套对象，如果有值，说明在目标对象上也需要创建targetClass对象进行复制
-                value = ReflectionHelper.newInstance(invocation.getContext().getCurrentField().getTargetClass());
+                value = ReflectionHelper.newInstance(invocation.getContext().getCurrentField().getTargetField().getClazz());
             }
         }
 

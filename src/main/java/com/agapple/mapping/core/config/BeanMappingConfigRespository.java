@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.agapple.mapping.core.builder.BeanMappingBuilder;
+import com.agapple.mapping.core.config.parse.BeanMappingParser;
+
 /**
  * BeanMappingObject对应的仓库，解析一次Object后会进行cache
  * 
@@ -20,6 +23,16 @@ public class BeanMappingConfigRespository {
      */
     public BeanMappingObject getBeanMappingObject(Class src, Class target) {
         return mappings.get(mapperObjectName(src, target));
+    }
+
+    /**
+     * 直接注册一个解析好的{@linkplain BeanMappingBuilder}
+     */
+    public void register(BeanMappingBuilder builder) {
+        if (builder != null) {
+            BeanMappingObject object = builder.get();
+            mappings.put(mapperObjectName(object.getSrcClass(), object.getTargetClass()), object);
+        }
     }
 
     /**

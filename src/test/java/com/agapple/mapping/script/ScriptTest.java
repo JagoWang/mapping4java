@@ -1,4 +1,4 @@
-package com.agapple.mapping;
+package com.agapple.mapping.script;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,6 +7,7 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
+import com.agapple.mapping.BeanMappingUtil;
 import com.agapple.mapping.core.config.BeanMappingConfigHelper;
 import com.agapple.mapping.object.SrcMappingObject;
 

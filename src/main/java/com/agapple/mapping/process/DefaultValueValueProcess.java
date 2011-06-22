@@ -20,13 +20,14 @@ public class DefaultValueValueProcess implements ValueProcess {
     public Object process(Object value, ValueProcessInvocation invocation) throws BeanMappingException {
         // 处理下自己的业务
         BeanMappingField currentField = invocation.getContext().getCurrentField();
-        if (value == null && StringUtils.isNotEmpty(currentField.getDefaultValue())) {
-            if (currentField.getSrcClass() != null) {// 有指定对应的SrcClass
+        if (value == null && StringUtils.isNotEmpty(currentField.getDefaultValue())
+            && currentField.isMapping() == false) {
+            if (currentField.getSrcField().getClazz() != null) {// 有指定对应的SrcClass
                 Convertor convertor = ConvertorHelper.getInstance().getConvertor(String.class,
-                                                                                 currentField.getSrcClass());
+                                                                                 currentField.getSrcField().getClazz());
                 if (convertor != null) {
                     // 先对String字符串进行一次转化
-                    value = convertor.convert(currentField.getDefaultValue(), currentField.getSrcClass());
+                    value = convertor.convert(currentField.getDefaultValue(), currentField.getSrcField().getClazz());
                 }
             }
 

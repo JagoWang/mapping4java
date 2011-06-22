@@ -1,6 +1,7 @@
 package com.agapple.mapping;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -151,12 +152,14 @@ public class BeanMappingTest extends TestCase {
         Map targetRef = new HashMap();// 测试一下mapping到一个HashMap对象
         BeanMappingUtil.mapping(srcRef, targetRef);
         assertNull(targetRef.get("mapping"));
-        assertEquals(targetRef.get("integerValue"), srcRef.getIntegerValue());
+        // 测试指定了targetClass="BigInteger"
+        assertEquals(((BigInteger) targetRef.get("integerValue")).intValue(), srcRef.getIntegerValue().intValue());
 
         SrcMappingObject newSrcRef = new SrcMappingObject();
         BeanMappingUtil.mapping(targetRef, newSrcRef); // 反过来再mapping一次
         assertNull(newSrcRef.getMapping());
-        assertEquals(targetRef.get("integerValue"), newSrcRef.getIntegerValue());
+        // 测试指定了targetClass="BigInteger"
+        assertEquals(((BigInteger) targetRef.get("integerValue")).intValue(), newSrcRef.getIntegerValue().intValue());
     }
 
     @Test
@@ -179,6 +182,7 @@ public class BeanMappingTest extends TestCase {
         assertNotNull(newSrcRef.getMapping());
         assertEquals(((Map) targetRef.get("mapping")).get("value"),
                      newSrcRef.getMapping().getBigDecimalValue().toString());
-        assertEquals(targetRef.get("integerValue"), newSrcRef.getIntegerValue());
+        // 测试指定了targetClass="BigInteger"
+        assertEquals(((BigInteger) targetRef.get("integerValue")).intValue(), newSrcRef.getIntegerValue().intValue());
     }
 }
