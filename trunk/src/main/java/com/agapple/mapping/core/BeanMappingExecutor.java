@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.agapple.mapping.core.config.BeanMappingBehavior;
 import com.agapple.mapping.core.config.BeanMappingConfigHelper;
 import com.agapple.mapping.core.config.BeanMappingField;
 import com.agapple.mapping.core.config.BeanMappingObject;
@@ -80,6 +81,11 @@ public class BeanMappingExecutor {
             return executor;
         }
 
+        if (canBatch(config.getBehavior()) == false) {
+            config.setBatch(false);
+            return null;
+        }
+
         // 处理target操作数据搜集
         List<String> targetFields = new ArrayList<String>();
         List<Class> targetArgs = new ArrayList<Class>();
@@ -91,8 +97,14 @@ public class BeanMappingExecutor {
                 return null; // 直接不予处理
             }
 
-            if (beanField.getTargetField().getLocatorClass() != locatorClass) {
+            Class selfLocatorClass = beanField.getTargetField().getLocatorClass();
+            if (selfLocatorClass != null && selfLocatorClass != locatorClass) {
                 config.setBatch(false);// 直接改写为false，发现locatorClass存在于不同的class
+            }
+
+            if (canBatch(beanField.getBehavior()) == false) {
+                config.setBatch(false);
+                return null;
             }
             // 搜集信息
             targetFields.add(targetField);
@@ -118,6 +130,11 @@ public class BeanMappingExecutor {
             return executor;
         }
 
+        if (canBatch(config.getBehavior()) == false) {
+            config.setBatch(false);
+            return null;
+        }
+
         List<String> srcFields = new ArrayList<String>();
         List<Class> srcArgs = new ArrayList<Class>();
         // 处理src操作数据搜集
@@ -129,9 +146,16 @@ public class BeanMappingExecutor {
                 return null; // 直接不予处理
             }
 
-            if (beanField.getSrcField().getLocatorClass() != locatorClass) {
+            Class selfLocatorClass = beanField.getSrcField().getLocatorClass();
+            if (selfLocatorClass != null && selfLocatorClass != locatorClass) {
                 config.setBatch(false);// 直接改写为false，发现locatorClass存在于不同的class
             }
+
+            if (canBatch(beanField.getBehavior()) == false) {
+                config.setBatch(false);
+                return null;
+            }
+
             // 搜集信息
             srcFields.add(srcField);
             srcArgs.add(srcArg);
@@ -291,6 +315,13 @@ public class BeanMappingExecutor {
         newParam.setProcesses(param.getProcesses());
         // 进行递归调用
         execute(newParam);
+    }
+
+    /**
+     * 判断一下是否可以执行batch优化
+     */
+    private static boolean canBatch(BeanMappingBehavior behavior) {
+        return behavior.isMappingEmptyStrings() && behavior.isMappingNullValue();
     }
 
     /**
