@@ -13,6 +13,7 @@
             	<xs:element ref="global-configurations" maxOccurs="1" />
             	<xs:element ref="convetors-configurations" maxOccurs="1" />
             	<xs:element ref="class-alias-configurations" maxOccurs="1" />
+            	<xs:element ref="function-class-configurations" maxOccurs="1" />
             	<xs:element ref="bean-mapping" maxOccurs="unbounded" />
             </xs:choice>
         </xs:complexType>
@@ -87,6 +88,27 @@
         </xs:annotation>
         <xs:complexType>
         	<xs:attribute name="alias" type="xs:string" use="required" />
+        	<xs:attribute name="class" type="xs:string" use="required" />
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="function-class-configurations">
+        <xs:annotation>
+        	<xs:documentation>function class configs</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+       		 <xs:choice>
+    			<xs:element ref="functionClass" maxOccurs="unbounded" />
+    		</xs:choice>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="functionClass">
+        <xs:annotation>
+        	<xs:documentation>function class</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+        	<xs:attribute name="name" type="xs:string" use="required" />
         	<xs:attribute name="class" type="xs:string" use="required" />
     	</xs:complexType>
     </xs:element>

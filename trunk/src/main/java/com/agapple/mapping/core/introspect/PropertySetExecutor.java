@@ -8,22 +8,24 @@ import net.sf.cglib.reflect.FastMethod;
 import com.agapple.mapping.core.BeanMappingException;
 
 /**
+ * pojo bean属性的set操作
+ * 
  * @author jianghang 2011-5-25 下午01:04:50
  */
 public class PropertySetExecutor extends AbstractExecutor implements SetExecutor {
 
-    private final String property;
+    private static FastMethod method;
 
     public PropertySetExecutor(Introspector is, Class<?> clazz, String identifier, Class arg){
-        super(clazz, discover(is, clazz, identifier, arg));
-        property = identifier;
+        super(clazz, identifier);
+        method = discover(is, clazz, identifier, arg);
     }
 
     @Override
     public Object invoke(Object key, Object value) throws BeanMappingException {
         Object[] pargs = { value };
         try {
-            method.getJavaMethod().invoke(key, pargs);
+            method.invoke(key, pargs);
             return value;
         } catch (Exception e) {
             throw new BeanMappingException(e);
@@ -31,8 +33,8 @@ public class PropertySetExecutor extends AbstractExecutor implements SetExecutor
     }
 
     @Override
-    public Object getTargetProperty() {
-        return property;
+    public boolean isAlive() {
+        return method != null;
     }
 
     public static FastMethod discover(Introspector is, Class<?> clazz, String property, Class arg) {
@@ -69,4 +71,9 @@ public class PropertySetExecutor extends AbstractExecutor implements SetExecutor
         }
 
     }
+
+    public FastMethod getMethod() {
+        return method;
+    }
+
 }

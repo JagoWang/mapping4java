@@ -13,11 +13,9 @@ import com.agapple.mapping.core.config.BeanMappingConfigHelper;
 import com.agapple.mapping.core.config.BeanMappingField;
 import com.agapple.mapping.core.config.BeanMappingObject;
 import com.agapple.mapping.core.helper.BatchObjectHolder;
-import com.agapple.mapping.core.introspect.AbstractExecutor;
 import com.agapple.mapping.core.introspect.BatchExecutor;
 import com.agapple.mapping.core.introspect.GetExecutor;
 import com.agapple.mapping.core.introspect.MapGetExecutor;
-import com.agapple.mapping.core.introspect.MapSetExecutor;
 import com.agapple.mapping.core.introspect.SetExecutor;
 import com.agapple.mapping.core.introspect.Uberspector;
 import com.agapple.mapping.core.process.ValueProcessContext;
@@ -208,27 +206,20 @@ public class BeanMappingExecutor {
                                                                        param.getProcesses());
         Object getResult = invocation.getInitialValue();
         // 设置下srcClass
+        Class getResultClass = (getResult != null) ? getResult.getClass() : null;
         if (getExecutor != null && beanField.getSrcField().getClazz() == null) {
-            // 设置为自动提取的targetClasss
-            if (getExecutor instanceof MapGetExecutor) {
-                if (getResult != null) {
-                    beanField.getSrcField().setClazz(getResult.getClass());// 优先设置为getResult的class对象
-                }
-            } else {
-                beanField.getSrcField().setClazz(getSrcClass(getExecutor)); // 获取getExecutor方法的返回结果类型
-            }
+            beanField.getSrcField().setClazz(
+                                             Uberspector.getInstance().getGetClass(getExecutor,
+                                                                                   param.getSrcRef().getClass(),
+                                                                                   getResultClass));
         }
 
         // 设置下targetClass
         if (setExecutor != null && beanField.getTargetField().getClazz() == null) {
-            // 设置为自动提取的targetClasss
-            if (setExecutor instanceof MapSetExecutor) {
-                if (getResult != null) {
-                    beanField.getTargetField().setClazz(getResult.getClass());// 优先设置为getResult的class对象
-                }
-            } else {
-                beanField.getTargetField().setClazz(getTargetClass(setExecutor));
-            }
+            beanField.getTargetField().setClazz(
+                                                Uberspector.getInstance().getSetClass(setExecutor,
+                                                                                      param.getTargetRef().getClass(),
+                                                                                      getResultClass));
         }
         // 开始ValueProcess流程
         invocation.proceed(getResult);
@@ -271,23 +262,24 @@ public class BeanMappingExecutor {
         ValueProcessInvocation invocation = new ValueProcessInvocation(getExecutor, setExecutor, valueContext,
                                                                        param.getProcesses());
         Object srcRef = invocation.getInitialValue();
+
+        // 设置下srcClass
+        Class getResultClass = (srcRef != null) ? srcRef.getClass() : null;
         // 设置下srcClass
         if (getExecutor != null && beanField.getSrcField().getClazz() == null) {
-            // 设置为自动提取的targetClasss
-            if (getExecutor instanceof MapGetExecutor) {
-                if (srcRef != null) {
-                    beanField.getSrcField().setClazz(srcRef.getClass());// 优先设置为getResult的class对象
-                }
-            } else {
-                beanField.getSrcField().setClazz(getSrcClass(getExecutor));
-            }
+            beanField.getSrcField().setClazz(
+                                             Uberspector.getInstance().getGetClass(getExecutor,
+                                                                                   param.getSrcRef().getClass(),
+                                                                                   getResultClass));
         }
 
         if (setExecutor != null && beanField.getTargetField().getClazz() == null) {
-            if (setExecutor instanceof MapSetExecutor) {
-                beanField.getTargetField().setClazz(HashMap.class);// 针对Map处理,嵌套代码的复制默认设置为HashMap.class
-            } else {
-                beanField.getTargetField().setClazz(getTargetClass(setExecutor));
+            beanField.getTargetField().setClazz(
+                                                Uberspector.getInstance().getSetClass(setExecutor,
+                                                                                      param.getTargetRef().getClass(),
+                                                                                      getResultClass));
+            if (setExecutor instanceof MapGetExecutor) {
+                beanField.getTargetField().setClazz(HashMap.class);// 注意这里强制传递为HashMap.class
             }
         }
 
@@ -322,26 +314,6 @@ public class BeanMappingExecutor {
      */
     private static boolean canBatch(BeanMappingBehavior behavior) {
         return behavior.isMappingEmptyStrings() && behavior.isMappingNullValue();
-    }
-
-    /**
-     * 根据{@linkplain GetExecutor}获取对应的目标srcClass
-     */
-    private static Class getSrcClass(GetExecutor getExecutor) {
-        Class type = ((AbstractExecutor) getExecutor).getMethod().getReturnType();
-        return type;
-    }
-
-    /**
-     * 根据{@linkplain SetExecutor}获取对应的目标targetClass
-     */
-    private static Class getTargetClass(SetExecutor setExecutor) {
-        Class[] params = ((AbstractExecutor) setExecutor).getMethod().getParameterTypes();
-        if (params == null || params.length != 1) {
-            throw new BeanMappingException("illegal set method[" + ((AbstractExecutor) setExecutor).getMethodName()
-                                           + "] for ParameterType");
-        }
-        return params[0];
     }
 
 }

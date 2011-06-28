@@ -10,10 +10,10 @@ import com.agapple.mapping.core.config.BeanMappingField;
 import com.agapple.mapping.core.config.BeanMappingObject;
 import com.agapple.mapping.core.process.ValueProcess;
 import com.agapple.mapping.core.process.ValueProcessInvocation;
+import com.agapple.mapping.process.script.FunctionClassHelper;
 import com.agapple.mapping.process.script.JexlScriptContext;
 import com.agapple.mapping.process.script.JexlScriptExecutor;
 import com.agapple.mapping.process.script.ScriptContext;
-import com.agapple.mapping.process.script.ScriptExecutor;
 
 /**
  * 自定义script脚本的处理器 , get流程处理
@@ -22,8 +22,12 @@ import com.agapple.mapping.process.script.ScriptExecutor;
  */
 public class ScriptValueProcess implements ValueProcess {
 
-    private ScriptExecutor scriptExecutor = new JexlScriptExecutor();
-    public final String    SCRIPT_CONTEXT = "_script_context";
+    private JexlScriptExecutor scriptExecutor = new JexlScriptExecutor();
+    public final String        SCRIPT_CONTEXT = "_script_context";
+    {
+        // 初始化构造一下functions
+        scriptExecutor.setFunctions(FunctionClassHelper.getInstance().getAllFunctionClasses());
+    }
 
     @Override
     public Object process(Object value, ValueProcessInvocation invocation) throws BeanMappingException {

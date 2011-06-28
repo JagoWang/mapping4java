@@ -2,9 +2,6 @@ package com.agapple.mapping.core.introspect;
 
 import java.util.Map;
 
-import net.sf.cglib.reflect.FastClass;
-import net.sf.cglib.reflect.FastMethod;
-
 import com.agapple.mapping.core.BeanMappingException;
 
 /**
@@ -14,22 +11,11 @@ import com.agapple.mapping.core.BeanMappingException;
  */
 public class MapGetExecutor extends AbstractExecutor implements GetExecutor {
 
-    private static FastMethod MAP_GET;
-    private final Object      property;
+    private boolean flag = false;
 
-    static {
-        // 初始化map的get方法
-        FastClass ft = FastClass.create(Map.class);
-        MAP_GET = ft.getMethod("get", new Class[] { Object.class });
-    }
-
-    public MapGetExecutor(Introspector is, Class<?> clazz, Object key){
-        super(clazz, discover(clazz));
-        property = key;
-    }
-
-    public Object getTargetProperty() {
-        return property;
+    public MapGetExecutor(Introspector is, Class<?> clazz, String key){
+        super(clazz, key);
+        flag = discover(clazz);
     }
 
     @Override
@@ -38,8 +24,13 @@ public class MapGetExecutor extends AbstractExecutor implements GetExecutor {
         return map.get(property);
     }
 
-    public static FastMethod discover(Class<?> clazz) {
-        return (Map.class.isAssignableFrom(clazz)) ? MAP_GET : null;
+    @Override
+    public boolean isAlive() {
+        return flag;
+    }
+
+    public static boolean discover(Class<?> clazz) {
+        return (Map.class.isAssignableFrom(clazz)) ? true : false;
     }
 
 }

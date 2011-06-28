@@ -1,11 +1,14 @@
 package com.agapple.mapping.core.introspect;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
+
+import com.agapple.mapping.core.BeanMappingException;
 
 /**
  * 一些反射调用的工具类
@@ -18,6 +21,7 @@ public class Introspector {
     private Map<String, FastMethod> fastMethodCache = new ConcurrentHashMap<String, FastMethod>();
     private Map<String, Method>     methodCache     = new ConcurrentHashMap<String, Method>();
     private Map<String, Method[]>   allMethodCache  = new ConcurrentHashMap<String, Method[]>();
+    private Map<String, Field>      fieldCache      = new ConcurrentHashMap<String, Field>();
 
     public FastMethod getFastMethod(Class<?> clazz, String methodName) {
         return getFastMethod(clazz, methodName, new Class[] {});
@@ -101,6 +105,24 @@ public class Introspector {
             return methods;
         }
 
+    }
+
+    public Field getField(Class<?> clazz, String fieldName) {
+        Field field = fieldCache.get(fieldName);
+        if (field == null) {
+            try {
+                field = clazz.getDeclaredField(fieldName);
+            } catch (NoSuchFieldException e) {
+                // ignore
+            } catch (Exception e) {
+                throw new BeanMappingException(e);
+            }
+            if (field != null) {
+                fieldCache.put(fieldName, field);
+            }
+        }
+
+        return field;
     }
 
     /**

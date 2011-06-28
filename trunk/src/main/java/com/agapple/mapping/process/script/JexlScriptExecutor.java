@@ -54,9 +54,7 @@ public class JexlScriptExecutor implements ScriptExecutor {
         this.cacheSize = cacheSize;
     }
 
-    @Override
-    public void addFunction(String funcKey, Class funcClass) {
-        functions.put(funcKey, funcClass);
+    public void setFunctions(Map functions) {
+        this.functions.putAll(functions);
     }
-
 }
