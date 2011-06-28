@@ -11,25 +11,25 @@ import com.agapple.mapping.core.BeanMappingException;
  */
 public class PropertyGetExecutor extends AbstractExecutor implements GetExecutor {
 
-    private final String property;
+    private static FastMethod method;
 
     public PropertyGetExecutor(Introspector is, Class<?> clazz, String identifier){
-        super(clazz, discover(is, clazz, identifier));
-        property = identifier;
+        super(clazz, identifier);
+        method = discover(is, clazz, identifier);
     }
 
     @Override
     public Object invoke(Object obj) throws BeanMappingException {
         try {
-            return (method == null ? null : method.getJavaMethod().invoke(obj, (Object[]) null));
+            return (method == null ? null : method.invoke(obj, (Object[]) null));
         } catch (Exception e) {
             throw new BeanMappingException(e);
         }
     }
 
     @Override
-    public Object getTargetProperty() {
-        return property;
+    public boolean isAlive() {
+        return method != null;
     }
 
     public static FastMethod discover(Introspector is, Class<?> clazz, String property) {
@@ -56,4 +56,9 @@ public class PropertyGetExecutor extends AbstractExecutor implements GetExecutor
         }
         return method;
     }
+
+    public FastMethod getMethod() {
+        return method;
+    }
+
 }

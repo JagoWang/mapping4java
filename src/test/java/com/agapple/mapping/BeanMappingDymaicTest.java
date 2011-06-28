@@ -290,4 +290,68 @@ public class BeanMappingDymaicTest extends TestCase {
         assertEquals(((Date) dest.get(ONE_OTHER)).getTime(), dayDate.getTime());
         assertEquals(dest.get(TWO_OTHER), Integer.valueOf(10));
     }
+
+    @Test
+    public void testFieldNoMethod() { // 测试下属性没有对应的方法
+        BeanMappingBuilder builder = new BeanMappingBuilder() {
+
+            protected void configure() {
+                behavior().debug(true).mappingEmptyStrings(false).mappingNullValue(false).trimStrings(true);// 设置行为
+                mapping(HashMap.class, HashMap.class);
+                fields(srcField("intValue"), targetField(ONE_OTHER, String.class));
+                fields(srcField("integerValue"), targetField(TWO_OTHER, String.class));
+                fields(srcField("bigDecimalValue"), targetField(THREE_OTHER, String.class));
+            }
+
+        };
+
+        BeanMapping mapping = new BeanMapping(builder);
+        Map dest = new HashMap();
+        mapping.mapping(new NoMethodBean(), dest);
+        assertEquals(dest.get(ONE_OTHER), "10");
+        assertEquals(dest.get(TWO_OTHER), "10");
+        assertEquals(dest.get(THREE_OTHER), "10");
+    }
+
+    @Test
+    public void testThisSymbol() { // 测试下this的特殊属性
+        BeanMappingBuilder builder = new BeanMappingBuilder() {
+
+            protected void configure() {
+                behavior().debug(true).mappingEmptyStrings(false).mappingNullValue(false).trimStrings(true);// 设置行为
+                mapping(HashMap.class, HashMap.class);
+                fields(srcField("intValue"), targetField(ONE_OTHER, String.class));
+                fields(srcField("integerValue"), targetField(TWO_OTHER, String.class));
+                fields(srcField("bigDecimalValue"), targetField(THREE_OTHER, String.class));
+                fields(srcField("this"), targetField(FOUR_OTHER));
+            }
+
+        };
+
+        BeanMapping mapping = new BeanMapping(builder);
+        Map dest = new HashMap();
+        mapping.mapping(new NoMethodBean(), dest);
+        assertEquals(dest.get(ONE_OTHER), "10");
+        assertEquals(dest.get(TWO_OTHER), "10");
+        assertEquals(dest.get(THREE_OTHER), "10");
+        assertEquals(dest.get(FOUR_OTHER).getClass(), NoMethodBean.class);
+    }
+}
+
+class NoMethodBean {
+
+    private int       intValue;
+    protected Integer integerValue;
+    public BigDecimal bigDecimalValue;
+
+    public NoMethodBean(){
+        intValue = 10;
+        integerValue = Integer.valueOf(10);
+        bigDecimalValue = BigDecimal.TEN;
+    }
+
+    public int getIntValue() {
+        return intValue;
+    }
+
 }

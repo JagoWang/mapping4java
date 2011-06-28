@@ -203,6 +203,11 @@ public class BeanMappingParser {
             ConvertorParse.parseAndRegister(convetorNodeList.item(i));
         }
 
+        NodeList functionClassNodeList = root.getElementsByTagName("function-class-configurations");
+        for (int i = 0; i < functionClassNodeList.getLength(); i++) {
+            FunctionClassParse.parseAndRegister(functionClassNodeList.item(i));
+        }
+
         NodeList nodeList = root.getElementsByTagName("bean-mapping");
         List<BeanMappingObject> mappings = new ArrayList<BeanMappingObject>();
         // 解析BeanMappingObject属性

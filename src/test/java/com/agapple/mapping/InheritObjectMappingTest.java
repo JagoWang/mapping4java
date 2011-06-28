@@ -9,12 +9,15 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
+import junit.framework.Assert;
 import junit.framework.TestCase;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.agapple.mapping.core.builder.BeanMappingBuilder;
 import com.agapple.mapping.core.config.BeanMappingConfigHelper;
+import com.agapple.mapping.core.config.BeanMappingConfigRespository;
 import com.agapple.mapping.object.inherit.FirstObject;
 import com.agapple.mapping.object.inherit.TwoObject;
 
@@ -25,8 +28,14 @@ import com.agapple.mapping.object.inherit.TwoObject;
  */
 public class InheritObjectMappingTest extends TestCase {
 
-    static {
-        BeanMappingConfigHelper.getInstance().registerConfig("mapping/mapping.xml");
+    @Before
+    public void setUp() {
+        try {
+            // 清空下repository下的数据
+            TestUtils.setField(BeanMappingConfigHelper.getInstance(), "repository", new BeanMappingConfigRespository());
+        } catch (Exception e) {
+            Assert.fail();
+        }
     }
 
     @Test
