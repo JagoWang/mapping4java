@@ -3,12 +3,16 @@ package com.agapple.mapping.script;
 import java.util.HashMap;
 import java.util.Map;
 
+import junit.framework.Assert;
 import junit.framework.TestCase;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.agapple.mapping.BeanMappingUtil;
+import com.agapple.mapping.TestUtils;
 import com.agapple.mapping.core.config.BeanMappingConfigHelper;
+import com.agapple.mapping.core.config.BeanMappingConfigRespository;
 import com.agapple.mapping.object.SrcMappingObject;
 
 /**
@@ -18,8 +22,15 @@ import com.agapple.mapping.object.SrcMappingObject;
  */
 public class ScriptTest extends TestCase {
 
-    static {
-        BeanMappingConfigHelper.getInstance().registerConfig("mapping/script-mapping.xml");
+    @Before
+    public void setUp() {
+        try {
+            // 清空下repository下的数据
+            TestUtils.setField(BeanMappingConfigHelper.getInstance(), "repository", new BeanMappingConfigRespository());
+            BeanMappingConfigHelper.getInstance().registerConfig("mapping/script-mapping.xml");
+        } catch (Exception e) {
+            Assert.fail();
+        }
     }
 
     @Test
@@ -72,7 +83,4 @@ public class ScriptTest extends TestCase {
         assertEquals(newSrcRef.isStart(), targetRef.get("start"));
     }
 
-    @Test
-    public void testScript_nested() {
-    }
 }

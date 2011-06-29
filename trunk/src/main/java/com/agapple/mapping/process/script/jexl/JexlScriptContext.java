@@ -1,8 +1,10 @@
-package com.agapple.mapping.process.script;
+package com.agapple.mapping.process.script.jexl;
 
 import java.util.Map;
 
 import org.apache.commons.jexl2.MapContext;
+
+import com.agapple.mapping.process.script.ScriptContext;
 
 /**
  * 定义为Jexl context

@@ -15,7 +15,7 @@ import com.agapple.mapping.core.config.BeanMappingObject;
 import com.agapple.mapping.core.helper.BatchObjectHolder;
 import com.agapple.mapping.core.introspect.BatchExecutor;
 import com.agapple.mapping.core.introspect.GetExecutor;
-import com.agapple.mapping.core.introspect.MapGetExecutor;
+import com.agapple.mapping.core.introspect.MapSetExecutor;
 import com.agapple.mapping.core.introspect.SetExecutor;
 import com.agapple.mapping.core.introspect.Uberspector;
 import com.agapple.mapping.core.process.ValueProcessContext;
@@ -278,7 +278,7 @@ public class BeanMappingExecutor {
                                                 Uberspector.getInstance().getSetClass(setExecutor,
                                                                                       param.getTargetRef().getClass(),
                                                                                       getResultClass));
-            if (setExecutor instanceof MapGetExecutor) {
+            if (setExecutor instanceof MapSetExecutor) {
                 beanField.getTargetField().setClazz(HashMap.class);// 注意这里强制传递为HashMap.class
             }
         }
@@ -286,7 +286,7 @@ public class BeanMappingExecutor {
         // 执行set,反射构造一个子Model
         // 如果嵌套对象为null，则直接略过该对象处理，目标对象也为null,此时srcRef可能为null
         Object value = invocation.proceed(srcRef); // 在目标节点对象上，创建一个子节点
-        if (srcRef == null) {
+        if (srcRef == null && value == null) {
             return; // 如果为null，则不做递归处理
         }
 

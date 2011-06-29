@@ -12,6 +12,10 @@
     	<classAlias alias="commonClass" class="com.agapple.mapping.process.convetor.CommonAndCommonConvertor$CommonToCommon" />
     </class-alias-configurations>
     
+    <function-class-configurations>
+    	<functionClass name="customFunction" class="com.agapple.mapping.script.CustomFunctionClass" />
+    </function-class-configurations>
+    
     <bean-mapping srcClass="map" targetClass="java.util.HashMap" reversable="false" mappingNullValue="false" debug="true">
     	<field-mapping srcName="id" srcClass="java.lang.String" targetName="id" targetClass="java.lang.String" defaultValue="0" convetor="stringToDate" script="idFormat.format()" mappingNullValue="true" trimStrings="true"/>
     	<field-mapping mapping="true" srcName="model" targetName="model" mappingNullValue="true" trimStrings="true" />

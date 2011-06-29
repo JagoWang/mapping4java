@@ -7,7 +7,7 @@ import org.w3c.dom.NodeList;
 
 import com.agapple.mapping.core.BeanMappingException;
 import com.agapple.mapping.core.helper.ReflectionHelper;
-import com.agapple.mapping.process.script.FunctionClassHelper;
+import com.agapple.mapping.process.script.ScriptHelper;
 
 /**
  * 解析下Function class的相关配置
@@ -31,7 +31,7 @@ public class FunctionClassParse {
 
                 String name = nameNode.getNodeValue();
                 Class clazz = ReflectionHelper.forName(clazzNode.getNodeValue());
-                FunctionClassHelper.getInstance().registerFunctionClass(name, clazz);
+                ScriptHelper.getInstance().registerFunctionClass(name, ReflectionHelper.newInstance(clazz));
                 if (logger.isDebugEnabled()) {
                     logger.debug("register class[" + clazz.toString() + "] to name[" + name + "]");
                 }

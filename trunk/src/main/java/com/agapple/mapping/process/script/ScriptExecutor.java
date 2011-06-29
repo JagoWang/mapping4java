@@ -7,6 +7,8 @@ package com.agapple.mapping.process.script;
  */
 public interface ScriptExecutor {
 
+    public void addFunction(String name, Object obj);
+
     public Object evaluate(ScriptContext context, String script);
 
 }

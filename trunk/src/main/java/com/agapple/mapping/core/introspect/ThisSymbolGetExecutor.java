@@ -9,37 +9,28 @@ import com.agapple.mapping.core.BeanMappingException;
  */
 public class ThisSymbolGetExecutor extends AbstractExecutor implements GetExecutor {
 
-    private static final int NOT  = 0;
-    private static final int THIS = 1;
-    private int              sign = NOT;
+    private boolean flag = false;
 
     public ThisSymbolGetExecutor(Introspector is, Class<?> clazz, String key){
         super(clazz, key);
-        sign = discover(property);
+        flag = discover(property);
     }
 
     @Override
     public Object invoke(Object obj) throws BeanMappingException {
-        switch (sign) {
-            case THIS:
-                return obj;
-
-            default:
-                throw new BeanMappingException("error sign");
+        if (flag) {
+            return obj;
         }
+        throw new BeanMappingException("error flag");
     }
 
-    public static int discover(String key) {
-        if ("this".equalsIgnoreCase(key)) { // 处理下this指针
-            return THIS;
-        }
-
-        return NOT;
+    public static boolean discover(String key) {
+        return "this".equalsIgnoreCase(key) ? true : false;
     }
 
     @Override
     public boolean isAlive() {
-        return sign != NOT;
+        return flag;
     }
 
 }

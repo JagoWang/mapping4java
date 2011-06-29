@@ -7,6 +7,7 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.agapple.mapping.core.config.BeanMappingConfigHelper;
@@ -21,12 +22,15 @@ import com.agapple.mapping.object.TargetMappingObject;
  */
 public class BeanMappingTest extends TestCase {
 
-    static {
-        BeanMappingConfigHelper.getInstance().registerConfig("mapping/mapping.xml");
-    }
+    private BeanMapping srcMapping    = null;
+    private BeanMapping targetMapping = null;
 
-    public BeanMapping srcMapping    = BeanMapping.create(SrcMappingObject.class, TargetMappingObject.class);
-    public BeanMapping targetMapping = BeanMapping.create(TargetMappingObject.class, SrcMappingObject.class);
+    @Before
+    public void setUp() {
+        BeanMappingConfigHelper.getInstance().registerConfig("mapping/mapping.xml");
+        srcMapping = BeanMapping.create(SrcMappingObject.class, TargetMappingObject.class);
+        targetMapping = BeanMapping.create(TargetMappingObject.class, SrcMappingObject.class);
+    }
 
     @Test
     public void testBeanToBean_ok() {

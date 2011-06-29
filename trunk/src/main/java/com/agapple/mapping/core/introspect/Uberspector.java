@@ -133,7 +133,8 @@ public class Uberspector {
             return srcRefClass; // 返回对应src的类型
         }
 
-        throw new BeanMappingException("unknow GetExecutor");
+        return null;
+        // throw new BeanMappingException("unknow GetExecutor");
     }
 
     /**
@@ -150,7 +151,8 @@ public class Uberspector {
             return ((FieldSetExecutor) setExecutor).getField().getType();
         }
 
-        throw new BeanMappingException("unknow SetExecutor");
+        return null;
+        // throw new BeanMappingException("unknow SetExecutor");
     }
 
     /**

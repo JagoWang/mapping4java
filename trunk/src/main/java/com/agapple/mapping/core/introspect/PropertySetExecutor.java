@@ -14,7 +14,7 @@ import com.agapple.mapping.core.BeanMappingException;
  */
 public class PropertySetExecutor extends AbstractExecutor implements SetExecutor {
 
-    private static FastMethod method;
+    private FastMethod method;
 
     public PropertySetExecutor(Introspector is, Class<?> clazz, String identifier, Class arg){
         super(clazz, identifier);
@@ -73,7 +73,7 @@ public class PropertySetExecutor extends AbstractExecutor implements SetExecutor
     }
 
     public FastMethod getMethod() {
-        return method;
+        return this.method;
     }
 
 }
