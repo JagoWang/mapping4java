@@ -1,4 +1,4 @@
-package com.agapple.mapping.process.script;
+package com.agapple.mapping.process.script.jexl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,6 +6,9 @@ import java.util.Map;
 import org.apache.commons.jexl2.Expression;
 import org.apache.commons.jexl2.JexlContext;
 import org.apache.commons.jexl2.JexlEngine;
+
+import com.agapple.mapping.process.script.ScriptContext;
+import com.agapple.mapping.process.script.ScriptExecutor;
 
 /**
  * Jexl的script实现
@@ -54,7 +57,7 @@ public class JexlScriptExecutor implements ScriptExecutor {
         this.cacheSize = cacheSize;
     }
 
-    public void setFunctions(Map functions) {
-        this.functions.putAll(functions);
+    public void addFunction(String name, Object obj) {
+        this.functions.put(name, obj);
     }
 }

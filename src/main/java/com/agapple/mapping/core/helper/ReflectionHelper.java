@@ -156,4 +156,19 @@ public class ReflectionHelper {
             throw new BeanMappingException("forName class[" + className + "] is error!", e);
         }
     }
+
+    /**
+     * 从指定的ClassLoader中装载
+     */
+    public static Class forName(String className, ClassLoader loader) {
+        try {
+            return loader.loadClass(className);
+        } catch (ClassNotFoundException e) {
+            if (aliasClassMap.containsKey(className)) {
+                return aliasClassMap.get(className);
+            }
+
+            throw new BeanMappingException("forName class[" + className + "] is error!", e);
+        }
+    }
 }
