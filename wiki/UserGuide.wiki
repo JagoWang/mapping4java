@@ -87,3 +87,10 @@
   * convetor：指定类型转换器
   * script：指定script脚本
   * mapping：是否进行嵌套的mapping映射处理
+
+=Example=
+==基础类型==
+默认支持的几种基础类型转化：
+ # 支持(int,long,short,byte,char,boolean,float,double)8种原型和其对应的基本 #    类型 + (BigInteger , BigDecimal)  + String 允许互相之间转化
+支持(java.util.Date , java.util.Calendar)和字符串的转化，提供默认的day("yyyy-MM-dd") , time("yyyy-MM-dd HH:mm:ss")两种格式的转化
+支持8种类型的Array +  List + Set，允许互相之间的转化
