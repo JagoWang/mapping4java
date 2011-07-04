@@ -112,7 +112,7 @@
    <field-mapping srcName="intValue" srcClass="int" targetName="bigValue" targetClass="java.math.BigDecimal"/>
 </bean-mapping>
 }}}
-*说明：* 这里src/target属性均为基础类型，所以不需要定义任何convertor，系统能自动的进行mapping转化
+*相关说明：* 这里src/target属性均为基础类型，所以不需要定义任何convertor，系统能自动的进行mapping转化
 
 ===String和Date转化例子===
 {{{
@@ -120,7 +120,7 @@
    <field-mapping srcName="gmtCreate" srcClass="java.util.Date" targetName="gmtCreate" targetClass="string" convertor="DateDayToString" />
 </bean-mapping>
 }}}
-*说明:* 默认支持的几种Date,Calendar,String转化
+*相关说明:* 默认支持的几种Date,Calendar,String转化
  * DateDayToString/StringToDateDay ('yyyy-MM-dd')
  * DateTimeToString/StringToDateTime ('yyyy-MM-dd HH:mm:ss')
  * CalendarDayToString/StringToCalendarDay ('yyyy-MM-dd')
@@ -133,15 +133,12 @@
    <field-mapping srcName="set" srcClass="java.util.HashSet" srcComponentClass="int" targetName="list" targetClass="java.util.ArrayList" targetComponentClass="java.util.BigDecimal" />
 </bean-mapping>
 }}}
-*说明:* 
+*相关说明:* 
  * 源属性的类型&Component类型都可以自动的进行识别，可以不用配置
  * 如果目标属性为Array类型，也可以自动的进行识别，可以不用配置
  * 如果针对目标类型是Collection，并且没有指定对应的Component类型，则默认会将源类型的对象引用直接复制给目标Collection
 
 ===自定义convertor===
- # 实现[Convertor http://code.google.com/p/mapping4java/source/browse/trunk/src/main/java/com/agapple/mapping/process/convetor/Convertor.java]接口
- # 在[UserGuide#convetors-configurations]中注册convertor为指定的alias
- # 在field-mapping中声明使用上一步定义的alias name
 {{{
 <convetors-configurations>
    <convertor alias="custom1" class="com.agapple.mapping.process.convetor.XXX" />
@@ -151,6 +148,10 @@
   <field-mapping srcName="srcValue" targetName="targetValue" convertor="custom1" />
 </bean-mapping>
 }}}
+*相关说明：*
+ # 实现[Convertor http://code.google.com/p/mapping4java/source/browse/trunk/src/main/java/com/agapple/mapping/process/convetor/Convertor.java]接口
+ # 在[UserGuide#convetors-configurations]中注册convertor为指定的alias
+ # 在field-mapping中声明使用上一步定义的alias name
 
 ==Map&Bean Example==
 说明：目前BeanMapping支持map,bean的mapping处理。
@@ -159,14 +160,14 @@
    <field-mapping srcName="int" srcClass="int" targetName="integer" targetClass="java.lang.Integer" />
 </bean-mapping>
 }}}
-*说明：*　支持Map&Bean的互相转化，只需指定对应的src/target class类型
+*相关说明：*　支持Map&Bean的互相转化，只需指定对应的src/target class类型
  * Map To Map
  * Map To Bean
  * Bean To Map
  * Bean To Bean
  
 ==Nested Mapping Example==
- 说明：BeanMapping支持嵌套属性的mapping
+*相关说明：* BeanMapping支持嵌套属性的mapping
   * model下的子model需要进行嵌套属性mapping
   * collection类型的component进行嵌套mapping处理
 ===子模型嵌套===
@@ -180,7 +181,7 @@
 ....
 </bean-mapping>
 }}}
-*说明:*
+*相关说明：*
  # 首先在field-mapping中定义mapping="true"，声明该属性是个复合属性需要进行递归mapping处理
  # 定义嵌套复合属性的mapping定义
  
@@ -195,7 +196,7 @@
 ....
 </bean-mapping>
 }}}
-*说明:*
+*相关说明：*
  # 首先在field-mapping中定义src/target ComponentClass
  # 定义嵌套复合属性的mapping定义，如果没有mapping定义则默认进行同名属性拷贝
 ==Default Value Mapping Example==
@@ -205,7 +206,7 @@
   <field-mapping srcName="srcValue" targetName="targetValue" defaultValue="100" />
 </bean-mapping>
 }}}
-*说明：*
+*相关说明：*
  * defaultValue的定义主要是针对null value才生效
  * defautlvalue作用在mappingNullValue/mappingEmptyStrings之前，所以声明了defautlvalue的，mappingNullValue/mappingEmptyStrings都会失效
  * defaultValue默认为string字符串，如果目标类型为非基本类型，则需要自定义convertor
@@ -217,7 +218,7 @@
   <field-mapping srcName="superAttribute" srcLocatorClass="superSrcClass" targetName="superAttribute" targetLocatorClass="superTargetClass" />
 </bean-mapping>
 }}}
-*说明：*
+*相关说明：*
  * srcLocatorClass/targetLocatorClass :可指定操作的目标class类型，比如可以指定当前mapping class的父类中的属性
 
 ==特殊场景mapping Example==
@@ -225,12 +226,12 @@
 说明：允许src/target属性没有对应的方法，配置方式和正常的一致。
 
 ===this symbol name===
-说明：允许使用"this"符号，表明将当前的object ref做为另一个模型的子属性
 {{{
 <bean-mapping srcClass="xxx" targetClass="xxx" >
   <field-mapping srcName="this" targetName="subModel" />
 </bean-mapping>
 }}}
+*相关说明：* 允许使用"this"符号，表明将当前的object ref做为另一个模型的子属性
 
 ==override global configurations Example==
 {{{
@@ -238,11 +239,12 @@
   <field-mapping srcName="id" targetName="id" defaultValue="0" mappingNullValue="true" trimStrings="true"/>
 </bean-mapping>
 }}}
-*说明：*
+*相关说明：* 
  * 参数优先级为field-mapping > bean-mapping -> global
+ * 如果没有定义，bean-mapping继承于global，field-mapping继承于bean-mappng
 
 ==script Example==
-说明：允许使用script个性化定义mapping处理规则。script采用了apache下的JEXL做为解析引擎进行处理
+*相关说明：* 允许使用script个性化定义mapping处理规则。script采用了apache下的JEXL做为解析引擎进行处理
   * 支持四则运算
   * 支持数组属性的处理
   * 支持集合属性的处理
@@ -288,5 +290,5 @@
 ....
 </bean-mapping>
 }}}
-*说明：*
+*相关说明：* 
  * 一旦mapping关系中使用了script脚本定义，则reversable会失效，强制为不可逆
