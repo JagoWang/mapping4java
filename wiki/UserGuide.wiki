@@ -1,0 +1,44 @@
+#详细介绍相关配置的使用
+<wiki:toc max_depth="4" />
+
+=XMl配置=
+==配置内容==
+==引入schema==
+<code language="xml">
+<bean-mappings xmlns="http://mapping4java.googlecode.com/schema/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://mapping4java.googlecode.com/schema/mapping http://mapping4java.googlecode.com/svn/trunk/src/main/resources/META-INF/mapping.xsd">
+....
+</bean-mappings>
+</code>
+===global-configurations===
+说明：定义行为参数
+<code language="xml">
+<global-configurations debug="false" mappingNullValue="true" mappingEmptyStrings="true" trimStrings="true" />
+</code>
+*相关说明：*
+ * debug：是否开启详细的mapping过程的日志，可用于问题分析。在真实的产品环境中一般不建议打开，默认为false
+ * mappingNullValue：mapping过程中，如果源目标对象get返回的结果为null是否继续对目标对象进行set属性为null的处理，默认为true
+ * mappingEmptyStrings：mapping过程中，如果源目标对象get返回的结果为Emptys的字符串对象，是否继续对目标对象进行set属性为null的处理，默认为true
+ * trimStrings：mapping过程中，针对字符串类型是否需要进行trim操作，默认为false
+
+===class-alias-configurations===
+说明：类别名定义
+{{{
+<class-alias-configurations>
+   <classAlias alias="commonClass" class="com.agapple.mapping.process.convetor.CommonAndCommonConvertor$CommonToCommon" />
+</class-alias-configurations>
+}}}
+*相关说明：*
+ * classAlias：可将指定的class定义alias别名，alias的scope为整个jvm实例
+
+===convetors-configurations===
+说明：自定义convertor类
+{{{
+<convetors-configurations>
+   <convertor alias="custom1" class="com.agapple.mapping.process.convetor.XXX" />
+   <convertor alias="custom2" class="commonClass" />
+</convetors-configurations>
+}}}
+*相关说明：*
+ * convertor：可将指定的class注册到convertor容器中，并指定convetor别名为alias。一个class可以对应多个alias
+ * convertor所定义的class，可以直接使用[UserGuide#class-alias-configurations]中的alias别名
