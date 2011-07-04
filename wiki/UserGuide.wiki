@@ -99,6 +99,12 @@
  # 基本类型之间的互转
  # 支持(java.util.Date , java.util.Calendar)和字符串的转化，提供默认的day("yyyy-MM-dd") , time("yyyy-MM-dd HH:mm:ss")两种格式的转化
  # 支持基础类型的Array,List,Set，允许互相之间的转化
+  * List to List
+  * List to Array
+  * Array to Array
+  * Set to Set
+  * Set to Array
+  * Set to List
 
 ===基础类型转化例子===
 {{{
@@ -130,6 +136,21 @@
 *说明:* 
  * 源属性的类型&Component类型都可以自动的进行识别，可以不用配置
  * 如果目标属性为Array类型，也可以自动的进行识别，可以不用配置
+ * 如果针对目标类型是Collection，并且没有指定对应的Component类型，则默认会将源类型的对象引用直接复制给目标Collection
+
+===自定义convertor===
+ # 实现[Convertor http://code.google.com/p/mapping4java/source/browse/trunk/src/main/java/com/agapple/mapping/process/convetor/Convertor.java]接口
+ # 在[UserGuide#convetors-configurations]中注册convertor为指定的alias
+ # 在field-mapping中声明使用上一步定义的alias name
+{{{
+<convetors-configurations>
+   <convertor alias="custom1" class="com.agapple.mapping.process.convetor.XXX" />
+</convetors-configurations>
+
+<bean-mapping srcClass="xxx" targetClass="xxx">
+  <field-mapping srcName="srcValue" targetName="targetValue" convertor="custom1" />
+</bean-mapping>
+}}}
 
 ==Map&Bean Example==
 说明：目前BeanMapping支持map,bean的mapping处理。
@@ -177,6 +198,27 @@
 *说明:*
  # 首先在field-mapping中定义src/target ComponentClass
  # 定义嵌套复合属性的mapping定义，如果没有mapping定义则默认进行同名属性拷贝
+==Default Value Mapping Example==
+说明：支持默认值定义
+{{{
+<bean-mapping srcClass="xxx" targetClass="xxx">
+  <field-mapping srcName="srcValue" targetName="targetValue" defaultValue="100" />
+</bean-mapping>
+}}}
+*说明：*
+ * defaultValue的定义主要是针对null value才生效
+ * defautlvalue作用在mappingNullValue/mappingEmptyStrings之前，所以声明了defautlvalue的，mappingNullValue/mappingEmptyStrings都会失效
+ * defaultValue默认为string字符串，如果目标类型为非基本类型，则需要自定义convertor
+
+==Inheritance mapping Example==
+说明：支持有继承关系的bean mapping操作
+{{{
+<bean-mapping srcClass="xxx" targetClass="xxx">
+  <field-mapping srcName="superAttribute" srcLocatorClass="superSrcClass" targetName="superAttribute" targetLocatorClass="superTargetClass" />
+</bean-mapping>
+}}}
+*说明：*
+ * srcLocatorClass/targetLocatorClass :可指定操作的目标class类型，比如可以指定当前mapping class的父类中的属性
 
 ==特殊场景mapping Example==
 ===no getter/setter method===
@@ -190,7 +232,7 @@
 </bean-mapping>
 }}}
 
-==override hconfigurations Example==
+==override global configurations Example==
 {{{
 <bean-mapping srcClass="xx" targetClass="xx" mappingNullValue="false" debug="true">
   <field-mapping srcName="id" targetName="id" defaultValue="0" mappingNullValue="true" trimStrings="true"/>
@@ -222,6 +264,22 @@
 }}}
 
 ===自定义function的处理===
+{{{
+<function-class-configurations>
+  <functionClass name="customFunction" class="com.agapple.mapping.script.CustomFunctionClass" />
+</function-class-configurations>
+
+<bean-mapping srcClass="xxx" targetClass="xxx">
+  <field-mapping srcName="srcValue" targetName="targetValue" script="customFunction:method(src.srcValue)" />
+</bean-mapping>
+}}}
+*相关说明：*
+ # 提供任意class实现，需要保证线程安全。无需事先任何接口
+ # 在[UserGuide#function-class-configurations]中注册该function为指定的alias
+ # 在field-mapping中声明使用该function方式为：alias:methodName(args)。
+  * alias为对应在上一步所定义的别名
+  * methodName为对应function class中的任一一个method name
+  * args可通过srcKey,targetKey进行属性访问。包括数组,Collection,Bean,Map等对象
 
 ==reversable Example==
 说明：默认bean-mapping的定义均为单向，从srcClass映射为targetClass。可通过声明reversable=true，表明映射关系可逆，会自动生成targetClass到srcClass的映射
