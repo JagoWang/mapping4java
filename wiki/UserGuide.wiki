@@ -42,3 +42,48 @@
 *相关说明：*
  * convertor：可将指定的class注册到convertor容器中，并指定convetor别名为alias。一个class可以对应多个alias
  * convertor所定义的class，可以直接使用[UserGuide#class-alias-configurations]中的alias别名
+
+===function-class-configurations===
+说明：定义script中的function支持类
+{{{
+<function-class-configurations>
+  <functionClass name="customFunction" class="com.agapple.mapping.script.CustomFunctionClass" />
+</function-class-configurations>
+}}}
+*相关说明：*
+ * functionClass：可将指定的class注册到script容器中，并指定别名为alias。一个class可以对应多个alias
+ * function所定义的class，可以直接使用[UserGuide#class-alias-configurations]中的alias别名
+ * 更多关于script/function的使用
+
+===bean-mapping===
+说明：定义mapping的具体行为
+{{{
+<bean-mapping srcClass="map" targetClass="java.util.HashMap" reversable="false" mappingNullValue="false" debug="true">
+  <field-mapping srcName="id" srcClass="java.lang.String" targetName="id" targetClass="java.lang.String" defaultValue="0" convetor="stringToDate" script="customFunction:sum(src.intValue,src.integerValue)" mappingNullValue="true" trimStrings="true"/>
+  <field-mapping mapping="true" srcName="model" targetName="model" mappingNullValue="true" trimStrings="true" />
+</bean-mapping>
+}}}
+*相关说明：*
+ # bean-mapping属性
+  * srcClass：源对象的class类型
+  * targetClass：目标对象的class类型
+  * reversable：mapping规则是否允许逆序处理
+  * debug：覆盖[UserGuide#global-configurations]的属性定义
+  * mappingNullValue：覆盖[UserGuide#global-configurations]的属性定义
+  * mappingEmptyStrings：覆盖[UserGuide#global-configurations]的属性定义
+  * trimStrings：覆盖[UserGuide#global-configurations]的属性定义
+  * srcKey：script上下文中，对应源object的引用名字，比如可通过srcKey.field获取属性
+  * targetKey：script上下文中，对应目标object的引用名字
+ # field-mapping属性
+  * srcName：源对象的属性名
+  * srcClass：源对象的属性类型
+  * srcLocatorClass：指定在该LocatorClass，查找对应的目标数据name的属性方法，解决继承属性
+  * srcComponentClass：指定Collection/Array的ComponentType
+  * targetName：目标对象的属性名
+  * targetClass：目标对象的属性类型
+  * targetLocatorClass：指定在该LocatorClass，查找对应的目标数据name的属性方法，解决继承属性
+  * targetComponentClass：指定Collection/Array的ComponentType
+  * defaultValue：默认值
+  * convetor：指定类型转换器
+  * script：指定script脚本
+  * mapping：是否进行嵌套的mapping映射处理
