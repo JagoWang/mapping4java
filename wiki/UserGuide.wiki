@@ -1,4 +1,4 @@
-#详细介绍相关配置的使用
+#summary 详细介绍相关配置的使用
 <wiki:toc max_depth="4" />
 
 =XMl配置=
@@ -131,4 +131,4 @@
  * 源属性的类型&Component类型都可以自动的进行识别，可以不用配置
  * 如果目标属性为Array类型，也可以自动的进行识别，可以不用配置
 
-==Map&PojoBean互相mapping==
+==Map&Bean互相mapping==
