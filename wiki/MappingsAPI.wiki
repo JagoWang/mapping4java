@@ -1,0 +1,33 @@
+#summary 基于java api构建BeanMapping自定义配置
+
+=介绍=
+基于XML进行mapping行为定义，使用上存在一些限制
+ # 静态定义，不可修改
+ # class和属性的定义都是类名和方法名的复制，在借助于IDE进行重构时容易存在遗漏
+
+=使用=
+{{{
+BeanMappingBuilder builder = new BeanMappingBuilder() {
+
+            protected void configure() {
+                mapping(HashMap.class, HashMap.class).batch(false).reversable(true).keys("src", "target");
+                fields(srcField("one"), targetField("oneOther")).convertor("convertor").defaultValue("ljh");
+                fields(srcField("two").clazz(String.class), targetField("twoOther")).script("1+2").convertor(
+                                                                                                             StringToCommon.class);
+                fields(srcField("three").clazz(ArrayList.class), targetField("threeOther").clazz(HashSet.class)).recursiveMapping(
+                                                                                                                                  true);
+            }
+
+        };
+}}}
+通过builder可以比较方便的构造mapping config，最后需要生成mapping实例，还需要做一步：
+{{{
+BeanMapping mapping = new BeanMapping(builder);
+mapping.mapping(src, dest);//使用
+}}}
+or 
+{{{
+BeanMappingConfigHelper.getInstance().register(builder); // 进行注册
+BeanMappingObject object = BeanMappingConfigHelper.getInstance().getBeanMappingObject(srcClass,targetClass);
+mapping.mapping(src, dest);//使用
+}}}
