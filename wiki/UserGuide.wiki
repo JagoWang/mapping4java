@@ -90,7 +90,45 @@
 
 =Example=
 ==基础类型==
-默认支持的几种基础类型转化：
- # 支持(int,long,short,byte,char,boolean,float,double)8种原型和其对应的基本 #    类型 + (BigInteger , BigDecimal)  + String 允许互相之间转化
-支持(java.util.Date , java.util.Calendar)和字符串的转化，提供默认的day("yyyy-MM-dd") , time("yyyy-MM-dd HH:mm:ss")两种格式的转化
-支持8种类型的Array +  List + Set，允许互相之间的转化
+基本类型定义：
+ * int,long,short,byte,char,boolean,float,double的8种原型
+ * Integer,Long,Short,Byte,Character,Boolean,Float,Double的8中原型对应的基本类型
+ * BigInteger,BigDecimal类型
+
+默认支持的几种类型转化：
+ # 基本类型之间的互转
+ # 支持(java.util.Date , java.util.Calendar)和字符串的转化，提供默认的day("yyyy-MM-dd") , time("yyyy-MM-dd HH:mm:ss")两种格式的转化
+ # 支持基础类型的Array,List,Set，允许互相之间的转化
+
+===基础类型转化例子===
+{{{
+<bean-mapping srcClass="xxx" targetClass="xxxx">
+   <field-mapping srcName="intValue" srcClass="int" targetName="bigValue" targetClass="java.math.BigDecimal"/>
+</bean-mapping>
+}}}
+*说明：* 这里src/target属性均为基础类型，所以不需要定义任何convertor，系统能自动的进行mapping转化
+
+===String和Date转化例子===
+{{{
+<bean-mapping srcClass="xxx" targetClass="xxxx">
+   <field-mapping srcName="gmtCreate" srcClass="java.util.Date" targetName="gmtCreate" targetClass="string" convertor="DateDayToString" />
+</bean-mapping>
+}}}
+*说明:* 默认支持的几种Date,Calendar,String转化
+ * DateDayToString/StringToDateDay ('yyyy-MM-dd')
+ * DateTimeToString/StringToDateTime ('yyyy-MM-dd HH:mm:ss')
+ * CalendarDayToString/StringToCalendarDay ('yyyy-MM-dd')
+ * CalendarTimeToString/StringToCalendarTime ('yyyy-MM-dd HH:mm:ss')
+
+===array&list转化例子===
+{{{
+<bean-mapping srcClass="xxx" targetClass="xxxx">
+   <field-mapping srcName="array" targetName="list" targetClass="java.util.ArrayList" targetComponentClass="java.util.BigDecimal" />
+   <field-mapping srcName="set" srcClass="java.util.HashSet" srcComponentClass="int" targetName="list" targetClass="java.util.ArrayList" targetComponentClass="java.util.BigDecimal" />
+</bean-mapping>
+}}}
+*说明:* 
+ * 源属性的类型&Component类型都可以自动的进行识别，可以不用配置
+ * 如果目标属性为Array类型，也可以自动的进行识别，可以不用配置
+
+==Map&PojoBean互相mapping==
