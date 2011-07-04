@@ -89,7 +89,7 @@
   * mapping：是否进行嵌套的mapping映射处理
 
 =Example=
-==基础类型==
+==基础类型 Example==
 基本类型定义：
  * int,long,short,byte,char,boolean,float,double的8种原型
  * Integer,Long,Short,Byte,Character,Boolean,Float,Double的8中原型对应的基本类型
@@ -131,4 +131,104 @@
  * 源属性的类型&Component类型都可以自动的进行识别，可以不用配置
  * 如果目标属性为Array类型，也可以自动的进行识别，可以不用配置
 
-==Map&Bean互相mapping==
+==Map&Bean Example==
+说明：目前BeanMapping支持map,bean的mapping处理。
+{{{
+<bean-mapping srcClass="java.util.HashMap" targetClass="java.util.HashMap">
+   <field-mapping srcName="int" srcClass="int" targetName="integer" targetClass="java.lang.Integer" />
+</bean-mapping>
+}}}
+*说明：*　支持Map&Bean的互相转化，只需指定对应的src/target class类型
+ * Map To Map
+ * Map To Bean
+ * Bean To Map
+ * Bean To Bean
+ 
+==Nested Mapping Example==
+ 说明：BeanMapping支持嵌套属性的mapping
+  * model下的子model需要进行嵌套属性mapping
+  * collection类型的component进行嵌套mapping处理
+===子模型嵌套===
+{{{
+<bean-mapping srcClass="java.util.HashMap" targetClass="java.util.HashMap">
+   <field-mapping srcName="name" targetName="targetName" />
+   <field-mapping srcName="subModel" targetName="targetSubModel" mapping="true" />
+</bean-mapping>
+
+<bean-mapping srcClass="xxx.SubModel" targetClass="xxx.targetSubModel" >
+....
+</bean-mapping>
+}}}
+*说明:*
+ # 首先在field-mapping中定义mapping="true"，声明该属性是个复合属性需要进行递归mapping处理
+ # 定义嵌套复合属性的mapping定义
+ 
+===collection的component嵌套===
+{{{
+<bean-mapping srcClass="java.util.HashMap" targetClass="java.util.HashMap">
+   <field-mapping srcName="name" targetName="targetName" />
+   <field-mapping srcName="subList" srcComponentClass="subModel" targetName="targetList" targetComponentClass="targetSubModel" />
+</bean-mapping>
+
+<bean-mapping srcClass="xxx.SubModel" targetClass="xxx.targetSubModel" >
+....
+</bean-mapping>
+}}}
+*说明:*
+ # 首先在field-mapping中定义src/target ComponentClass
+ # 定义嵌套复合属性的mapping定义，如果没有mapping定义则默认进行同名属性拷贝
+
+==特殊场景mapping Example==
+===no getter/setter method===
+说明：允许src/target属性没有对应的方法，配置方式和正常的一致。
+
+===this symbol name===
+说明：允许使用"this"符号，表明将当前的object ref做为另一个模型的子属性
+{{{
+<bean-mapping srcClass="xxx" targetClass="xxx" >
+  <field-mapping srcName="this" targetName="subModel" />
+</bean-mapping>
+}}}
+
+==override hconfigurations Example==
+{{{
+<bean-mapping srcClass="xx" targetClass="xx" mappingNullValue="false" debug="true">
+  <field-mapping srcName="id" targetName="id" defaultValue="0" mappingNullValue="true" trimStrings="true"/>
+</bean-mapping>
+}}}
+*说明：*
+ * 参数优先级为field-mapping > bean-mapping -> global
+
+==script Example==
+说明：允许使用script个性化定义mapping处理规则。script采用了apache下的JEXL做为解析引擎进行处理
+  * 支持四则运算
+  * 支持数组属性的处理
+  * 支持集合属性的处理
+  * 允许自定义function处理，比如json格式，xml格式
+
+===四则运算===
+{{{
+<bean-mapping srcClass="xx" targetClass="xx" mappingNullValue="false" debug="true">
+  <field-mapping targetName="value" script="src.one + src.two" />
+</bean-mapping>
+}}}
+
+===数组/集合属性的处理===
+{{{
+<bean-mapping srcClass="xx" targetClass="xx" mappingNullValue="false" debug="true">
+  <field-mapping targetName="value" script="src.array[0]" />
+  <field-mapping targetName="value" script="src.list[0]" />
+</bean-mapping>
+}}}
+
+===自定义function的处理===
+
+==reversable Example==
+说明：默认bean-mapping的定义均为单向，从srcClass映射为targetClass。可通过声明reversable=true，表明映射关系可逆，会自动生成targetClass到srcClass的映射
+{{{
+<bean-mapping srcClass="xxx" targetClass="xxx" reversable="true">
+....
+</bean-mapping>
+}}}
+*说明：*
+ * 一旦mapping关系中使用了script脚本定义，则reversable会失效，强制为不可逆
