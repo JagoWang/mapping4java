@@ -1,0 +1,62 @@
+#summary 介绍BeanMapping的内部设计&扩展点
+<wiki:toc max_depth="4" />
+
+=介绍=
+iteye相关文章： 
+ * [http://agapple.iteye.com/blog/1075671]
+ * [http://agapple.iteye.com/blog/1101502]
+
+=总体设计=
+[http://dl.iteye.com/upload/attachment/496320/482a8f78-9acc-35d6-be77-9a1fe03e8349.jpg]
+*相关说明：*
+ * 将属性mapping的动作抽象成Get/ Se两个操作。 Get操作针对数据源对象，Set操作针对数据目标对象
+ * 在Get/Set中间，定义了一个ValueProcess处理插件的概念，允许扩展相关的功能插件 （自认为相比于BeanUtils/BeanCopier的非常好的亮点，扩展性良好）
+ * 整个BeanMapping是采用微内核的设计，自身的一些功能点也是通过ValueProcess插件.
+
+==Get/Set设计==
+[http://dl.iteye.com/upload/attachment/510028/4c121cbd-7c5e-3fa3-b073-6c44a72e68d8.png]
+
+==!ValueProcess设计==
+ ValueProcess是本工具设计的核心点,也是相应的功能扩展点. 它在这个mapping过程中，所处的位置就是Get,Set的当中，允许动态的进行修改。
+默认支持的几个ValueProcess插件:
+ * DefaultValueValueProcess (支持[UserGuide#Default Value Mapping Example])
+ * ConvertorValueProcess (支持[UserGuide#基础类型 Example])
+ * ScriptValueProcess (支持[UserGuide#script Example])
+ * DebugValueProcess (打印debug信息)
+ * BehaviorValueProcess (支持[UserGuide#global-configurations]功能)
+
+*相关类图设计：*
+[http://dl.iteye.com/upload/attachment/510030/23dde9a4-582a-3567-b4b1-a416234f95ec.png]
+
+==实现自定义!ValueProcess==
+*!ValueProcess接口:*
+{{{
+public interface ValueProcess {
+
+    public Object process(Object value, ValueProcessInvocation invocation) throws BeanMappingException;
+
+}
+}}}
+
+*CustomValueProcess:*
+{{{
+public class CustomValueProcess implements ValueProcess {
+
+    public Object process(Object value, ValueProcessInvocation invocation) throws BeanMappingException {
+		ValueProcessContext context = invocation.getContext();
+		if(context xxxx) {
+			// do with something
+		} 
+		
+		return invocation.proceed(value); // 继续传递
+    }
+}
+}}}
+*相关说明：*
+ # ValueProcessContext为整个!ValueProcess处理过程中的上下文相关数据
+  * BeanMappingParam: 当前需要进行mapping操作的相关参数对象
+  * BeanMappingObject: 当前需要进行mapping操作的相关配置对象(基于XML or Mapping API)后的解析结果
+  * BeanMappingField: 当前进行mapping操作的field属性配置对象(比如src/target field)
+ # ValueProcessInvocation: 为!ValueProcess的调度控制器
+  * invocation.getContext(): 可获取ValueProcessContext对象
+  * invocation.proceed(value)： 传递给chian !ValueProcess的下一个节点
