@@ -3,3 +3,4 @@
 [GettingStart]<br/>
 [UserGuide]<br/>
 [ProgramGuide]<br/>
+[Performance]<br/>
