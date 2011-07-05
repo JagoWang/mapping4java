@@ -126,6 +126,7 @@ BeanCopy性能测试，对比的内容：
 
 *测试结果：*
 [http://dl.iteye.com/upload/attachment/496355/2b29ad34-a6fe-3da1-a3d0-b0d82fd6750c.png]
+
 *相关说明：*
  因为beanUtils，PropertyUtils的性能太差，基本上其他的柱状图都看不清楚。
 
@@ -134,8 +135,7 @@ BeanCopy性能测试，对比的内容：
 *相关说明：*
  排除了PropertyUtils/BeanUtils的性能对比图，发现BeanMapping提供的copy方法可以比直接Method的反射调用略快一点，不过和cglib的BeanCopier还是有点差距，毕竟人家的功能支持的也很简单，很裸露的get/set调用。性能上基本也和直接硬编码写copy操作一样。
 
-
-具体测试数据：
+*具体测试数据：*
 || ||*开启batch优化(200w次):单位ns*||*纯解释执行(排除JIT优化)(10w次):单位ns*||
 ||!BeanMapping.copy||1189||72780||
 ||!Method||1322||25882||
