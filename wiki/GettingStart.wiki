@@ -3,6 +3,14 @@
 =下载=
 [http://code.google.com/p/mapping4java/downloads/list]
 
+代码已提交到mvn仓库，可设置mvn dependency进行依赖：
+{{{
+<dependency>
+  <groupId>com.googlecode.mapping4java</groupId>
+  <artifactId>mapping</artifactId>
+  <version>1.0.0</version>
+</dependency>
+}}}
 =第一个例子=
 
 ==默认的属性拷贝==
